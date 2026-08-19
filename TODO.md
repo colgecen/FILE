@@ -211,7 +211,7 @@
 ## Faz 5 — Dosya Gezgini / ExplorerView (14 commit)
 
 ### 5.1 Panel çizimi
-- [ ] ExplorerView iskelet: sol panel, genişlik 1/7, sağ 1px vurgu mavisi sınır, keskin köşeler
+- [x] ExplorerView iskelet: sol panel, genişlik 1/7, sağ 1px vurgu mavisi sınır, keskin köşeler (Faz 4: `feat: tree komutuyla gezgin acilisini ekle`)
     - Commit: `feat: gezgin panel iskeletini ciz`
 - [ ] Klasör/dosya satırları: girinti hiyerarşisi, satır yükseklikleri
     - Commit: `feat: gezgin satir gorunumlerini ekle`

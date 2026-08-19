@@ -1,34 +1,61 @@
 import { describe, expect, it } from 'vitest';
 import { ExplorerModel } from './explorer';
+import type { FileNode } from './types';
 
-describe('ExplorerModel', () => {
-  it('varsayılan durumda kapalıdır', () => {
+const folder = (path: string, name: string, children: readonly FileNode[]): FileNode => ({
+  path,
+  name,
+  kind: 'directory',
+  isOpen: false,
+  children,
+});
+
+const file = (path: string, name: string): FileNode => ({
+  path,
+  name,
+  kind: 'file',
+  isOpen: false,
+  children: [],
+});
+
+const TREE: readonly FileNode[] = [
+  folder('/proje', 'proje', [
+    folder('/proje/src', 'src', [
+      file('/proje/src/main.ts', 'main.ts'),
+      file('/proje/src/util.ts', 'util.ts'),
+    ]),
+    file('/proje/readme.md', 'readme.md'),
+  ]),
+];
+
+describe('ExplorerModel satırlar', () => {
+  it('genişletilmiş klasörler düzleştirilerek listelenir', () => {
     const model = new ExplorerModel();
-    expect(model.getState().isOpen).toBe(false);
+    model.settle(TREE, '/proje');
+    const rows = model.rows();
+    expect(rows.map((row) => row.name)).toEqual(['proje', 'src', 'main.ts', 'util.ts', 'readme.md']);
   });
 
-  it('open/close/toggle durumu değiştirir', () => {
+  it('dersinlik girintisi hiyerarşiyi yansıtır', () => {
     const model = new ExplorerModel();
-    model.open();
-    expect(model.getState().isOpen).toBe(true);
-    model.open();
-    expect(model.getState().isOpen).toBe(true);
-    model.close();
-    expect(model.getState().isOpen).toBe(false);
-    model.toggle();
-    expect(model.getState().isOpen).toBe(true);
-    model.toggle();
-    expect(model.getState().isOpen).toBe(false);
+    model.settle(TREE, '/proje');
+    const rows = model.rows();
+    expect(rows[0]!.depth).toBe(0);
+    expect(rows[1]!.depth).toBe(1);
+    expect(rows[2]!.depth).toBe(2);
   });
 
-  it('abonelere durum değişimini bildirir', () => {
+  it('daraltılmış klasörün çocukları görünmez', () => {
     const model = new ExplorerModel();
-    let notified = 0;
-    model.subscribe(() => {
-      notified += 1;
-    });
-    model.open();
-    model.close();
-    expect(notified).toBe(2);
+    model.settle(TREE, '/proje');
+    model.toggleExpanded('/proje/src');
+    const rows = model.rows();
+    expect(rows.map((row) => row.name)).toEqual(['proje', 'src', 'readme.md']);
+  });
+
+  it('kök klasör açılışta otomatik genişler', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    expect(model.getState().expanded.has('/proje')).toBe(true);
   });
 });
