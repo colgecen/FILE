@@ -27,7 +27,6 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'palette.close', keys: ['Escape'], label: 'Paleti kapat', zone: 'palette' },
 
   // Gezgin
-  { commandId: 'explorer.toggle', keys: ['Control+i'], label: 'Gezgini aç/kapat (tree)' },
   { commandId: 'explorer.folder.next', keys: ['F3'], label: 'Klasör: sonraki', zone: 'explorer' },
   { commandId: 'explorer.folder.prev', keys: ['Shift+F3'], label: 'Klasör: önceki', zone: 'explorer' },
   { commandId: 'explorer.up', keys: ['ArrowUp'], label: 'Klasör/dosya: yukarı', zone: 'explorer' },

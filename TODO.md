@@ -105,19 +105,19 @@
     - Commit: `feat: odak bolgesine ozel eslemeleri ekle`
 
 ### 2.4 IPC köprüsü
-- [ ] Preload `window.api` tip tanımlı imzaları: `openFile`, `readFile`, `writeFile`, `readDir`, `gitBranch`, `sysStart`, `sysStop`, `appExit`
+- [x] Preload `window.api` tip tanımlı imzaları: `openFile`, `readFile`, `writeFile`, `readDir`, `gitBranch`, `sysStart`, `sysStop`, `appExit`
     - Commit: `feat: preload api imzalarini tanimla`
-- [ ] Main dialog handler'ları: dosya aç, klasör aç, farklı kaydet
+- [x] Main dialog handler'ları: dosya aç, klasör aç, farklı kaydet
     - Commit: `feat: dosya dialoglarini ekle`
-- [ ] Main fs handler'ları: okuma/yazma/klasör okuma + yol doğrulama + boyut limiti
+- [x] Main fs handler'ları: okuma/yazma/klasör okuma + yol doğrulama + boyut limiti
     - Commit: `feat: fs isleyicilerini ekle`
-- [ ] `git:branch` + `app:exit` kanalları; kanal listesi ARCHITECTURE Bölüm 3 ile senkron kontrol
+- [x] `git:branch` + `app:exit` kanalları; kanal listesi ARCHITECTURE Bölüm 3 ile senkron kontrol
     - Commit: `feat: git ve uygulama kanallarini ekle`
 
 ### 2.5 Telemetri
-- [ ] Main: 1 Hz örnekleyici (`os.cpus`, `totalmem/freemem`, `process.cpuUsage`, platform) → `sys:metrics` itkisi
+- [x] Main: 1 Hz örnekleyici (`os.cpus`, `totalmem/freemem`, `process.cpuUsage`, platform) → `sys:metrics` itkisi
     - Commit: `feat: telemetri ornekleyicisini ekle`
-- [ ] Renderer tüketici: 500 ms throttle + `requestAnimationFrame` çizim planı
+- [x] Renderer tüketici: 500 ms throttle + `requestAnimationFrame` çizim planı
     - Commit: `feat: telemetri tuketicisini ekle`
 
 ### 2.6 AppShell çatısı
