@@ -251,7 +251,7 @@
 ## Faz 6 — Editör Çekirdeği / EditorCore (13 commit)
 
 ### 6.1 Monaco kurulumu
-- [ ] `monaco-editor` + worker kurulumu (electron-vite worker kuralları, TS dil hizmeti worker'ı)
+- [x] `monaco-editor` + worker kurulumu (electron-vite worker kuralları, TS dil hizmeti worker'ı)
     - Commit: `chore: monaco ve worker kurulumunu ekle`
 - [ ] İlk mount: EditorCore bileşeni model ile monte edilir
     - Commit: `feat: ilk monaco mountunu ekle`
