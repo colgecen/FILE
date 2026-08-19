@@ -8,6 +8,6 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    <p>iskelet</p>
+    <p>iskelet · api v{window.api.version}</p>
   </StrictMode>,
 );
