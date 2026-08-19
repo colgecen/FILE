@@ -10,9 +10,13 @@
     "build": "electron-vite build",
     "start": "electron-vite preview",
     "preview": "electron-vite preview",
+    "lint": "eslint electron src --report-unused-disable-directives",
+    "format": "prettier --write .",
     "typecheck:node": "tsc --noEmit -p electron/tsconfig.json",
     "typecheck:web": "tsc --noEmit",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web"
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
