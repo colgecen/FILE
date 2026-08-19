@@ -3,7 +3,7 @@ import { menuModel, selectableIndexOfItems, useMenuModelState } from './menuMode
 export function MenuPanel({ level = 0 }: { level?: number }): React.JSX.Element {
   const state = useMenuModelState();
   if (state.openTop === null) return <></>;
-  const items = menuModel.currentItems();
+  const items = menuModel.itemsAt(state.path.slice(0, level));
   const openSubLevel = state.path[level];
 
   const children = items.map((item, realIndex) => {

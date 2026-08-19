@@ -175,8 +175,17 @@ export class MenuModel {
     return item === undefined ? null : item.label;
   }
 
-  currentItems(): readonly MenuItem[] {
-    return this.itemsAtLevel();
+  itemsAt(path: readonly number[]): readonly MenuItem[] {
+    if (this.state.openTop === null) return [];
+    let level: readonly MenuItem[] = menuTree[this.state.openTop]?.items ?? [];
+    for (const idx of path) {
+      const item = level[idx];
+      if (item?.kind !== 'submenu' || item.children === undefined) {
+        return [];
+      }
+      level = item.children;
+    }
+    return level;
   }
 
   currentPathLabel(): string {
@@ -190,16 +199,7 @@ export class MenuModel {
   }
 
   private itemsAtPath(path: readonly number[]): readonly MenuItem[] {
-    if (this.state.openTop === null) return [];
-    let level: readonly MenuItem[] = menuTree[this.state.openTop]?.items ?? [];
-    for (const idx of path) {
-      const item = level[idx];
-      if (item?.kind !== 'submenu' || item.children === undefined) {
-        return [];
-      }
-      level = item.children;
-    }
-    return level;
+    return this.itemsAt(path);
   }
 
   private itemAtActive(items: readonly MenuItem[]): MenuItem | undefined {
