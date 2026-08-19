@@ -1,3 +1,4 @@
+import { reportError } from './appErrors';
 import type { CommandDef, CommandResult } from './types';
 
 type CommandHandlers = {
@@ -43,6 +44,7 @@ export class CommandRegistry {
       return await def.run();
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+      reportError(message);
       return { ok: false, error: message };
     }
   }
