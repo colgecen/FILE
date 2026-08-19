@@ -19,8 +19,8 @@ export function keyChordFromEvent(event: KeyboardEvent): string | null {
   if (event.metaKey) chord.push('Meta');
   if (event.altKey) chord.push('Alt');
   if (event.shiftKey) chord.push('Shift');
-  const primary =
-    event.key.length === 1 && !NAMED_KEYS.has(event.key) ? event.key.toLowerCase() : event.key;
+  const raw = event.key === ' ' ? 'Space' : event.key;
+  const primary = raw.length === 1 && !NAMED_KEYS.has(raw) ? raw.toLowerCase() : raw;
   chord.push(primary);
   return chord.join('+');
 }
