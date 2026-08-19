@@ -1,0 +1,113 @@
+# DECISIONS.md — Teknoloji ve Tasarım Karar Kayıtları (ADR)
+
+> Her madde, "Neden bu kütüphane/teknoloji/yaklaşım?" sorusunun cevabıdır.
+> Mimariye dokunan her değişiklik önce buraya ADR olarak eklenir, sonra kod yazılır.
+
+Format: **Durum** — Bağlam — Karar — Sonuçlar.
+
+---
+
+## D-001 Electron masaüstü kabuğu
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Uygulama masaüstünde çalışacak; dosya sistemi erişimi, aç/kaydet dialogları, sistem telemetrisi ve gelecekte terminal (pty) ve yerel yapay zekâ desteği gerekiyor. Saf web ortamında bu yetenekler kısıtlı veya yok.
+- **Karar:** Masaüstü kabuğu olarak Electron kullanılır.
+- **Sonuçlar:** Node v24 zaten mevcut (ek araç kurulumu gerekmez); tüm fs/dialog işlemleri Main Process'te güvenle yürür; native modüller için napi/ABI yolu açık kalır. Renderer'da Node erişimi kapatılır (güvenlik, ARCHITECTURE Bölüm 9).
+
+## D-002 electron-vite üzerinde Vite
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Renderer'da React + Vite isteniyor; main/preload tarafının da derlenmesi gerekiyor.
+- **Karar:** `electron-vite` tek yapılandırma ile üç katmanı (main/preload/renderer) derler.
+- **Sonuçlar:** HMR renderer'da çalışır; worker ve static kaynak yolu kuralları tek yerden yönetilir.
+
+## D-003 React + TypeScript (strict)
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Büyüyecek, çok bileşenli bir arayüz; hata oranını düşük tutmak isteniyor.
+- **Karar:** React + TypeScript, `strict` modda; `any` kullanımı yasak; `no-unused-vars` aktif.
+- **Sonuçlar:** Daha güvenli refactor; IPC sözleşmesi tiplerle belgelenir.
+
+## D-004 Monaco Editor + özel tema
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Editör motoru seçimi; VS Code'la aynı motor olması dil hizmeti (LSP) ve worker ekosistemini hazır getirir.
+- **Karar:** Monaco Editor; tema `defineTheme` ile tanımlanır; TypeScript dil hizmeti web worker ile.
+- **Sonuçlar:** İmleç stili (boş blok), ligatürler ve renk tokenları Monaco API'si ile tam kontrol edilir.
+
+## D-005 Komut kaydı ve tuş kaydı ayrıştırması
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Tüm eylemler klavye ile tetiklenecek; kullanıcı tuş atamalarını zamanla değiştirecek.
+- **Karar:** Her eylem `CommandRegistry`'de bir komut; tuş eşlemeleri ayrı `Keymap` kaydında; çakışma tespiti yapılır.
+- **Sonuçlar:** Kısayol değişimi kod değişikliği gerektirmez; menüler, palet ve kısayollar aynı komutlara işaret eder.
+
+## D-006 Klavye birinci sınıf, fare ikincil
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Ürünün ana kullanım senaryosu klavye; fare yalnızca kolaylaştırıcı.
+- **Karar:** Odak yönetimi ve gezinme modeli klavye için tasarlanır; fare etkileşimleri menülerde hover/click olarak çalışır ancak hiçbir kritik akış fareden geçmez.
+- **Sonuçlar:** Tüm akışlar klavye ile test edilir.
+
+## D-007 Renk paleti kısıtı
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Görsel kimlik: holografik sade görünüm, keskin köşeler, ince çizgiler.
+- **Karar:** Yalnızca mavi tonları + beyaz + siyah; **kırmızı yalnızca hata**; `border-radius: 0`; tüm kenarlıklar 1px vurgu mavisi. Token listesi ARCHITECTURE Bölüm 7.1'de zorunludur.
+- **Sonuçlar:** Yeni renk tokenı eklemek için ADR gerekir; renk kullanımı otomatik kontrol edilebilir.
+
+## D-008 BrowserWindow güvenlik ayarları sabit
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Renderer'a Node erişimi açmak hızlı ama güvensizdir.
+- **Karar:** `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` kalıcıdır; iletişim yalnızca `window.api` (preload contextBridge).
+- **Sonuçlar:** Tüm fs işlemleri Main'de yazılır; pty/native modüller yalnızca Main'de kullanılır.
+
+## D-009 Dosya gezgini: Ctrl+I komut paleti → `tree`
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Gezgini her zaman görünür tutmak yerine isteğe bağlı çağırmak isteniyor.
+- **Karar:** Ctrl+I ile açılan komut paletine `tree` yazınca sol tarafta, pencere genişliğinin 1/7'sini kaplayan geziin açılır ve odak geziinde olur. Gezginde klasörler arası **F3 / yön tuşları**, dosyalar arası **Tab / yön tuşları** ile gezinilir.
+- **Sonuçlar:** `tree` komutu CommandRegistry'de birinci sınıf komuttur; gezgin kapalıyken paletle, açıkken Esc ile kapatılabilir.
+
+## D-010 Durum çubuğu telemetrisi
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Alt satır; dosya adı, imleç konumu, git branch, sistem yükü ve (ileride) yapay zekâ durumu tek bakışta görülmeli.
+- **Karar:** `StatusBar` bileşeni; Orbitron fontu; veriler IPC üzerinden (telemetri 1 Hz örnekleme, renderer'da 500 ms throttle).
+- **Sonuçlar:** Sistem bilgisi renderer'da hesaplanmaz; gelecek AI durumu aynı satıra `AIStatus` tipiyle eklenir.
+
+## D-011 State yönetimi: önce kütüphanesiz
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Faz 1-3 boyunca state küçük; aşırı kütüphane yükü istenmiyor.
+- **Karar:** React Context + `useReducer` ile başlanır; state karmaşıklaşırsa (ör. AI fazı öncesi) kütüphane kararı ADR'ye bağlanır.
+- **Sonuçlar:** Faz 1-3 boyunca ekstra bağımlılık yok.
+
+## D-012 Terminal: xterm.js + node-pty (ileri faz)
+
+- **Durum:** Kabul edildi (gerçekleştirme ileri fazda)
+- **Bağlam:** Emacs tarzı terminal özellikleri (yeni/split terminal, görev çalıştırma) terminal çekirdeği gerektirir.
+- **Karar:** Görünüm `xterm.js`, arka uç `node-pty` (Main Process). Node-pty native bir modül olduğundan `@electron/rebuild` ile Electron ABI'sına derlenir.
+- **Sonuçlar:** Terminal, native modül derleme iş hattını da beraberinde getirir; önceki fazlarda terminal menüsü yer tutucudur.
+
+## D-013 Yerel yapay zekâ: kontrat önce, motor sonra
+
+- **Durum:** Kabul edildi (gerçekleştirme ileri fazda)
+- **Bağlam:** Chat, inline tamamlama, kod açıklama, model indirme/yönetim gerekiyor; motor seçimi belirsiz.
+- **Karar:** Önce tip kontratları (AIStatus, model bilgisi, kanallar), sonra motor seçimi ADR'si. Ağır hesaplar worker'da.
+- **Sonuçlar:** UI ve StatusBar entegrasyonu motordan bağımsız geliştirilir.
+
+## D-014 Native çekirdek (Rust/C++) gelecekteki faz
+
+- **Durum:** Ertelendi (kabul edilmedi, kontrat ayrıldı)
+- **Bağlam:** Sistemde Rust/C++ araç zinciri yok; ilk fazlarda performans gereksinimi Node/Electron Main tarafını aşmıyor.
+- **Karar:** İlk aşamada native modül derlenmez; tüm sistem işlemleri Electron Main Process'te. İleride native modül, IPC sözleşmesinin Main tarafını devralabilir (kanallar korunur).
+- **Sonuçlar:** Şimdilik native/maddi ABI bağımlılığı yok; mimari buna hazır.
+
+## D-015 Doküman ve iletişim dili
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Proje sahibi Türkçe çalışıyor; kod adları İngilizce standart.
+- **Karar:** Dokümanlar, commit mesajları ve UI metinleri Türkçe; kod tanımlayıcıları İngilizce; teknik terimler UI'da İngilizce kalabilir (ör. "Find" yerine "Ara (Find)").
+- **Sonuçlar:** Tutarlı iletişim; AGENTS.md'de kurallaştırıldı.
