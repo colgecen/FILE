@@ -55,6 +55,13 @@ describe('PaletteModel', () => {
     );
   });
 
+  it('tree sorgusu gezgin komutunu ilk sırada getirir', () => {
+    paletteModel.reset(registry.list());
+    paletteModel.setQuery('tree', registry.list());
+    const items = paletteModel.getState().items;
+    expect(items[0]?.commandId).toBe('explorer.tree');
+  });
+
   it('seçim sarar', () => {
     paletteModel.reset(registry.list());
     paletteModel.move(-1);

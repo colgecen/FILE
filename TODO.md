@@ -199,7 +199,7 @@
     - Commit: `feat: palet odak korumasi ekle`
 
 ### 4.4 `tree` komutu
-- [ ] `tree` komut tanımı katalogda (açılışta eşleşmelere yüksek öncelik)
+- [x] `tree` komut tanımı katalogda (açılışta eşleşmelere yüksek öncelik)
     - Commit: `feat: tree komutunu tanimla`
 - [ ] Çalışınca ExplorerView açılır: sol taraf, pencere genişliğinin 1/7'si, 1px mavi sınır
     - Commit: `feat: tree komutuyla gezgin acilisini ekle`

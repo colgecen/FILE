@@ -118,7 +118,7 @@ const SEEDS: readonly CommandSeed[] = [
   { id: 'ai.models.download', title: 'Model İndir', category: 'ai' },
 
   // Gezgin
-  { id: 'explorer.tree', title: 'tree — Dosya Gezgini', category: 'view' },
+  { id: 'explorer.tree', title: 'tree — Dosya Gezgini', category: 'view', aliases: ['tree'] },
   { id: 'explorer.toggle', title: 'Gezgini Aç/Kapat', category: 'view' },
   { id: 'explorer.refresh', title: 'Gezgini Yenile', category: 'view' },
 
