@@ -135,30 +135,43 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'palette.confirm',
     title: 'Seçimi çalıştır',
     category: 'view',
-    run: placeholder('palette.confirm'),
-    placeholder: true,
+    run: async () => {
+      const item = paletteModel.activeItem();
+      if (item === undefined) return { ok: false, error: 'Seçilecek komut yok' };
+      paletteModel.reset(registry.list());
+      focusManager.returnToPrevious();
+      await registry.run(item.commandId);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'palette.up',
     title: 'Sonuç: yukarı',
     category: 'view',
-    run: placeholder('palette.up'),
-    placeholder: true,
+    run: () => {
+      paletteModel.move(-1);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'palette.down',
     title: 'Sonuç: aşağı',
     category: 'view',
-    run: placeholder('palette.down'),
-    placeholder: true,
+    run: () => {
+      paletteModel.move(1);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'palette.close',
     title: 'Paleti kapat',
     category: 'view',
-    run: closeToPrevious,
+    run: () => {
+      paletteModel.reset(registry.list());
+      focusManager.returnToPrevious();
+      return { ok: true };
+    },
   });
-
   registry.register({
     id: 'explorer.toggle',
     title: 'Gezgini aç/kapat',

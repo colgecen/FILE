@@ -50,3 +50,40 @@ describe('palette açılış akışı', () => {
     expect(paletteModel.getState().query).toBe('');
   });
 });
+
+describe('palet seçim komutları', () => {
+  it('up ve down seçimi kaydırır', async () => {
+    paletteModel.reset(registry.list());
+    await registry.run('palette.down');
+    expect(paletteModel.getState().activeIndex).toBe(1);
+    await registry.run('palette.up');
+    expect(paletteModel.getState().activeIndex).toBe(0);
+  });
+
+  it('confirm seçili komutu çalıştırır ve paleti kapatır', async () => {
+let executed = false;
+    registry.register({
+      id: 'test.hello',
+      title: 'Merhaba',
+      category: 'file',
+      run: () => {
+        executed = true;
+        return { ok: true };
+      },
+    });
+    await registry.run('palette.toggle');
+    paletteModel.reset([registry.get('test.hello')!]);
+    await registry.run('palette.confirm');
+    expect(executed).toBe(true);
+    expect(focusManager.get()).toBe('editor');
+  });
+
+  it('close sorguyu temizler ve önceki bölgeye döner', async () => {
+    paletteModel.reset(registry.list());
+    await registry.run('palette.toggle');
+    paletteModel.setQuery('xyz', registry.list());
+    await registry.run('palette.close');
+    expect(paletteModel.getState().query).toBe('');
+    expect(focusManager.get()).toBe('editor');
+  });
+});

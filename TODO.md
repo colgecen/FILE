@@ -177,11 +177,11 @@
 ## Faz 4 — Komut Paleti / Ctrl+I (11 commit)
 
 ### 4.1 Palet arayüzü
-- [ ] `CommandHUD` bileşen iskeleti: ekran ortasında konumlanma, görünürlük kontrolü
+- [x] `CommandHUD` bileşen iskeleti: ekran ortasında konumlanma, görünürlük kontrolü
     - Commit: `feat: komut paleti bilesen iskeletini ciz`
-- [ ] Panel stili: %90 opak siyah, 1px mavi çerçeve, Orbitron, keskin köşeler
+- [x] Panel stili: %90 opak siyah, 1px mavi çerçeve, Orbitron, keskin köşeler
     - Commit: `feat: komut paleti panel stilini ekle`
-- [ ] Giriş kutusu + sonuç listesi: tamamen klavye ile yönetilir
+- [x] Giriş kutusu + sonuç listesi: tamamen klavye ile yönetilir
     - Commit: `feat: palet giris ve sonuc listesini ekle`
 
 ### 4.2 Fuzzy filtre

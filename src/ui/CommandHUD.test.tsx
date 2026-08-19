@@ -44,4 +44,27 @@ describe('CommandHUD', () => {
     expect(screen.getByText('Dosya Aç')).toBeInTheDocument();
     expect(screen.queryByText('Kaydet')).toBeNull();
   });
+
+  it('aktif öğe vurgulanır ve hareket eder', () => {
+    renderShell();
+    act(() => {
+      focusManager.set('palette');
+      paletteModel.reset([
+        { id: 'a.open', title: 'Dosya Aç', category: 'file', run: () => ({ ok: true }) },
+        { id: 'b.save', title: 'Kaydet', category: 'file', run: () => ({ ok: true }) },
+      ]);
+    });
+    expect(screen.getByText('Dosya Aç').closest('.command-hud__item')?.className).toContain(
+      'command-hud__item--active',
+    );
+    act(() => {
+      paletteModel.move(1);
+    });
+    expect(screen.getByText('Kaydet').closest('.command-hud__item')?.className).toContain(
+      'command-hud__item--active',
+    );
+    expect(screen.getByText('Dosya Aç').closest('.command-hud__item')?.className).not.toContain(
+      'command-hud__item--active',
+    );
+  });
 });
