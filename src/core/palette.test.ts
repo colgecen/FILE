@@ -1,13 +1,18 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { CommandRegistry } from './commands';
 import { focusManager } from './focus';
 import { registerMenuCommands } from './menuCommands';
+import { openFilesModel } from './openFiles';
 import { paletteModel } from './palette';
 import { registerNavCommands } from './navCommands';
 
 const registry = new CommandRegistry();
 registerMenuCommands(registry);
 registerNavCommands(registry);
+
+afterEach(() => {
+  openFilesModel.set([]);
+});
 
 describe('PaletteModel', () => {
   it('varsayılan listede ilk on iki komutu gösterir', () => {
@@ -22,6 +27,32 @@ describe('PaletteModel', () => {
     paletteModel.setQuery('kaydet', registry.list());
     const titles = paletteModel.getState().items.map((item) => item.title);
     expect(titles).toContain('Kaydet');
+  });
+
+  it('eşanlam ile komut bulunur', () => {
+    paletteModel.reset(registry.list());
+    paletteModel.setQuery('w', registry.list());
+    const items = paletteModel.getState().items;
+    expect(items.map((item) => item.commandId)).toContain('file.save');
+    expect(items.map((item) => item.commandId)).toContain('file.save.all');
+  });
+
+  it('açık dosya adıyla arama yapılır', () => {
+    openFilesModel.set([{ name: 'main.ts', path: '/proje/main.ts' }]);
+    paletteModel.reset(registry.list());
+    paletteModel.setQuery('main', registry.list());
+    const items = paletteModel.getState().items;
+    expect(items.map((item) => item.commandId)).toContain('file.open');
+    const fileItem = items.find((item) => item.filePath === '/proje/main.ts');
+    expect(fileItem?.title).toBe('main.ts');
+  });
+
+  it('sorgusuz listede açık dosyalar yer almaz', () => {
+    openFilesModel.set([{ name: 'main.ts', path: '/proje/main.ts' }]);
+    paletteModel.reset(registry.list());
+    expect(paletteModel.getState().items.map((item) => item.filePath)).not.toContain(
+      '/proje/main.ts',
+    );
   });
 
   it('seçim sarar', () => {

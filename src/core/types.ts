@@ -71,6 +71,7 @@ export type CommandDef = {
   readonly category: CommandCategory;
   readonly run: () => CommandResult | Promise<CommandResult>;
   readonly placeholder?: boolean;
+  readonly aliases?: readonly string[];
 };
 
 export type KeyBinding = {

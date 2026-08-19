@@ -11,6 +11,7 @@ type CommandSeed = {
   readonly title: string;
   readonly category: CommandCategory;
   readonly run?: () => { ok: boolean; error?: string };
+  readonly aliases?: readonly string[];
 };
 
 const SEEDS: readonly CommandSeed[] = [
@@ -18,13 +19,13 @@ const SEEDS: readonly CommandSeed[] = [
   { id: 'file.new.file', title: 'Yeni Dosya', category: 'file' },
   { id: 'file.new.window', title: 'Yeni Pencere', category: 'file' },
   { id: 'file.new.terminal', title: 'Yeni Terminal', category: 'file' },
-  { id: 'file.open.file', title: 'Dosya Aç', category: 'file' },
-  { id: 'file.open.folder', title: 'Klasör Aç', category: 'file' },
+  { id: 'file.open.file', title: 'Dosya Aç', category: 'file', aliases: ['o'] },
+  { id: 'file.open.folder', title: 'Klasör Aç', category: 'file', aliases: ['ff'] },
   { id: 'file.open.recent', title: 'Son Kullanılanlar', category: 'file' },
   { id: 'file.open.recent.none', title: 'Kayıt Yok', category: 'file' },
-  { id: 'file.save', title: 'Kaydet', category: 'file' },
-  { id: 'file.save.as', title: 'Farklı Kaydet', category: 'file' },
-  { id: 'file.save.all', title: 'Tümünü Kaydet', category: 'file' },
+  { id: 'file.save', title: 'Kaydet', category: 'file', aliases: ['w'] },
+  { id: 'file.save.as', title: 'Farklı Kaydet', category: 'file', aliases: ['sa'] },
+  { id: 'file.save.all', title: 'Tümünü Kaydet', category: 'file', aliases: ['wa'] },
   { id: 'file.exit', title: 'Çıkış', category: 'file' },
 
   // Edit
@@ -133,6 +134,7 @@ export function registerMenuCommands(registry: CommandRegistry): void {
       title: seed.title,
       category: seed.category,
       run: seed.run ?? PLACEHOLDER(seed.id),
+      ...(seed.aliases === undefined ? {} : { aliases: seed.aliases }),
       placeholder: seed.run === undefined,
     });
   }

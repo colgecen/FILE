@@ -187,7 +187,7 @@
 ### 4.2 Fuzzy filtre
 - [x] Komut adları üzerinde bulanık arama
     - Commit: `feat: komut bulanik aramasini ekle`
-- [ ] Kısaltma eşanlamları + açık dosya adları ile genişletilmiş arama
+- [x] Kısaltma eşanlamları + açık dosya adları ile genişletilmiş arama
     - Commit: `feat: esanlam ve dosya aramasini ekle`
 - [ ] Sonuç sıralama; yukarı/aşağı seçim; Enter çalıştırır; Esc kapatır
     - Commit: `feat: palet secim akisini ekle`
