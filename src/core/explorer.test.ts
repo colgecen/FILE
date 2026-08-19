@@ -247,3 +247,28 @@ describe('ExplorerModel yön tuşu dosya gezinmesi', () => {
     expect(model.getState().selectedPath).toBe('/proje/src/main.ts');
   });
 });
+
+describe('ExplorerModel klasör eylemi', () => {
+  it('selectedRow varsayılanı ilk satırdır', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    expect(model.selectedRow()?.path).toBe('/proje');
+  });
+
+  it('toggleFolder genişletilmiş klasörü daraltır', async () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    expect(model.getState().expanded.has('/proje/src')).toBe(true);
+    await model.toggleFolder('/proje/src');
+    expect(model.getState().expanded.has('/proje/src')).toBe(false);
+  });
+
+  it('toggleFolder boş klasörü okumadan genişletir', async () => {
+    const model = new ExplorerModel();
+    model.settle([folder('/bos', 'bos', [])], '/');
+    model.toggleExpanded('/bos');
+    expect(model.getState().expanded.has('/bos')).toBe(false);
+    await model.toggleFolder('/bos');
+    expect(model.getState().expanded.has('/bos')).toBe(true);
+  });
+});

@@ -239,7 +239,7 @@
     - Commit: `feat: yon tuslari ile dosya gezinmesini ekle`
 
 ### 5.4 Eylemler
-- [ ] Enter: klasör → aç/kapat (genişlet/daralt)
+- [x] Enter: klasör → aç/kapat (genişlet/daralt)
     - Commit: `feat: klasor ac kapat eylemini ekle`
 - [ ] Enter: dosya → model oluştur + editör sekmesi + odak editöre geçer
     - Commit: `feat: dosya acma akisini ekle`

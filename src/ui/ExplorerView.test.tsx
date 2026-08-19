@@ -185,6 +185,25 @@ describe('ExplorerView', () => {
     fireEvent.keyDown(window, { key: 'ArrowDown' });
     expect(explorerModel.getState().selectedPath).toBe('/proje/src/main.ts');
   });
+
+  it('Enter seçili klasörü daraltır ve genişletir', async () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      focusManager.set('explorer');
+    });
+    fireEvent.keyDown(window, { key: 'ArrowDown' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje/src');
+    await act(async () => {
+      fireEvent.keyDown(window, { key: 'Enter' });
+    });
+    expect(explorerModel.getState().expanded.has('/proje/src')).toBe(false);
+    await act(async () => {
+      fireEvent.keyDown(window, { key: 'Enter' });
+    });
+    expect(explorerModel.getState().expanded.has('/proje/src')).toBe(true);
+  });
 });
 
 describe('ExplorerView kök yükleme', () => {

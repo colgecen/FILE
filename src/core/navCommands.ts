@@ -5,9 +5,6 @@ import { menuModel } from '../menus/menuModel';
 import { paletteModel } from './palette';
 import type { FocusZone } from './types';
 
-const placeholder =
-  (id: string) => (): { ok: boolean; error: string } => ({ ok: false, error: `Yakında: ${id}` });
-
 const toggleZone = (zone: FocusZone) => (): { ok: boolean } => {
   if (focusManager.get() === zone) {
     focusManager.returnToPrevious();
@@ -245,8 +242,15 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'explorer.activate',
     title: 'Dosya aç / klasör aç-kapat',
     category: 'view',
-    run: placeholder('explorer.activate'),
-    placeholder: true,
+    run: async () => {
+      const row = explorerModel.selectedRow();
+      if (row === undefined) return { ok: false, error: 'Seçim yok' };
+      if (row.kind === 'directory') {
+        await explorerModel.toggleFolder(row.path, window.api.readDir);
+        return { ok: true };
+      }
+      return { ok: false, error: 'Dosya açma akışı henüz bağlanmadı' };
+    },
   });
   registry.register({
     id: 'explorer.close',
