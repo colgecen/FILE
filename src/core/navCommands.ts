@@ -17,11 +17,6 @@ const toggleZone = (zone: FocusZone) => (): { ok: boolean } => {
   return { ok: true };
 };
 
-const closeToPrevious = (): { ok: boolean } => {
-  focusManager.returnToPrevious();
-  return { ok: true };
-};
-
 const goTop = (delta: number) => (): { ok: boolean } => {
   const state = menuModel.getState();
   if (state.openTop === null) {
@@ -179,6 +174,7 @@ export function registerNavCommands(registry: CommandRegistry): void {
     category: 'view',
     run: () => {
       explorerModel.open();
+      focusManager.set('explorer');
       return { ok: true };
     },
   });
@@ -241,6 +237,10 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'explorer.close',
     title: 'Gezginden çık',
     category: 'view',
-    run: closeToPrevious,
+    run: () => {
+      explorerModel.close();
+      focusManager.returnToPrevious();
+      return { ok: true };
+    },
   });
 }

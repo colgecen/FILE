@@ -203,7 +203,7 @@
     - Commit: `feat: tree komutunu tanimla`
 - [x] Çalışınca ExplorerView açılır: sol taraf, pencere genişliğinin 1/7.si, 1px mavi sınır
     - Commit: `feat: tree komutuyla gezgin acilisini ekle`
-- [ ] Gezgin zaten açıksa yalnızca odak transferi yapılır; gezgin kapatma komutu da tanımlı
+- [x] Gezgin zaten açıksa yalnızca odak transferi yapılır; gezgin kapatma komutu da tanımlı
     - Commit: `feat: gezginlere odak transferini ekle`
 
 ---

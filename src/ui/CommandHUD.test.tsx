@@ -161,7 +161,7 @@ describe('palet klavye akışı', () => {
     expect(input).toHaveFocus();
   });
 
-  it('paletten tree komutu gezgini açar', () => {
+  it('paletten tree komutu gezgini açar ve odaklanır', () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
     act(() => {
@@ -170,6 +170,20 @@ describe('palet klavye akışı', () => {
     fireEvent.keyDown(window, { key: 'Enter' });
     expect(explorerModel.getState().isOpen).toBe(true);
     expect(screen.getByRole('region', { name: 'Dosya gezgini' })).toBeInTheDocument();
+    expect(focusManager.get()).toBe('explorer');
+  });
+
+  it('gezgin açıkken Esc kapatır ve odak editöre döner', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    act(() => {
+      paletteModel.setQuery('tree', createCore().registry.list());
+    });
+    fireEvent.keyDown(window, { key: 'Enter' });
+    expect(focusManager.get()).toBe('explorer');
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(explorerModel.getState().isOpen).toBe(false);
     expect(focusManager.get()).toBe('editor');
+    expect(screen.queryByRole('region', { name: 'Dosya gezgini' })).toBeNull();
   });
 });
