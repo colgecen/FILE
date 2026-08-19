@@ -47,8 +47,8 @@
 
 ## 5. Görev ve Commit Disiplini
 
-- `TODO.md`'deki plan takip edilir; **her görev tek commit** ile tamamlanır.
-- Commit öncesi doğrulama zinciri çalıştırılır (Bölüm 2).
+- `TODO.md`'deki plan takip edilir; **her görev (her checkbox) ayrı bir commit** ile tamamlanır; görevler özenle, ayrıntılı ve acele edilmeden yapılır; yarım veya özensiz iş commit edilmez.
+- Commit öncesi doğrulama zinciri çalıştırılır (Bölüm 2). Toplam plan: 135 commit (bkz. TODO.md).
 - Görev bitince ilgili `TODO.md` checkbox'ları işaretlenir (`[x]`).
 - Mimariye dokunan her değişiklik: önce ADR (DECISIONS.md), sonra kod.
 - Şüphede kalındığında kod yazmadan önce kullanıcıya sorulur; varsayım yapılmaz.
