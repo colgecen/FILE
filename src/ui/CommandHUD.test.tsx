@@ -35,8 +35,8 @@ describe('CommandHUD', () => {
     act(() => {
       focusManager.set('palette');
       paletteModel.reset([
-        { commandId: 'a.open', title: 'Dosya Aç', category: 'file' },
-        { commandId: 'b.save', title: 'Kaydet', category: 'file' },
+        { id: 'a.open', title: 'Dosya Aç', category: 'file', run: () => ({ ok: true }) },
+        { id: 'b.save', title: 'Kaydet', category: 'file', run: () => ({ ok: true }) },
       ]);
     });
     const input = screen.getByPlaceholderText('Komut yaz…');
