@@ -233,7 +233,7 @@
     - Commit: `feat: f3 ile klasor gezinmesini ekle`
 - [x] **Klasörler arası:** yön tuşları ile gezinme
     - Commit: `feat: yon tuslari ile klasor gezinmesini ekle`
-- [ ] **Dosyalar arası:** Tab tuşu ile gezinme
+- [x] **Dosyalar arası:** Tab tuşu ile gezinme
     - Commit: `feat: tab ile dosya gezinmesini ekle`
 - [ ] **Dosyalar arası:** yön tuşları ile gezinme
     - Commit: `feat: yon tuslari ile dosya gezinmesini ekle`

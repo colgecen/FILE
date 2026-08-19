@@ -193,3 +193,37 @@ describe('ExplorerModel yön tuşu gezinmesi', () => {
     expect(model.getState().selectedPath).toBe('/proje');
   });
 });
+
+describe('ExplorerModel dosya gezinmesi', () => {
+  it('Tab dosyalar arasında sırayla gezer ve sarar', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.moveFile(1);
+    expect(model.getState().selectedPath).toBe('/proje/src/util.ts');
+    model.moveFile(1);
+    expect(model.getState().selectedPath).toBe('/proje/readme.md');
+    model.moveFile(1);
+    expect(model.getState().selectedPath).toBe('/proje/src/main.ts');
+  });
+
+  it('Shift+Tab dosyalar arasında geriye gezer', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.moveFile(-1);
+    expect(model.getState().selectedPath).toBe('/proje/readme.md');
+  });
+
+  it('dosya yoksa hareket olmaz', () => {
+    const model = new ExplorerModel();
+    model.settle([folder('/klasor', 'klasor', [])], '/');
+    model.moveFile(1);
+    expect(model.getState().selectedPath).toBe('/klasor');
+  });
+
+  it('seçim klasördeyken Tab dosya kanalına geçer', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.moveFile(1);
+    expect(model.getState().selectedPath).toBe('/proje/src/util.ts');
+  });
+});
