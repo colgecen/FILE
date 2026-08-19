@@ -121,17 +121,17 @@
     - Commit: `feat: telemetri tuketicisini ekle`
 
 ### 2.6 AppShell çatısı
-- [ ] Merkezi `keydown` dinleyicisi: odak bölgesine göre Keymap'i çağırır, çakışma raporlarını gösterir
+- [x] Merkezi `keydown` dinleyicisi: odak bölgesine göre Keymap'i çağırır, çakışma raporlarını gösterir
     - Commit: `feat: merkezi klavye dinleyicisini kur`
-- [ ] Odak bölgesi yönetimi: editör/menü/palet/gezgin; geçişler yalnızca komutla
+- [x] Odak bölgesi yönetimi: editör/menü/palet/gezgin; geçişler yalnızca komutla
     - Commit: `feat: odak bolgesi yonetimini ekle`
-- [ ] Hata toplama: hata nesneleri tek kanaldan; kırmızı göstergelere bağlanır
+- [x] Hata toplama: hata nesneleri tek kanaldan; kırmızı göstergelere bağlanır
     - Commit: `feat: hata gostergesi altyapisini ekle`
-- [ ] IPC yaşam döngüsü: AppShell mount'ta `sysStart`, unmount'ta `sysStop`; kapatma akışı
+- [x] IPC yaşam döngüsü: AppShell mount'ta `sysStart`, unmount'ta `sysStop`; kapatma akışı
     - Commit: `feat: ipc yasam dongusunu kur`
-- [ ] AppShell bileşen iskeleti: sağlayıcılar (CommandRegistry/Keymap/State), çocuk alanlar
+- [x] AppShell bileşen iskeleti: sağlayıcılar (CommandRegistry/Keymap/State), çocuk alanlar
     - Commit: `feat: appshell bilesenini kur`
-- [ ] Pencere kapanış onayı: kaydedilmemiş değişiklik varsa uyarı akışı
+- [x] Pencere kapanış onayı: kaydedilmemiş değişiklik varsa uyarı akışı
     - Commit: `feat: kapanis onayi akisini ekle`
 
 ---
@@ -139,21 +139,21 @@
 ## Faz 3 — Menü Çubuğu (13 commit)
 
 ### 3.1 Menü ağacı verisi
-- [ ] `src/menus/menuTree.ts`: veri yapısı + 9 üst başlık; her öğe komut id ile bağlı
+- [x] `src/menus/menuTree.ts`: veri yapısı + 9 üst başlık; her öğe komut id ile bağlı
     - Commit: `feat: menu agaci iskeletini kur`
-- [ ] File + Edit katalogları: Yeni Dosya/Yeni Pencere/Yeni Terminal; Aç (Dosya/Klasör/Son Kullanılanlar); Kaydet/Kaydet As/Tümünü Kaydet; Çıkış; Geri Al/Yinele/Geri Alma Ağacı; Kes/Kopyala/Yapıştır; Ara/Bul/Değiştir (Regexp); Yorum Aç/Kapat
+- [x] File + Edit katalogları: Yeni Dosya/Yeni Pencere/Yeni Terminal; Aç (Dosya/Klasör/Son Kullanılanlar); Kaydet/Kaydet As/Tümünü Kaydet; Çıkış; Geri Al/Yinele/Geri Alma Ağacı; Kes/Kopyala/Yapıştır; Ara/Bul/Değiştir (Regexp); Yorum Aç/Kapat
     - Commit: `feat: dosya ve duzenleme menulerini tanimla`
-- [ ] Selection + View katalogları: Tümünü Seç/Genişlet/Daralt; İmleç Yukarı/Aşağı/Tümü; Sütun/Dikdörtgen; Komut Paleti; Kenar Çubukları (Gezgin/Ara/Kaynak Kontrolü/Çalıştır); Tam Ekran/Zen Modu/Kelime Sarmalama; Tek Pencere/Dikey/Yatay Böl
+- [x] Selection + View katalogları: Tümünü Seç/Genişlet/Daralt; İmleç Yukarı/Aşağı/Tümü; Sütun/Dikdörtgen; Komut Paleti; Kenar Çubukları (Gezgin/Ara/Kaynak Kontrolü/Çalıştır); Tam Ekran/Zen Modu/Kelime Sarmalama; Tek Pencere/Dikey/Yatay Böl
     - Commit: `feat: secim ve gorunum menulerini tanimla`
-- [ ] Go + Run + Terminal + Help + Local AI katalogları: Dosyaya/Sembole/Tanıma/Referans; Satıra Git; Geri/İleri; Yer İmleri; Hata Ayıklama komutları; Terminal/Görevler; Karşılama/Kısayollar/Hakkında; AI yer tutucuları
+- [x] Go + Run + Terminal + Help + Local AI katalogları: Dosyaya/Sembole/Tanıma/Referans; Satıra Git; Geri/İleri; Yer İmleri; Hata Ayıklama komutları; Terminal/Görevler; Karşılama/Kısayollar/Hakkında; AI yer tutucuları
     - Commit: `feat: gezinme calistirma terminal yardim ve ai menulerini tanimla`
 
 ### 3.2 MenuBar bileşeni
-- [ ] Üst buton satırı: 9 buton, 1px mavi kenarlık, hover/focus vurgusu, keskin köşeler
+- [x] Üst buton satırı: 9 buton, 1px mavi kenarlık, hover/focus vurgusu, keskin köşeler
     - Commit: `feat: ust buton satirini ciz`
-- [ ] Alt menü paneli: odağa/hover'a gelince otomatik açılır; 1px mavi çerçeve
+- [x] Alt menü paneli: odağa/hover'a gelince otomatik açılır; 1px mavi çerçeve
     - Commit: `feat: alt menu panelini ciz`
-- [ ] İkinci düzey alt menüler: genişleme okları, konumlandırma
+- [x] İkinci düzey alt menüler: genişleme okları, konumlandırma
     - Commit: `feat: alt menu seviyelerini ekle`
 
 ### 3.3 Klavye gezinmesi
