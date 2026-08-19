@@ -133,6 +133,7 @@ export function registerMenuCommands(registry: CommandRegistry): void {
       title: seed.title,
       category: seed.category,
       run: seed.run ?? PLACEHOLDER(seed.id),
+      placeholder: seed.run === undefined,
     });
   }
 }

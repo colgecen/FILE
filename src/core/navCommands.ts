@@ -86,10 +86,18 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'menubar.activate',
     title: 'Öğeyi çalıştır',
     category: 'view',
-    run: () => {
+    run: async () => {
       const result = menuModel.activate();
       if (result.type === 'command' && result.commandId !== undefined) {
-        void registry.run(result.commandId);
+        const def = registry.get(result.commandId);
+        const cmdResult = await registry.run(result.commandId);
+        if (cmdResult.ok) {
+          menuModel.setFeedback(null);
+        } else if (def?.placeholder === true) {
+          menuModel.setFeedback(`Yakında: ${def.title}`);
+        } else {
+          menuModel.setFeedback(cmdResult.error ?? 'İşlem başarısız');
+        }
       }
       return { ok: true };
     },
@@ -118,18 +126,21 @@ export function registerNavCommands(registry: CommandRegistry): void {
     title: 'Seçimi çalıştır',
     category: 'view',
     run: placeholder('palette.confirm'),
+    placeholder: true,
   });
   registry.register({
     id: 'palette.up',
     title: 'Sonuç: yukarı',
     category: 'view',
     run: placeholder('palette.up'),
+    placeholder: true,
   });
   registry.register({
     id: 'palette.down',
     title: 'Sonuç: aşağı',
     category: 'view',
     run: placeholder('palette.down'),
+    placeholder: true,
   });
   registry.register({
     id: 'palette.close',
@@ -149,42 +160,49 @@ export function registerNavCommands(registry: CommandRegistry): void {
     title: 'Klasör: sonraki',
     category: 'view',
     run: placeholder('explorer.folder.next'),
+    placeholder: true,
   });
   registry.register({
     id: 'explorer.folder.prev',
     title: 'Klasör: önceki',
     category: 'view',
     run: placeholder('explorer.folder.prev'),
+    placeholder: true,
   });
   registry.register({
     id: 'explorer.up',
     title: 'Klasör/dosya: yukarı',
     category: 'view',
     run: placeholder('explorer.up'),
+    placeholder: true,
   });
   registry.register({
     id: 'explorer.down',
     title: 'Klasör/dosya: aşağı',
     category: 'view',
     run: placeholder('explorer.down'),
+    placeholder: true,
   });
   registry.register({
     id: 'explorer.file.next',
     title: 'Dosya: sonraki',
     category: 'view',
     run: placeholder('explorer.file.next'),
+    placeholder: true,
   });
   registry.register({
     id: 'explorer.file.prev',
     title: 'Dosya: önceki',
     category: 'view',
     run: placeholder('explorer.file.prev'),
+    placeholder: true,
   });
   registry.register({
     id: 'explorer.activate',
     title: 'Dosya aç / klasör aç-kapat',
     category: 'view',
     run: placeholder('explorer.activate'),
+    placeholder: true,
   });
   registry.register({
     id: 'explorer.close',

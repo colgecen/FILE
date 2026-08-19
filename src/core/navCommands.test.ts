@@ -132,4 +132,25 @@ describe('navCommands · menubar', () => {
     await registry.run('menubar.close');
     expect(focusManager.get()).toBe('editor');
   });
+
+  it('Enter yer tutucu komutta Yakında bilgisi gösterir', async () => {
+    const registry = setup();
+    await registry.run('menubar.toggle');
+    await registry.run('menubar.activate');
+    expect(menuModel.getState().feedback).toBe('Yakında: Yeni Dosya');
+  });
+
+  it('Enter başarılı komutta geri bildirimi temizler', async () => {
+    const registry = setup();
+    registry.register({
+      id: 'file.new.file',
+      title: 'Yeni Dosya',
+      category: 'file',
+      run: () => ({ ok: true }),
+    });
+    menuModel.setFeedback('eski');
+    await registry.run('menubar.toggle');
+    await registry.run('menubar.activate');
+    expect(menuModel.getState().feedback).toBeNull();
+  });
 });

@@ -70,6 +70,7 @@ export type CommandDef = {
   readonly title: string;
   readonly category: CommandCategory;
   readonly run: () => CommandResult | Promise<CommandResult>;
+  readonly placeholder?: boolean;
 };
 
 export type KeyBinding = {
