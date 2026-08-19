@@ -1,6 +1,7 @@
 import { reportError } from './appErrors';
 import { CommandRegistry } from './commands';
 import { registerDefaultBindings } from './defaultBindings';
+import { registerExitCommands } from './exit';
 import { registerFocusCommands } from './focus';
 import { KeyboardController } from './input';
 import { Keymap } from './keymap';
@@ -28,6 +29,7 @@ export function createCore(): Core {
   registerMenuCommands(registry);
   registerNavCommands(registry);
   registerFocusCommands(registry);
+  registerExitCommands(registry);
   registerDefaultBindings(keymap);
   coreInstance = { registry, keymap, controller: new KeyboardController(keymap, registry) };
   return coreInstance;

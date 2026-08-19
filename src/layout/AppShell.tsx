@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
+import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
+import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 
 const CoreContext = createContext<Core | null>(null);
@@ -21,6 +23,7 @@ export function AppShell({
   glass?: boolean;
 }): React.JSX.Element {
   const core = useMemo(() => createCore(), []);
+  const exitPending = useExitPending();
   useIpcLifecycle(window.api);
   useEffect(() => core.controller.attach(window), [core]);
 
@@ -29,6 +32,14 @@ export function AppShell({
     <CoreContext.Provider value={core}>
       <div className={className}>
         <ErrorIndicator />
+        {exitPending && (
+          <ConfirmOverlay
+            message="Kaydedilmemiş değişiklikler var. Kapatılsın mı?"
+            confirmLabel="Onayla"
+            onConfirm={() => exitController.confirm()}
+            onCancel={() => exitController.cancel()}
+          />
+        )}
         {children}
       </div>
     </CoreContext.Provider>

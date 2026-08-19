@@ -54,3 +54,36 @@ body,
 .error-indicator__count {
   line-height: 1;
 }
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.confirm-overlay__panel {
+  min-width: 320px;
+  max-width: 480px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--bg-overlay);
+}
+
+.confirm-overlay__message {
+  margin: 0 0 12px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.confirm-overlay__hint {
+  margin: 0;
+  color: var(--accent-soft);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
