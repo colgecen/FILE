@@ -215,7 +215,7 @@
     - Commit: `feat: gezgin panel iskeletini ciz`
 - [ ] Klasör/dosya satırları: girinti hiyerarşisi, satır yükseklikleri
     - Commit: `feat: gezgin satir gorunumlerini ekle`
-- [ ] Tip ikonları: klasör/dosya ayraçları (metin tabanlı, ikon kütüphanesi yok)
+- [x] Tip ikonları: klasör/dosya ayraçları (metin tabanlı, ikon kütüphanesi yok)
     - Commit: `feat: gezgin tip ikonlarini ekle`
 - [ ] Klasör durum göstergesi: genişletilmiş/daraltılmış oku
     - Commit: `feat: klasor durum gostergesini ekle`
