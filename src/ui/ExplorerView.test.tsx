@@ -5,6 +5,7 @@ import { AppShell } from '../layout/AppShell';
 import { explorerModel } from '../core/explorer';
 import { createCore } from '../core/instances';
 import { paletteModel } from '../core/palette';
+import { tabsModel } from '../core/tabs';
 import { focusManager } from '../core/focus';
 import type { FileNode } from '../core/types';
 
@@ -203,6 +204,31 @@ describe('ExplorerView', () => {
       fireEvent.keyDown(window, { key: 'Enter' });
     });
     expect(explorerModel.getState().expanded.has('/proje/src')).toBe(true);
+  });
+
+  it('Enter dosyayı okur, sekme oluşturur ve editöre odaklanır', async () => {
+    vi.mocked(window.api.readFile).mockResolvedValue({
+      path: '/proje/src/main.ts',
+      name: 'main.ts',
+      content: 'const a = 1;',
+      language: 'typescript',
+    });
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      explorerModel.select('/proje/src/main.ts');
+      focusManager.set('explorer');
+    });
+    await act(async () => {
+      fireEvent.keyDown(window, { key: 'Enter' });
+    });
+    const state = tabsModel.getState();
+    expect(state.tabs).toHaveLength(1);
+    expect(state.activeId).toBe('/proje/src/main.ts');
+    expect(state.tabs[0]!.file.content).toBe('const a = 1;');
+    expect(explorerModel.getState().isOpen).toBe(true);
+    expect(focusManager.get()).toBe('editor');
   });
 });
 

@@ -2,7 +2,9 @@ import type { CommandRegistry } from './commands';
 import { explorerModel } from './explorer';
 import { focusManager } from './focus';
 import { menuModel } from '../menus/menuModel';
+import { openFilesModel } from './openFiles';
 import { paletteModel } from './palette';
+import { tabsModel } from './tabs';
 import type { FocusZone } from './types';
 
 const toggleZone = (zone: FocusZone) => (): { ok: boolean } => {
@@ -249,7 +251,19 @@ export function registerNavCommands(registry: CommandRegistry): void {
         await explorerModel.toggleFolder(row.path, window.api.readDir);
         return { ok: true };
       }
-      return { ok: false, error: 'Dosya açma akışı henüz bağlanmadı' };
+      const result = await window.api.readFile(row.path);
+      if (result === null) return { ok: false, error: 'Dosya okunamadı' };
+      tabsModel.open({
+        path: result.path,
+        name: result.name,
+        content: result.content,
+        language: result.language,
+      });
+      openFilesModel.set(
+        tabsModel.getState().tabs.map((tab) => ({ name: tab.file.name, path: tab.file.path })),
+      );
+      focusManager.returnToPrevious();
+      return { ok: true };
     },
   });
   registry.register({

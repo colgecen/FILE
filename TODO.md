@@ -241,7 +241,7 @@
 ### 5.4 Eylemler
 - [x] Enter: klasör → aç/kapat (genişlet/daralt)
     - Commit: `feat: klasor ac kapat eylemini ekle`
-- [ ] Enter: dosya → model oluştur + editör sekmesi + odak editöre geçer
+- [x] Enter: dosya → model oluştur + editör sekmesi + odak editöre geçer
     - Commit: `feat: dosya acma akisini ekle`
 - [ ] Esc: gezginden çıkış, odak editöre döner (odak bölgesi kuralı)
     - Commit: `feat: gezginden cikis akisini ekle`
