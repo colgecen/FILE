@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { reportError } from '../core/appErrors';
 import { onFocusZoneChange } from '../core/focus';
@@ -19,7 +19,9 @@ describe('AppShell', () => {
     errorStore.clear();
     const { container } = render(<AppShell />);
     expect(container.querySelector('.error-indicator')).toBeNull();
-    reportError('Test hatası');
+    act(() => {
+      reportError('Test hatası');
+    });
     expect(container.querySelector('.error-indicator')).not.toBeNull();
     errorStore.clear();
   });
