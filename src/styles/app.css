@@ -140,6 +140,17 @@ body,
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
 }
 
+.menu-panel__row {
+  position: relative;
+}
+
+.menu-panel .menu-panel {
+  top: -5px;
+  left: 100%;
+  border-top: 1px solid var(--border);
+  border-left: none;
+}
+
 .menu-panel__item {
   display: flex;
   align-items: center;

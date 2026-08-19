@@ -39,4 +39,15 @@ describe('MenuBar', () => {
     const active = items.find((item) => item.getAttribute('data-active') === 'true');
     expect(active).toBeDefined();
   });
+
+  it('alt menü öğesi çocuk panelini açık gösterir', () => {
+    renderShell();
+    act(() => {
+      menuModel.openAt(0);
+      menuModel.setActiveItem(5);
+      menuModel.activate();
+    });
+    expect(screen.getByText('Kayıt Yok')).toBeInTheDocument();
+    expect(screen.getAllByRole('menu')).toHaveLength(2);
+  });
 });
