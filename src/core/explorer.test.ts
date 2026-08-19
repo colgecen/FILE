@@ -227,3 +227,23 @@ describe('ExplorerModel dosya gezinmesi', () => {
     expect(model.getState().selectedPath).toBe('/proje/src/util.ts');
   });
 });
+
+describe('ExplorerModel yön tuşu dosya gezinmesi', () => {
+  it('seçim dosyadayken yön tuşları dosyalar arasında gezer', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.select('/proje/src/main.ts');
+    model.moveArrow(1);
+    expect(model.getState().selectedPath).toBe('/proje/src/util.ts');
+    model.moveArrow(-1);
+    expect(model.getState().selectedPath).toBe('/proje/src/main.ts');
+  });
+
+  it('yön tuşları dosya kanalında klasörlere taşmaz ve sarar', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.select('/proje/readme.md');
+    model.moveArrow(1);
+    expect(model.getState().selectedPath).toBe('/proje/src/main.ts');
+  });
+});

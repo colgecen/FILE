@@ -171,6 +171,20 @@ describe('ExplorerView', () => {
     fireEvent.keyDown(window, { key: 'Tab', shiftKey: true });
     expect(explorerModel.getState().selectedPath).toBe('/proje/src/main.ts');
   });
+
+  it('seçim dosyadayken ok tuşları dosyalar arasında gezer', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      explorerModel.select('/proje/src/main.ts');
+      focusManager.set('explorer');
+    });
+    fireEvent.keyDown(window, { key: 'ArrowDown' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje/readme.md');
+    fireEvent.keyDown(window, { key: 'ArrowDown' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje/src/main.ts');
+  });
 });
 
 describe('ExplorerView kök yükleme', () => {
