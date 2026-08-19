@@ -80,4 +80,56 @@ describe('navCommands · menubar', () => {
     await registry.run('menubar.down');
     expect(menuModel.getState().activeTop).toBe(0);
   });
+
+  it('Enter komut öğesini çalıştırır', async () => {
+    const registry = setup();
+    const run = { called: 0 };
+    registry.register({
+      id: 'file.new.file',
+      title: 'Yeni Dosya',
+      category: 'file',
+      run: () => {
+        run.called++;
+        return { ok: true };
+      },
+    });
+    await registry.run('menubar.toggle');
+    await registry.run('menubar.activate');
+    expect(run.called).toBe(1);
+  });
+
+  it('Enter alt menü öğesini açar', async () => {
+    const registry = setup();
+    await registry.run('menubar.toggle');
+    menuModel.setActiveItem(5);
+    await registry.run('menubar.activate');
+    expect(menuModel.getState().path).toHaveLength(1);
+  });
+
+  it('Esc alt menüyü kapatır, menüde kalır', async () => {
+    const registry = setup();
+    await registry.run('menubar.toggle');
+    menuModel.setActiveItem(5);
+    await registry.run('menubar.activate');
+    await registry.run('menubar.close');
+    expect(focusManager.get()).toBe('menubar');
+    expect(menuModel.getState().path).toHaveLength(0);
+    expect(menuModel.getState().openTop).toBe(0);
+  });
+
+  it('Esc menüyü kapatınca önceki bölgeye döner', async () => {
+    const registry = setup();
+    await registry.run('menubar.toggle');
+    await registry.run('menubar.close');
+    expect(focusManager.get()).toBe('editor');
+    expect(menuModel.getState().openTop).toBeNull();
+  });
+
+  it('Esc üçüncü basışta güvenle çalışır (boş yığın)', async () => {
+    const registry = setup();
+    await registry.run('menubar.toggle');
+    await registry.run('menubar.close');
+    await registry.run('menubar.close');
+    expect(focusManager.get()).toBe('editor');
+  });
 });

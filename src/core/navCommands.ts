@@ -86,13 +86,25 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'menubar.activate',
     title: 'Öğeyi çalıştır',
     category: 'view',
-    run: placeholder('menubar.activate'),
+    run: () => {
+      const result = menuModel.activate();
+      if (result.type === 'command' && result.commandId !== undefined) {
+        void registry.run(result.commandId);
+      }
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'menubar.close',
     title: 'Menüyü kapat',
     category: 'view',
-    run: closeToPrevious,
+    run: () => {
+      const step = menuModel.closeStep();
+      if (step === null || step === 'closed-menu') {
+        focusManager.returnToPrevious();
+      }
+      return { ok: true };
+    },
   });
 
   registry.register({
