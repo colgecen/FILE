@@ -1,6 +1,10 @@
 import { app, BrowserWindow } from 'electron';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { registerAppHandlers } from './appHandlers';
+import { registerDialogHandlers } from './dialogs';
+import { registerFsHandlers } from './fsHandlers';
+import { registerGitHandlers } from './gitHandlers';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -56,6 +60,12 @@ function createMainWindow(): void {
 }
 
 void app.whenReady().then((): void => {
+  const getWindow = (): BrowserWindow | null => mainWindow;
+  registerDialogHandlers(getWindow);
+  registerFsHandlers();
+  registerGitHandlers();
+  registerAppHandlers(getWindow);
+
   createMainWindow();
 
   app.on('activate', (): void => {
