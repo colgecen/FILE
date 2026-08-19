@@ -3,6 +3,7 @@ import { act } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { AppShell } from '../layout/AppShell';
 import { createCore } from '../core/instances';
+import { explorerModel } from '../core/explorer';
 import { focusManager } from '../core/focus';
 import { paletteModel } from '../core/palette';
 
@@ -158,5 +159,17 @@ describe('palet klavye akışı', () => {
     expect(withTab).toBe(false);
     expect(focusManager.get()).toBe('palette');
     expect(input).toHaveFocus();
+  });
+
+  it('paletten tree komutu gezgini açar', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    act(() => {
+      paletteModel.setQuery('tree', createCore().registry.list());
+    });
+    fireEvent.keyDown(window, { key: 'Enter' });
+    expect(explorerModel.getState().isOpen).toBe(true);
+    expect(screen.getByRole('region', { name: 'Dosya gezgini' })).toBeInTheDocument();
+    expect(focusManager.get()).toBe('editor');
   });
 });

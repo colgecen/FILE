@@ -6,6 +6,7 @@ import { MenuBar } from '../menus/MenuBar';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
+import { ExplorerView } from '../ui/ExplorerView';
 
 const CoreContext = createContext<Core | null>(null);
 
@@ -44,7 +45,10 @@ export function AppShell({
             onCancel={() => exitController.cancel()}
           />
         )}
-        {children}
+        <div className="app-shell__workspace">
+          <ExplorerView />
+          {children}
+        </div>
       </div>
     </CoreContext.Provider>
   );

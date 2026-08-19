@@ -201,7 +201,7 @@
 ### 4.4 `tree` komutu
 - [x] `tree` komut tanımı katalogda (açılışta eşleşmelere yüksek öncelik)
     - Commit: `feat: tree komutunu tanimla`
-- [ ] Çalışınca ExplorerView açılır: sol taraf, pencere genişliğinin 1/7'si, 1px mavi sınır
+- [x] Çalışınca ExplorerView açılır: sol taraf, pencere genişliğinin 1/7.si, 1px mavi sınır
     - Commit: `feat: tree komutuyla gezgin acilisini ekle`
 - [ ] Gezgin zaten açıksa yalnızca odak transferi yapılır; gezgin kapatma komutu da tanımlı
     - Commit: `feat: gezginlere odak transferini ekle`

@@ -1,4 +1,5 @@
 import type { CommandRegistry } from './commands';
+import { explorerModel } from './explorer';
 import { focusManager } from './focus';
 import { menuModel } from '../menus/menuModel';
 import { paletteModel } from './palette';
@@ -169,6 +170,15 @@ export function registerNavCommands(registry: CommandRegistry): void {
     run: () => {
       paletteModel.reset(registry.list());
       focusManager.returnToPrevious();
+      return { ok: true };
+    },
+  });
+  registry.register({
+    id: 'explorer.tree',
+    title: 'tree — Dosya Gezgini',
+    category: 'view',
+    run: () => {
+      explorerModel.open();
       return { ok: true };
     },
   });
