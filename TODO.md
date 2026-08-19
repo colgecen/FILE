@@ -1,287 +1,412 @@
 # TODO.md — Görev Takvimi ve Roadmap
 
-> Kural: **her görev tek commit**. Commit mesajları Türkçe, conventional commit biçiminde
-> (`docs:`, `feat:`, `fix:`, `chore:`, `refactor:`, `test:`).
+> **Kural: her görev (her checkbox) = tek commit.** Görevler özenle, ayrıntılı ve
+> acele edilmeden yapılır; yarım veya özensiz iş commit edilmez.
+> Commit mesajları Türkçe, conventional style: `docs:`, `feat:`, `fix:`, `chore:`, `refactor:`, `test:`.
 > Her commit'ten önce: `typecheck` + `lint` + `build` çalışır; test varsa testler geçer.
-> İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor.
+> İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor
+
+**Toplam planlanan commit: 135** (4'ü tamamlandı, 131'i kaldı).
 
 ---
 
-## Faz 0 — Dokümantasyon (tamamlandı)
+## Faz 0 — Dokümantasyon (4 commit · TAMAMLANDI)
 
-- [x] ARCHITECTURE.md — `docs: mimari dokümanı ekle`
-- [x] DECISIONS.md — `docs: teknoloji karar kayıtlarını ekle`
-- [x] TODO.md — `docs: görev planını ekle`
-- [x] AGENTS.md — `docs: yapay zeka çalışma kurallarını ekle`
+- [x] ARCHITECTURE.md — yazıldı
+    - Commit: `docs: mimari dokümanı ekle`
+- [x] DECISIONS.md — yazıldı
+    - Commit: `docs: teknoloji karar kayıtlarını ekle`
+- [x] TODO.md — yazıldı
+    - Commit: `docs: görev planını ekle`
+- [x] AGENTS.md — yazıldı
+    - Commit: `docs: yapay zeka çalışma kurallarını ekle`
 
 ---
 
-## Faz 1 — Proje İskeleti
+## Faz 1 — Proje İskeleti (20 commit)
 
-### 1.1 Vite + React + TypeScript iskeleti
-- [ ] Doğrulama: `export PATH="$HOME/node/bin:$PATH"` → `node --version` (v24.x)
-- [ ] Boş git deposuna Vite şablonu kur (react-ts); mevcut 4 dokümana dokunma
-- [ ] Bağımlılıklar: `react`, `react-dom`, `monaco-editor`, `electron`, `electron-vite`, `vite`, `@vitejs/plugin-react`, `typescript`, `eslint`, `prettier`, `vitest`
-- [ ] `npm install`; `npm run dev` çalışır
-- [ ] Commit: `chore: vite react-ts iskeletini kur`
+### 1.1 Vite + React + TypeScript kurulumu
+- [ ] `export PATH="$HOME/node/bin:$PATH"` ile node v24.x doğrulanır; boş depoya Vite react-ts şablonu kurulur (mevcut 4 dokümana dokunulmaz); `npm install` çalışır
+    - Commit: `chore: vite react-ts iskeletini kur`
+- [ ] Çalışma bağımlılıkları: `react`, `react-dom`, `monaco-editor`; geliştirme: `electron`, `electron-vite`, `vite`, `@vitejs/plugin-react`, `typescript`, `eslint`, `prettier`, `vitest` — tek `npm install` ile temiz kurulum
+    - Commit: `chore: bagimlilik listesini kur`
 
 ### 1.2 Electron kabuğu
-- [ ] `electron/main` ve `electron/preload` klasörleri; electron-vite yapılandırması
-- [ ] Main: BrowserWindow — siyah arka plan, 1px vurgu mavisi kenarlık, `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`
-- [ ] Preload: `contextBridge` ile boş `window.api` yüzeyi (tip tanımlı)
-- [ ] Commit: `feat: electron main ve preload iskeletini kur`
+- [ ] `electron/main` + `electron/preload` klasörleri; electron-vite yapılandırması (main/preload/renderer tsconfig ayrımı)
+    - Commit: `chore: electron-vite yapilandirmasini ekle`
+- [ ] Main: BrowserWindow — siyah arka plan, 1px vurgu mavisi kenarlık, `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`; app yaşam döngüsü
+    - Commit: `feat: ana pencereyi olustur`
+- [ ] Preload: `contextBridge` ile tip tanımlı boş `window.api` yüzeyi + `api.d.ts`
+    - Commit: `feat: preload api yuzeyini ekle`
+- [ ] Dev akışı: `npm run dev` renderer'ı derler, pencereyi açar, HMR çalışır
+    - Commit: `feat: dev baslatma akisini dogrula`
 
 ### 1.3 Kalite araçları
-- [ ] tsconfig strict; ESLint + Prettier kuralları (region `semi`, `quotes` vs. tutarlı)
+- [ ] tsconfig: strict, `noUnusedLocals`, dizi/nesne tipleri sıkı
+    - Commit: `chore: strict typescript ayarlarini yapilandir`
+- [ ] ESLint (flat config) + Prettier: tutarlı biçimlendirme, `semi`, `quotes` kuralları
+    - Commit: `chore: lint ve bicimlendirme araclarini kur`
 - [ ] npm script'leri: `dev`, `build`, `typecheck`, `lint`, `test`
-- [ ] `vitest` + React Testing Library kurulumu
-- [ ] Commit: `chore: lint ve typecheck araçlarını yapılandır`
+    - Commit: `chore: npm scriptlerini tanimla`
+- [ ] Vitest + React Testing Library kurulumu; açılan ilk test (yapı doğrulaması)
+    - Commit: `test: vitest ortamini kur`
 
 ### 1.4 Görsel temel
 - [ ] `src/theme/tokens.css`: renk tokenları (ARCHITECTURE Bölüm 7.1 tablosu birebir)
-- [ ] `src/theme/theme.ts`: aynı tokenların TS karşılığı
-- [ ] JetBrains Mono + Orbitron yazı tipi yükleme planı (yerel paketleme)
-- [ ] Commit: `feat: tema tokenlarını ve font katmanını ekle`
+    - Commit: `feat: renk tokenlarini css olarak ekle`
+- [ ] `src/theme/theme.ts`: tokenların TS karşılığı (tek kaynak, css ile senkron)
+    - Commit: `feat: tema tokenlarini ts olarak ekle`
+- [ ] Font katmanı: JetBrains Mono (ligatür hazırlığı) + Orbitron yükleme ve ön yükleme
+    - Commit: `feat: yazi tiplerini ekle`
 
 ### 1.5 İlk çalışan pencere
-- [ ] AppShell iskelet boşluğu: siyah zemin, 1px mavi çerçeve, keskin köşeler
-- [ ] Saydamlık/cam (backdrop-filter) denemesi + fallback mat siyah
-- [ ] Commit: `feat: ilk calisan pencere iskeleti`
+- [ ] AppShell iskeleti render edilir: saf siyah zemin
+    - Commit: `feat: ilk appshell iskeletini ciz`
+- [ ] Pencere çerçevesi: 1px vurgu mavisi kenarlık, keskin köşeler (`border-radius: 0`)
+    - Commit: `feat: pencere cercevesi stillerini ekle`
+- [ ] Saydam pencere + `backdrop-filter` cam/hologram denemesi (Linux compositor)
+    - Commit: `feat: saydam pencere ve cam efekti denemesi`
+- [ ] Compositor desteklemezse fallback: mat siyah zemin, görsel bütünlük korunur
+    - Commit: `feat: mat siyah fallback zemin`
+- [ ] Renderer güvenlik başlıkları: CSP yalnızca yerel kaynakları yükler
+    - Commit: `chore: renderer icin csp basliklarini ekle`
+- [ ] `.gitignore` + temel depo düzeni (node_modules, out, dist dışı)
+    - Commit: `chore: gitignore ve depo duzenini kur`
+- [ ] README.md: proje tanımı, kurulum ve komutlar (Türkçe)
+    - Commit: `docs: readme dosyasini ekle`
 
 ---
 
-## Faz 2 — Çekirdek Katman
+## Faz 2 — Çekirdek Katman (21 commit)
 
 ### 2.1 Tipler
-- [ ] `src/core/types.ts`: `FileNode`, `DirEntry`, `OpenFile`, `CursorPos`, `PaneLayout`, `SplitDirection`, `TelemetrySnapshot`, `AIStatus`, `CommandDef`, `KeyBinding`
-- [ ] Commit: `feat: cekirdek veri tiplerini tanimla`
+- [ ] `src/core/types.ts` — dosya/gezgin: `FileNode`, `DirEntry`, `OpenFile`
+    - Commit: `feat: dosya ve gezgin tiplerini tanimla`
+- [ ] Düzen/editör: `CursorPos`, `PaneLayout`, `SplitDirection`, `OpenTab`
+    - Commit: `feat: duzen ve editor tiplerini ekle`
+- [ ] Sistem/komut: `TelemetrySnapshot`, `AIStatus`, `CommandDef`, `KeyBinding`, `FocusZone`
+    - Commit: `feat: sistem ve komut tiplerini tanimla`
 
-### 2.2 Komut kaydı
-- [ ] `CommandRegistry`: komut tanımı (id, başlık, kategorı, çalıştırıcı, kısayol bilgisi)
-- [ ] Menü ağacındaki her öğe için komut tanımı (File/Edit/Selection/View/Go/Run/Terminal/Help)
-- [ ] Çalıştırma durumu: başarı/hata sonucu döner
-- [ ] Commit: `feat: komut kaydini kur`
+### 2.2 Komut kaydı (CommandRegistry)
+- [ ] Registry çekirdeği: komut tanımı (id, başlık, kategori, çalıştırıcı), kayıt/sorgu API'si
+    - Commit: `feat: komut kaydinin cekirdegini kur`
+- [ ] Menü ağacındaki tüm öğeler için komut tanımları (File/Edit/Selection/View/Go/Run/Terminal/Help)
+    - Commit: `feat: menu komutlarini tanimla`
+- [ ] Çalıştırma sonucu: başarı/hata nesnesi döner; hata merkezî gösterime taşınır
+    - Commit: `feat: komut sonucu ve hata yuzeyini ekle`
 
 ### 2.3 Tuş kaydı (Keymap)
-- [ ] `Keymap`: tuş birleşimi → komut id eşlemesi; çakışma tespiti + raporlama
-- [ ] Varsayılan eşlemeler: F1 (menü), sol/sağ (üst butonlar), Tab/yukarı-aşağı (alt menü/dosyalar), F3 (klasörler), Ctrl+I (palet), Enter/Esc
-- [ ] Odak bölgesine göre eşleme: editör / menü / palet / gezgin
-- [ ] Commit: `feat: tus esleme kaydini kur (keymap)`
+- [ ] Keymap çekirdeği: birleşim → komut id eşlemesi, çakışma tespiti ve raporlama
+    - Commit: `feat: keymap kaydini kur`
+- [ ] Varsayılan eşlemeler: F1 (menü), sol/sağ (üst butonlar), Tab/yukarı-aşağı (alt menü + gezgin dosyaları), F3 (gezgin klasörleri), Ctrl+I (palet), Enter, Esc
+    - Commit: `feat: varsayilan tus eslemelerini tanimla`
+- [ ] Odak bölgesine göre eşleme: editör / menü / palet / gezgin ayrımı
+    - Commit: `feat: odak bolgesine ozel eslemeleri ekle`
 
 ### 2.4 IPC köprüsü
-- [ ] Preload `window.api`: `openFile`, `readFile`, `writeFile`, `readDir`, `gitBranch`, `sysStart`, `sysStop`, `appExit` (tip tanımlı)
-- [ ] Main handler'lar: dialog'lar, fs işlemleri, yol doğrulama, boyut limiti
-- [ ] Doğrulanmış ipc kanal listesi ARCHITECTURE Bölüm 3 ile senkron
-- [ ] Commit: `feat: ipc koprusunu kur`
+- [ ] Preload `window.api` tip tanımlı imzaları: `openFile`, `readFile`, `writeFile`, `readDir`, `gitBranch`, `sysStart`, `sysStop`, `appExit`
+    - Commit: `feat: preload api imzalarini tanimla`
+- [ ] Main dialog handler'ları: dosya aç, klasör aç, farklı kaydet
+    - Commit: `feat: dosya dialoglarini ekle`
+- [ ] Main fs handler'ları: okuma/yazma/klasör okuma + yol doğrulama + boyut limiti
+    - Commit: `feat: fs isleyicilerini ekle`
+- [ ] `git:branch` + `app:exit` kanalları; kanal listesi ARCHITECTURE Bölüm 3 ile senkron kontrol
+    - Commit: `feat: git ve uygulama kanallarini ekle`
 
 ### 2.5 Telemetri
-- [ ] Main: 1 Hz örnekleme (`os.cpus`, `totalmem`/`freemem`, `process.cpuUsage`, platform)
-- [ ] Renderer tarafı tüketici: 500 ms throttle + `requestAnimationFrame` çizim
-- [ ] Commit: `feat: sistem telemetri toplayicisini ekle`
+- [ ] Main: 1 Hz örnekleyici (`os.cpus`, `totalmem/freemem`, `process.cpuUsage`, platform) → `sys:metrics` itkisi
+    - Commit: `feat: telemetri ornekleyicisini ekle`
+- [ ] Renderer tüketici: 500 ms throttle + `requestAnimationFrame` çizim planı
+    - Commit: `feat: telemetri tuketicisini ekle`
 
 ### 2.6 AppShell çatısı
-- [ ] Merkezi `keydown` dinleyicisi: odak bölgesine göre Keymap'i çağırır
-- [ ] Odak bölgesi yönetimi (editör/menü/palet/gezgin) — bölge geçişleri yalnızca komutla
-- [ ] IPC başlatma, hata toplama (kırmızı göstergeler), pencere kapatma
-- [ ] Commit: `feat: appshell catisini kur`
+- [ ] Merkezi `keydown` dinleyicisi: odak bölgesine göre Keymap'i çağırır, çakışma raporlarını gösterir
+    - Commit: `feat: merkezi klavye dinleyicisini kur`
+- [ ] Odak bölgesi yönetimi: editör/menü/palet/gezgin; geçişler yalnızca komutla
+    - Commit: `feat: odak bolgesi yonetimini ekle`
+- [ ] Hata toplama: hata nesneleri tek kanaldan; kırmızı göstergelere bağlanır
+    - Commit: `feat: hata gostergesi altyapisini ekle`
+- [ ] IPC yaşam döngüsü: AppShell mount'ta `sysStart`, unmount'ta `sysStop`; kapatma akışı
+    - Commit: `feat: ipc yasam dongusunu kur`
+- [ ] AppShell bileşen iskeleti: sağlayıcılar (CommandRegistry/Keymap/State), çocuk alanlar
+    - Commit: `feat: appshell bilesenini kur`
+- [ ] Pencere kapanış onayı: kaydedilmemiş değişiklik varsa uyarı akışı
+    - Commit: `feat: kapanis onayi akisini ekle`
 
 ---
 
-## Faz 3 — Menü Çubuğu (üst navigasyon)
+## Faz 3 — Menü Çubuğu (13 commit)
 
 ### 3.1 Menü ağacı verisi
-- [ ] `src/menus/menuTree.ts`: 9 üst başlık + tüm alt öğeler (komut id bağlantılı)
-  - File: Yeni Dosya/Yeni Pencere/Yeni Terminal; Aç (Dosya/Klasör/Son Kullanılanlar); Kaydet/Kaydet As/Tümünü Kaydet; Çıkış
-  - Edit: Geri Al/Yinele/Geri Alma Ağacı; Kes/Kopyala/Yapıştır/Panoya Geçmişi; Ara/Bul/Değiştir (Regexp); Yorum Aç/Kapat
-  - Selection: Tümünü Seç, Seçimi Genişlet/Daralt; İmleç Yukarı/Aşağı/Tümü; Sütun Modu, Dikdörtgen
-  - View: Komut Paleti; Kenar Çubukları (Gezgin/Ara/Kaynak Kontrolü/Çalıştır); Tam Ekran, Zen Modu, Kelime Sarmalama; Tek Pencere, Dikey/Yatay Böl
-  - Go: Dosyaya Git/Sembole Git/Tanıma Git/Referanslar; Satıra/Sütuna Git, Geri/İleri; Yer İmi (Aç/Kapat, Atla, Liste)
-  - Run: Hata Ayıklamayı Başlat, Kesme Noktası, Devam; Üstüne Adım/İçine Adım/Üstünden Çık; Hata Ayıklamadan Çalıştır, Son Çalıştırmayı Tekrarla
-  - Terminal: Yeni Terminal; Böl/Kapat; Görev Çalıştır/Son Görev
-  - Help: Karşılama/Başlangıç/Dokümantasyon; Klavye Kısayolları, Fonksiyonu Değişkeni ve Modu Tanımla; Hakkında/Sürüm/Paket Güncelle/Bilgi
-  - Local AI (ileri faz, yer tutucu): Sohbet, Satır İçi Tamamlama, Kodu Açıkla; Model Seç/Durum; Yapılandır/İndir
-- [ ] Commit: `feat: menu agacini tanimla`
+- [ ] `src/menus/menuTree.ts`: veri yapısı + 9 üst başlık; her öğe komut id ile bağlı
+    - Commit: `feat: menu agaci iskeletini kur`
+- [ ] File + Edit katalogları: Yeni Dosya/Yeni Pencere/Yeni Terminal; Aç (Dosya/Klasör/Son Kullanılanlar); Kaydet/Kaydet As/Tümünü Kaydet; Çıkış; Geri Al/Yinele/Geri Alma Ağacı; Kes/Kopyala/Yapıştır; Ara/Bul/Değiştir (Regexp); Yorum Aç/Kapat
+    - Commit: `feat: dosya ve duzenleme menulerini tanimla`
+- [ ] Selection + View katalogları: Tümünü Seç/Genişlet/Daralt; İmleç Yukarı/Aşağı/Tümü; Sütun/Dikdörtgen; Komut Paleti; Kenar Çubukları (Gezgin/Ara/Kaynak Kontrolü/Çalıştır); Tam Ekran/Zen Modu/Kelime Sarmalama; Tek Pencere/Dikey/Yatay Böl
+    - Commit: `feat: secim ve gorunum menulerini tanimla`
+- [ ] Go + Run + Terminal + Help + Local AI katalogları: Dosyaya/Sembole/Tanıma/Referans; Satıra Git; Geri/İleri; Yer İmleri; Hata Ayıklama komutları; Terminal/Görevler; Karşılama/Kısayollar/Hakkında; AI yer tutucuları
+    - Commit: `feat: gezinme calistirma terminal yardim ve ai menulerini tanimla`
 
 ### 3.2 MenuBar bileşeni
-- [ ] 9 üst buton; 1px mavi kenarlıklar; keskin köşeler; hover/focus vurgusu
-- [ ] Alt menüler: buton odağına/hover'a gelince otomatik açılır; ikinci düzey alt menüler
-- [ ] Commit: `feat: menu cubugunu ciz`
+- [ ] Üst buton satırı: 9 buton, 1px mavi kenarlık, hover/focus vurgusu, keskin köşeler
+    - Commit: `feat: ust buton satirini ciz`
+- [ ] Alt menü paneli: odağa/hover'a gelince otomatik açılır; 1px mavi çerçeve
+    - Commit: `feat: alt menu panelini ciz`
+- [ ] İkinci düzey alt menüler: genişleme okları, konumlandırma
+    - Commit: `feat: alt menu seviyelerini ekle`
 
-### 3.3 Klavye gezinmesi (menü modeli)
-- [ ] F1: menü bölgesine geç / kapat
-- [ ] Sol/sağ: üst butonlar arası; Tab/yukarı-aşağı: açık alt menü öğeleri
-- [ ] Enter: komut çalıştır; Esc: adım adım kapat
-- [ ] Odak kilidi: alt menü açıkken üst butonlara kaçış yok
-- [ ] Commit: `feat: menu klavye gezimnesini ekle`
+### 3.3 Klavye gezinmesi
+- [ ] F1: menü bölgesine geçiş / menüden çıkış
+    - Commit: `feat: f1 odak gecisini ekle`
+- [ ] Sol/sağ yön: üst butonlar arasında dolanım
+    - Commit: `feat: ust buton gezinmesini ekle`
+- [ ] Tab/yukarı-aşağı: açık alt menü öğeleri arasında gezinme
+    - Commit: `feat: alt menu gezinmesini ekle`
+- [ ] Enter: öğeyi çalıştırır; Esc: adım adım kapatır; alt menü açıkken odak kilidi (üst butonlara kaçış yok)
+    - Commit: `feat: enter esc ve odak kilidi mantigini ekle`
 
 ### 3.4 Menü → komut bağlama
-- [ ] Tüm alt öğeler CommandRegistry komutlarına bağlanır (dosya işlemleri önce yer tutucu, sonra Faz 9)
-- [ ] Çalıştırılamayanlar "Yakında" işaretiyle görünür
-- [ ] Commit: `feat: menu ogelerini komutlara bagla`
+- [ ] Tüm alt öğeler CommandRegistry komutlarına bağlanır (dosya işlemleri ilk etapta yer tutucu; tam akış Faz 9)
+    - Commit: `feat: menu ogelerini komutlara bagla`
+- [ ] Çalıştırılamayan öğeler "Yakında" işaretiyle görünür, Enter'da bilgi gösterir
+    - Commit: `feat: yer tutucu komut durumlarini ekle`
 
 ---
 
-## Faz 4 — Komut Paleti (Ctrl+I)
+## Faz 4 — Komut Paleti / Ctrl+I (11 commit)
 
 ### 4.1 Palet arayüzü
-- [ ] `CommandHUD`: ekran ortasında, %90 opak siyah, 1px mavi çerçeve, Orbitron
-- [ ] Giriş kutusu + sonuç listesi; klavye ile tam kontrol
-- [ ] Commit: `feat: komut paleti arayuzunu ciz`
+- [ ] `CommandHUD` bileşen iskeleti: ekran ortasında konumlanma, görünürlük kontrolü
+    - Commit: `feat: komut paleti bilesen iskeletini ciz`
+- [ ] Panel stili: %90 opak siyah, 1px mavi çerçeve, Orbitron, keskin köşeler
+    - Commit: `feat: komut paleti panel stilini ekle`
+- [ ] Giriş kutusu + sonuç listesi: tamamen klavye ile yönetilir
+    - Commit: `feat: palet giris ve sonuc listesini ekle`
 
 ### 4.2 Fuzzy filtre
-- [ ] Komut adları, kısaltma eşanlamlar ve açık dosyalar üzerinde arama
-- [ ] Sonuç sıralama; ok/Enter seçim; Esc kapama
-- [ ] Commit: `feat: komut paletine bulanik arama ekle`
+- [ ] Komut adları üzerinde bulanık arama
+    - Commit: `feat: komut bulanik aramasini ekle`
+- [ ] Kısaltma eşanlamları + açık dosya adları ile genişletilmiş arama
+    - Commit: `feat: esanlam ve dosya aramasini ekle`
+- [ ] Sonuç sıralama; yukarı/aşağı seçim; Enter çalıştırır; Esc kapatır
+    - Commit: `feat: palet secim akisini ekle`
 
 ### 4.3 Kısayol + odak yönetimi
-- [ ] Ctrl+I küresel kısayol → palet açar; odak palete geçer; Esc ile eski bölgeye dön
-- [ ] Commit: `feat: ctrl+i kisa yolunu ve odak gecisini ekle`
+- [ ] Ctrl+I küresel kısayolu paleti açar (odak bölgesi: palet)
+    - Commit: `feat: ctrl+i kisa yolunu ekle`
+- [ ] Esc ile önceki odak bölgesine dönüş; giriş kutusu odağı kilidi
+    - Commit: `feat: palet odak korumasi ekle`
 
 ### 4.4 `tree` komutu
-- [ ] `tree` eşleşmesi → ExplorerView açılır (genişliğin 1/7'si) + odak gezgine geçer
-- [ ] Gezgin zaten açıksa odak transferi yeter
-- [ ] Commit: `feat: tree komutuyla dosya gezginini ac`
+- [ ] `tree` komut tanımı katalogda (açılışta eşleşmelere yüksek öncelik)
+    - Commit: `feat: tree komutunu tanimla`
+- [ ] Çalışınca ExplorerView açılır: sol taraf, pencere genişliğinin 1/7'si, 1px mavi sınır
+    - Commit: `feat: tree komutuyla gezgin acilisini ekle`
+- [ ] Gezgin zaten açıksa yalnızca odak transferi yapılır; gezgin kapatma komutu da tanımlı
+    - Commit: `feat: gezginlere odak transferini ekle`
 
 ---
 
-## Faz 5 — Dosya Gezgini (ExplorerView)
+## Faz 5 — Dosya Gezgini / ExplorerView (14 commit)
 
 ### 5.1 Panel çizimi
-- [ ] Sol panel: genişlik = pencerenin 1/7'si; 1px mavi sağ sınır; keskin köşeler
-- [ ] Klasör/dosya satırları: tip ikonları, girinti, durum (genişletilmiş/daraltılmış)
-- [ ] Commit: `feat: dosya gezgini panelini ciz`
+- [ ] ExplorerView iskelet: sol panel, genişlik 1/7, sağ 1px vurgu mavisi sınır, keskin köşeler
+    - Commit: `feat: gezgin panel iskeletini ciz`
+- [ ] Klasör/dosya satırları: girinti hiyerarşisi, satır yükseklikleri
+    - Commit: `feat: gezgin satir gorunumlerini ekle`
+- [ ] Tip ikonları: klasör/dosya ayraçları (metin tabanlı, ikon kütüphanesi yok)
+    - Commit: `feat: gezgin tip ikonlarini ekle`
+- [ ] Klasör durum göstergesi: genişletilmiş/daraltılmış oku
+    - Commit: `feat: klasor durum gostergesini ekle`
 
 ### 5.2 Veri bağlama
-- [ ] `fs:read-dir` IPC ile kök klasör ağacını çek; klasör açılışlarında isteğe bağlı okuma
-- [ ] Yükleme/hata durumları (hata → kırmızı gösterge)
-- [ ] Commit: `feat: gezgin klasor verisini ipc ile bagla`
+- [ ] `fs:read-dir` IPC ile klasör ağacı çekimi; genişletilen klasörler isteğe bağlı okunur
+    - Commit: `feat: gezgin veri kaynagini bagla`
+- [ ] Kök klasör: açılışta yüklenir; kök değiştirme akışı
+    - Commit: `feat: kok klasor yuklemesini ekle`
+- [ ] Yükleme ve hata durumları: bekleniyor göstergesi, hata → kırmızı gösterge
+    - Commit: `feat: gezgin yukleme ve hata durumlarini ekle`
 
-### 5.3 Gezinme modeli (KULLANICI SPESİFİKASYONU)
-- [ ] **Klasörler arası:** F3 veya yön tuşları
-- [ ] **Dosyalar arası:** Tab veya yön tuşları
-- [ ] Enter: klasör aç/kapat, dosya → editörde aç; Esc: gezginden çık, editöre dön
-- [ ] Commit: `feat: gezgin klavye gezimnesini ekle`
+### 5.3 Gezinme modeli (kullanıcı spesifikasyonu)
+- [ ] **Klasörler arası:** F3 tuşu ile gezinme
+    - Commit: `feat: f3 ile klasor gezinmesini ekle`
+- [ ] **Klasörler arası:** yön tuşları ile gezinme
+    - Commit: `feat: yon tuslari ile klasor gezinmesini ekle`
+- [ ] **Dosyalar arası:** Tab tuşu ile gezinme
+    - Commit: `feat: tab ile dosya gezinmesini ekle`
+- [ ] **Dosyalar arası:** yön tuşları ile gezinme
+    - Commit: `feat: yon tuslari ile dosya gezinmesini ekle`
 
-### 5.4 Dosya açma
-- [ ] Gezginden dosya → model oluştur + Editör sekmesi + odak editor
-- [ ] Commit: `feat: gezginden dosya acmayi ekle`
-
-### 5.5 Araçlar
-- [ ] Yenileme, kök klasör değiştirme, daralt/tümünü genişlet komutları
-- [ ] Commit: `feat: gezgin araclarini ekle`
+### 5.4 Eylemler
+- [ ] Enter: klasör → aç/kapat (genişlet/daralt)
+    - Commit: `feat: klasor ac kapat eylemini ekle`
+- [ ] Enter: dosya → model oluştur + editör sekmesi + odak editöre geçer
+    - Commit: `feat: dosya acma akisini ekle`
+- [ ] Esc: gezginden çıkış, odak editöre döner (odak bölgesi kuralı)
+    - Commit: `feat: gezginden cikis akisini ekle`
 
 ---
 
-## Faz 6 — Editör Çekirdeği (EditorCore)
+## Faz 6 — Editör Çekirdeği / EditorCore (13 commit)
 
 ### 6.1 Monaco kurulumu
-- [ ] Monaco yükleme (electron-vite worker kuralları: TS dil hizmeti worker'ı)
-- [ ] İlk editor mount; JetBrains Mono + ligatürler (`fontLigatures: true`)
-- [ ] Commit: `feat: monaco editoru monte et`
+- [ ] `monaco-editor` + worker kurulumu (electron-vite worker kuralları, TS dil hizmeti worker'ı)
+    - Commit: `chore: monaco ve worker kurulumunu ekle`
+- [ ] İlk mount: EditorCore bileşeni model ile monte edilir
+    - Commit: `feat: ilk monaco mountunu ekle`
+- [ ] JetBrains Mono + `fontLigatures: true`, doğru tema altında okunabilirlik
+    - Commit: `feat: editor font ve ligatur ayarlarini ekle`
 
 ### 6.2 Özel tema
-- [ ] `defineTheme` (ARCHITECTURE Bölüm 7.1 birebir): zemin `#03050A`, metin beyaz, anahtar kelime `#00D2FF`, string `#82AAFF`, yorum `#4A6B8C`, seçim `rgba(0,85,255,0.4)`, aktif satır `rgba(0,210,255,0.05)`, teşhis hata kırmızı `#FF5252`
-- [ ] Commit: `feat: monaco ozel temasini ekle`
+- [ ] `defineTheme`: ARCHITECTURE Bölüm 7.1 tokenları birebir (zemin `#03050A`, metin beyaz, imleç mavi)
+    - Commit: `feat: monaco temasini tanimla`
+- [ ] Sözdizimi renkleri: anahtar kelime `#00D2FF`, string `#82AAFF`, yorum `#4A6B8C`, seçim `rgba(0,85,255,0.4)`, aktif satır `rgba(0,210,255,0.05)`, teşhis hatası `#FF5252`
+    - Commit: `feat: sozdizimi renklendirmesini ekle`
 
 ### 6.3 İmleç ve iz efekti
 - [ ] İçi boş blok imleç (`block-outline`) + `cursorSmoothCaretAnimation`
-- [ ] Sönümlenen mavi iz: editör overlay katmanı
-- [ ] Commit: `feat: blok imlec ve iz efekti ekle`
+    - Commit: `feat: blok imlec ayarini ekle`
+- [ ] Sönümlenen mavi iz: editör overlay katmanı (düşük maliyetli çizim)
+    - Commit: `feat: imlec iz efektini ekle`
 
-### 6.4 Sekme/model yönetimi
-- [ ] Açık sekmeler, kirli işareti, kapatma; LRU üst sınır (ARCHITECTURE 6.3)
-- [ ] İmleç satır/sütun olayı → StatusBar'a akış
-- [ ] Commit: `feat: sekme ve model yonetimini ekle`
+### 6.4 Sekme ve model yönetimi
+- [ ] Sekme listesi, kirli işareti, kapama akışı; yeniden açma modeli
+    - Commit: `feat: sekme durumlarini ekle`
+- [ ] LRU üst sınır: açık model sayısı sınırlanır, en az kullanılan geri yazılır (ARCHITECTURE 6.3)
+    - Commit: `feat: model bellek sinirini ekle`
+- [ ] İmleç satır/sütun olayları → StatusBar'a akış
+    - Commit: `feat: imlec konum olaylarini ekle`
 
-### 6.5 Editör komutları
-- [ ] Keymap → editor eylemleri: geri al/yinele, kes/kopyala/yapıştır, ara/değiştir (regexp), yorum aç/kapat, çoklu imleç, sütun/dikdörtgen seçim, seçimi genişlet/daralt, yer imleri, satıra git
-- [ ] Commit: `feat: editor komutlarini keymap e bagla`
-
----
-
-## Faz 7 — Panel Yönetimi (PaneManager)
-
-### 7.1 Bölme düzeni
-- [ ] Dikey/yatay bölme komutları; 1px mavi ayraçlar; keskin köşeler
-- [ ] Tek pencere / split dinamikleri (View menüsü)
-- [ ] Commit: `feat: bolunmus panel duzenini ekle`
-
-### 7.2 Panel gezinme
-- [ ] Paneller arası gezinme (yön tuşları veya alt tuş eşlemesi), panel kapatma, aktif panel takibi
-- [ ] Commit: `feat: panel arasi gezimneyi ekle`
+### 6.5 Editör komutları (Keymap → editor)
+- [ ] Düzenleme komutları: geri al/yinele, kes/kopyala/yapıştır, yorum aç/kapat (Edit menüsüyle birebir)
+    - Commit: `feat: duzenleme komutlarini bagla`
+- [ ] Bul/değiştir (regexp destekli); uygulama içi arama yüzeyi
+    - Commit: `feat: bul ve degistir komutlarini ekle`
+- [ ] Çoklu imleç/sütun-dikdörtgen seçim/yer imleri temel bağlamaları (tam akış Faz 11)
+    - Commit: `feat: coklu secim ve yer imi temellerini ekle`
 
 ---
 
-## Faz 8 — Durum Çubuğu (StatusBar)
+## Faz 7 — Panel Yönetimi / PaneManager (5 commit)
 
-- [ ] `StatusBar`: Orbitron; siyah zemin, 1px mavi üst sınır
-- [ ] Dosya adı · satır:sütun · git branch · CPU/RAM göstergeleri · AI durumu (IDLE)
-- [ ] Telemetri + git verisi IPC ile; 500 ms throttle
-- [ ] Hata göstergesi: kırmızı HATA rozeti + panel çerçevesi yanıp sönme
-- [ ] Commit: `feat: durum cubugunu ve telemetri bilesenlerini ekle`
-
----
-
-## Faz 9 — Dosya İşlemleri (aç/kaydet)
-
-- [ ] Aç: dialog + `fs:read-file` → sekme; Son Kullanılanlar listesi (persist)
-- [ ] Kaydet / Kaydet As / Tümünü Kaydet; kirli işareti; `:w` palet komutu
-- [ ] Kaydetme animasyonu: çerçevede kısa mavi glow
-- [ ] Hata: kırmızı yanıp sönme + durum çubuğu rozeti + (Monaco teşhisi)
-- [ ] Commit: `feat: dosya acma ve kaydetme akisini ekle`
+- [ ] PaneManager iskelet: ızgara düzeni, aktif panel takibi, EditorCore render
+    - Commit: `feat: panel yoneticisi iskeletini kur`
+- [ ] Dikey bölme komutu (View menüsü, split vertical) çalışır durumda
+    - Commit: `feat: dikey bolme komutunu ekle`
+- [ ] Yatay bölme komutu (split horizontal) çalışır durumda
+    - Commit: `feat: yatay bolme komutunu ekle`
+- [ ] Panel ayraçları: 1px vurgu mavisi, keskin köşeler, bölme oranları
+    - Commit: `feat: panel ayraclarini ekle`
+- [ ] Paneller arası gezinme + panel kapatma komutları
+    - Commit: `feat: panel gezinmesini ve kapatmayi ekle`
 
 ---
 
-## Faz 10 — Terminal (ileri faz başlangıcı)
+## Faz 8 — Durum Çubuğu / StatusBar (5 commit)
 
-- [ ] `xterm.js` panel bileşeni (menü: Yeni Terminal / Böl / Kapat)
-- [ ] `node-pty` + `@electron/rebuild` (native derleme iş hattı, ADR D-012)
-- [ ] pty kanalları: spawn/kill/resize/data; Görev Çalıştır/Son Görev
-- [ ] Commit: `feat: xterm terminal panelini ekle`
+- [ ] StatusBar iskelet: siyah zemin, 1px vurgu mavisi üst sınır, Orbitron
+    - Commit: `feat: durum cubugu iskeletini ciz`
+- [ ] Dosya adı + satır:sütun göstergesi (EditorCore olaylarıyla beslenir)
+    - Commit: `feat: dosya bilgisi gostergesini ekle`
+- [ ] Git branch göstergesi (`git:branch` IPC; yoksa gizlenir)
+    - Commit: `feat: git branch gostergesini ekle`
+- [ ] CPU/RAM göstergeleri (telemetri itkisi; 500 ms throttle)
+    - Commit: `feat: sistem metrik gostergelerini ekle`
+- [ ] AI durum göstergesi (ilk değer `IDLE`) + hata rozeti (kırmızı, yalnızca hata)
+    - Commit: `feat: ai durum ve hata rozetini ekle`
 
 ---
 
-## Faz 11 — Gelişmiş Editör Özellikleri
+## Faz 9 — Dosya İşlemleri (5 commit)
 
-- [ ] Çoklu imleç yukarı/aşağı/tümü; sütun modu/dikdörtgen seçim (Selection menüsü + keymap)
+- [ ] Dosya açma akışı: dialog → `fs:read-file` → sekte/model; hatalar merkezî gösterime
+    - Commit: `feat: dosya acma akisini ekle`
+- [ ] Son Kullanılanlar listesi: kalıcı depo, menüden erişim
+    - Commit: `feat: son kullanilanlar listesini ekle`
+- [ ] Kaydet / Kaydet As / Tümünü Kaydet + `:w` palet komutu; kirli işareti temizlenir
+    - Commit: `feat: kaydetme komutlarini ekle`
+- [ ] Kaydetme geri bildirimi: pencere çerçevesinde kısa mavi glow animasyonu
+    - Commit: `feat: kaydetme isigi efektini ekle`
+- [ ] Hata geri bildirimi: ilgili panel çerçevesi kırmızı yanıp söner + durum çubuğu rozeti
+    - Commit: `feat: hata geribildirim efektini ekle`
+
+---
+
+## Faz 10 — Terminal (5 commit)
+
+- [ ] `xterm.js` panel bileşeni: menüden yeni terminal açılabilir (ilk aşamada taklit kabuk)
+    - Commit: `feat: xterm terminal panelini ekle`
+- [ ] `node-pty` kurulumu + `@electron/rebuild` native derleme iş hattı (ADR D-012)
+    - Commit: `chore: node-pty ve aabi derlemesini kur`
+- [ ] pty kanalları: spawn/kill/resize/data (Main Process, güvenlik kurallarına uygun)
+    - Commit: `feat: pty kanallarini ekle`
+- [ ] Terminal komutları: yeni terminal, terminali böl, terminali kapat (Terminal menüsü)
+    - Commit: `feat: terminal komutlarini ekle`
+- [ ] Görev akışı: görev çalıştır / son görevi tekrarla
+    - Commit: `feat: gorev calistirma komutlarini ekle`
+
+---
+
+## Faz 11 — Gelişmiş Editör Özellikleri (7 commit)
+
+- [ ] Çoklu imleç: yukarı/aşağı/tümü (Selection menüsü + keymap)
+    - Commit: `feat: coklu imlec komutlarini ekle`
+- [ ] Sütun modu / dikdörtgen seçim
+    - Commit: `feat: sutun ve dikdortgen secimini ekle`
 - [ ] Yer imleri: aç/kapat, atla, liste (Go menüsü)
-- [ ] Geri alma ağacı (Undo Tree) görünümü
-- [ ] Go to: dosya/sembol/tanım/referans; geri/ileri gezinme
-- [ ] Görünüm: zen modu, tam ekran, kelime sarmalama
-- [ ] Yardım: karşılama ekranı, kısayol listesi, hakkında
-- [ ] Commit: `feat: gelismis editor ve gezinme ozellikleri`
+    - Commit: `feat: yer imi komutlarini ekle`
+- [ ] Geri alma ağacı (Undo Tree) görünümü ve komutları
+    - Commit: `feat: geri alma agaci komutlarini ekle`
+- [ ] Go to: dosyaya/sembole/tanıma/referansa git; geri/ileri gezinme
+    - Commit: `feat: go to komutlarini ekle`
+- [ ] Görünüm modları: zen modu, tam ekran, kelime sarmalama
+    - Commit: `feat: gorunum modlarini ekle`
+- [ ] Yardım ekranları: karşılama, tuş listesi, hakkında
+    - Commit: `feat: yardim ekranlarini ekle`
 
 ---
 
-## Faz 12 — Yerel Yapay Zekâ (ileri faz)
+## Faz 12 — Yerel Yapay Zekâ (ileri faz · 6 commit)
 
-- [ ] Kontrat tipleri: `AIStatus`, `ModelInfo`, `ChatMessage`, tamamlama istekleri
-- [ ] Worker mimarisi: ağır işlemler izole worker'da
-- [ ] Menü: Sohbet / Satır İçi Tamamlama / Kodu Açıkla; Model Seç + Durum; İndir
-- [ ] StatusBar entegrasyonu (IDLE/COMPUTING/ERROR)
-- [ ] Motor seçimi ADR'si (DECISIONS D-013) sonrası gerçek entegrasyon
-- [ ] Commit: `feat: yerel ai menusu ve arayuzu`
-
----
-
-## Faz 13 — Test ve Parlatma
-
-- [ ] Komut paleti (Ctrl+I) end-to-end testi; `tree` → gezgin açılışı
-- [ ] F1 menü modeli testleri (klavye senaryoları)
-- [ ] Gezgin gezinme testleri (F3/Tab/yön tuşları)
-- [ ] Temel dosya aç/kaydet testleri (IPC mock ile)
-- [ ] `npm run build` üretim paketi + Electron başlatma doğrulaması
-- [ ] Commit: `test: klavye akislarini test et`
+- [ ] AI kontrat tipleri: `AIStatus`, `ModelInfo`, `ChatMessage`, tamamlama istekleri
+    - Commit: `feat: ai kontrat tiplerini tanimla`
+- [ ] Worker mimarisi: ağır işlemler izole worker'da (contextIsolation kuralı korunur)
+    - Commit: `feat: ai worker mimarisini kur`
+- [ ] AI menü kataloğu: sohbet, satır içi tamamlama, kodu açıkla
+    - Commit: `feat: ai menu katalogunu tanimla`
+- [ ] Model seçimi + durum yönetimi (model listesi, aktif model)
+    - Commit: `feat: model secimi ve durum yonetimini ekle`
+- [ ] Model indirme akışı: ilerleme, iptal, hata yönetimi
+    - Commit: `feat: model indirme akisini ekle`
+- [ ] StatusBar entegrasyonu (IDLE/COMPUTING/ERROR) + motor seçimi ADR'si sonrası gerçek bağlantı
+    - Commit: `feat: ai durumunu durum cubuguna bagla`
 
 ---
 
-## Kullanıcı Kararı Bekleyenler
+## Faz 13 — Test ve Parlatma (6 commit)
 
-- [ ] Klavyeye özel ek kısayollar (kullanıcı tarafından bildirilecek liste) — Keymap'e işlenecek
-- [ ] UI metinlerinde İngilizce/Türkçe terim kararları (ör. "Yeni Dosya" vs "New File")
+- [ ] Komut paleti (Ctrl+I) end-to-end testleri; `tree` → gezgin açılış senaryosu
+    - Commit: `test: komut paleti akislarini test et`
+- [ ] F1 menü modeli testleri (klavye senaryoları: gezinme, kilit, Esc)
+    - Commit: `test: menü modeli klavye testlerini ekle`
+- [ ] Gezgin gezinme testleri (F3/Tab/yön tuşları, Enter/Esc)
+    - Commit: `test: gezgin gezinme testlerini ekle`
+- [ ] Dosya aç/kaydet testleri (IPC mock'ları ile)
+    - Commit: `test: dosya akisi testlerini ekle`
+- [ ] `npm run typecheck` + `lint` + `build` tam zincir; hata yok, uyarı paketlenir
+    - Commit: `chore: uretim paketini dogrula`
+- [ ] Electron başlatma doğrulaması: pencere açılır, telemetri itkisi gelir, kapanış temiz
+    - Commit: `chore: electron baslatma dogrulamasini yap`
+
+---
+
+## Kullanıcı Kararı Bekleyenler (commit gerektirmez)
+
+- [ ] Klavyeye özel ek kısayollar (kullanıcı bildirecek liste) → Keymap'e işlenecek
+- [ ] UI metinlerinde Türkçe/İngilizce terim kararları (ör. "Yeni Dosya" vs "New File")
 - [ ] Terminal varsayılan kabuğu (bash/zsh/fish)
 - [ ] Yerel yapay zekâ motoru seçimi (Faz 12 öncesi)
-- [ ] Büyük dosya performans hedefi (ör. MB sınırı) — Faz 6 öncesi netleştirilecek
+- [ ] Büyük dosya performans hedefi (MB sınırı) — Faz 6 öncesi netleştirilecek
 
 ---
 
