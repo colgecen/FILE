@@ -30,6 +30,9 @@ export function CommandHUD(): React.JSX.Element | null {
           autoComplete="off"
           value={state.query}
           onChange={(event) => paletteModel.setQuery(event.currentTarget.value, registry.list())}
+          onKeyDown={(event) => {
+            if (event.key === 'Tab') event.preventDefault();
+          }}
         />
         <div className="command-hud__list" role="listbox" aria-label="Komut listesi">
           {state.items.map((item, index) => {

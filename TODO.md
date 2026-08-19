@@ -193,9 +193,9 @@
     - Commit: `feat: palet secim akisini ekle`
 
 ### 4.3 Kısayol + odak yönetimi
-- [ ] Ctrl+I küresel kısayolu paleti açar (odak bölgesi: palet)
+- [x] Ctrl+I küresel kısayolu paleti açar (odak bölgesi: palet)
     - Commit: `feat: ctrl+i kisa yolunu ekle`
-- [ ] Esc ile önceki odak bölgesine dönüş; giriş kutusu odağı kilidi
+- [x] Esc ile önceki odak bölgesine dönüş; giriş kutusu odağı kilidi
     - Commit: `feat: palet odak korumasi ekle`
 
 ### 4.4 `tree` komutu

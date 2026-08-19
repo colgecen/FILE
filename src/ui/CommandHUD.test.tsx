@@ -140,4 +140,23 @@ describe('palet klavye akışı', () => {
     expect(focusManager.get()).toBe('palette');
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
+
+  it('Esc ile önceki odak bölgesine dönülür', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'F1' });
+    fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(focusManager.get()).toBe('menubar');
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('giriş kutusundaki Tab odağı kilitlemek için engellenir', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    const input = screen.getByPlaceholderText('Komut yaz…');
+    const withTab = fireEvent.keyDown(input, { key: 'Tab' });
+    expect(withTab).toBe(false);
+    expect(focusManager.get()).toBe('palette');
+    expect(input).toHaveFocus();
+  });
 });
