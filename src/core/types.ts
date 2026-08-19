@@ -18,3 +18,24 @@ export type OpenFile = {
   readonly content: string;
   readonly language: string;
 };
+
+export type CursorPos = {
+  readonly line: number;
+  readonly column: number;
+};
+
+export type SplitDirection = 'vertical' | 'horizontal';
+
+export type PaneLayout = {
+  readonly id: string;
+  readonly direction: SplitDirection;
+  readonly root: boolean;
+  readonly children?: readonly PaneLayout[];
+  readonly activeTabId?: string;
+};
+
+export type OpenTab = {
+  readonly id: string;
+  readonly file: OpenFile;
+  readonly dirty: boolean;
+};
