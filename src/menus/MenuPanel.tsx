@@ -1,7 +1,9 @@
+import { useCore } from '../layout/AppShell';
 import { menuModel, selectableIndexOfItems, useMenuModelState } from './menuModel';
 
 export function MenuPanel({ level = 0 }: { level?: number }): React.JSX.Element {
   const state = useMenuModelState();
+  const { registry } = useCore();
   if (state.openTop === null) return <></>;
   const items = menuModel.itemsAt(state.path.slice(0, level));
   const openSubLevel = state.path[level];
@@ -36,6 +38,9 @@ export function MenuPanel({ level = 0 }: { level?: number }): React.JSX.Element 
         }}
       >
         <span className="menu-panel__label">{item.label}</span>
+        {item.commandId !== undefined && registry.get(item.commandId)?.placeholder === true && (
+          <span className="menu-panel__soon">Yakında</span>
+        )}
         {item.kind === 'submenu' && (
           <span className="menu-panel__arrow" aria-hidden="true">›</span>
         )}

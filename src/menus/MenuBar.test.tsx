@@ -50,4 +50,12 @@ describe('MenuBar', () => {
     expect(screen.getByText('Kayıt Yok')).toBeInTheDocument();
     expect(screen.getAllByRole('menu')).toHaveLength(2);
   });
+
+  it('yer tutucu komutlar Yakında rozeti taşır', () => {
+    renderShell();
+    act(() => {
+      menuModel.openAt(0);
+    });
+    expect(screen.getAllByText('Yakında').length).toBeGreaterThan(0);
+  });
 });
