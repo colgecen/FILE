@@ -5,6 +5,7 @@ import { registerAppHandlers } from './appHandlers';
 import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
+import { registerTelemetry } from './telemetry';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -65,6 +66,7 @@ void app.whenReady().then((): void => {
   registerFsHandlers();
   registerGitHandlers();
   registerAppHandlers(getWindow);
+  registerTelemetry(getWindow);
 
   createMainWindow();
 
