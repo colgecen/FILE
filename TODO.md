@@ -185,7 +185,7 @@
     - Commit: `feat: palet giris ve sonuc listesini ekle`
 
 ### 4.2 Fuzzy filtre
-- [ ] Komut adları üzerinde bulanık arama
+- [x] Komut adları üzerinde bulanık arama
     - Commit: `feat: komut bulanik aramasini ekle`
 - [ ] Kısaltma eşanlamları + açık dosya adları ile genişletilmiş arama
     - Commit: `feat: esanlam ve dosya aramasini ekle`

@@ -31,6 +31,41 @@ describe('PaletteModel', () => {
     paletteModel.move(1);
     expect(paletteModel.getState().activeIndex).toBe(0);
   });
+
+  it('dağınık harflerle bulanık eşleşir', () => {
+    paletteModel.reset(registry.list());
+    paletteModel.setQuery('kdt', registry.list());
+    const titles = paletteModel.getState().items.map((item) => item.title);
+    expect(titles).toContain('Kaydet');
+  });
+
+  it('eşleşmeyen komutlar sonuçtan elenir', () => {
+    paletteModel.reset([
+      { id: 'a', title: 'Yapay Zekâ Sohbeti', category: 'ai', run: () => ({ ok: true }) },
+      { id: 'b', title: 'Kaydet', category: 'file', run: () => ({ ok: true }) },
+      { id: 'c', title: 'Uzay', category: 'file', run: () => ({ ok: true }) },
+    ]);
+    paletteModel.setQuery('kay', [
+      { id: 'a', title: 'Yapay Zekâ Sohbeti', category: 'ai', run: () => ({ ok: true }) },
+      { id: 'b', title: 'Kaydet', category: 'file', run: () => ({ ok: true }) },
+      { id: 'c', title: 'Uzay', category: 'file', run: () => ({ ok: true }) },
+    ]);
+    const items = paletteModel.getState().items;
+    expect(items.map((item) => item.commandId)).toEqual(['b']);
+  });
+
+  it('yüksek puanlı eşleşme önce sıralanır', () => {
+    paletteModel.reset([
+      { id: 'head', title: 'Kaydet', category: 'file', run: () => ({ ok: true }) },
+      { id: 'tail', title: 'Çok Kaydet', category: 'file', run: () => ({ ok: true }) },
+    ]);
+    paletteModel.setQuery('k', [
+      { id: 'head', title: 'Kaydet', category: 'file', run: () => ({ ok: true }) },
+      { id: 'tail', title: 'Çok Kaydet', category: 'file', run: () => ({ ok: true }) },
+    ]);
+    const items = paletteModel.getState().items;
+    expect(items.map((item) => item.commandId)).toEqual(['head', 'tail']);
+  });
 });
 
 describe('palette açılış akışı', () => {

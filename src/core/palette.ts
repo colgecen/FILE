@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { fuzzyScore } from './fuzzy';
 import type { CommandDef } from './types';
 
 export type PaletteItem = {
@@ -52,22 +53,22 @@ export class PaletteModel {
   }
 
   private buildItems(commands: readonly CommandDef[], query: string): readonly PaletteItem[] {
-    const normalized = query.trim().toLowerCase();
-    if (normalized.length === 0) {
-      return commands.slice(0, 12).map((command) => ({
-        commandId: command.id,
-        title: command.title,
-        category: command.category,
-      }));
+    const candidate = (command: CommandDef): PaletteItem => ({
+      commandId: command.id,
+      title: command.title,
+      category: command.category,
+    });
+    if (query.trim().length === 0) {
+      return commands.slice(0, 12).map(candidate);
     }
     return commands
-      .filter((command) => command.title.toLowerCase().includes(normalized))
+      .flatMap((command) => {
+        const match = fuzzyScore(query, command.title);
+        return match === null ? [] : [{ command, match }];
+      })
+      .sort((a, b) => b.match.score - a.match.score)
       .slice(0, 12)
-      .map((command) => ({
-        commandId: command.id,
-        title: command.title,
-        category: command.category,
-      }));
+      .map((entry) => candidate(entry.command));
   }
 
   private emit(): void {
