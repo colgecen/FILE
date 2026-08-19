@@ -230,6 +230,19 @@ describe('ExplorerView', () => {
     expect(explorerModel.getState().isOpen).toBe(true);
     expect(focusManager.get()).toBe('editor');
   });
+
+  it('Esc gezginden çıkar, paneli açık bırakır', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      focusManager.set('explorer');
+    });
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(focusManager.get()).toBe('editor');
+    expect(explorerModel.getState().isOpen).toBe(true);
+    expect(screen.getByRole('region', { name: 'Dosya gezgini' })).toBeInTheDocument();
+  });
 });
 
 describe('ExplorerView kök yükleme', () => {

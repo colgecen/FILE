@@ -175,7 +175,7 @@ describe('palet klavye akışı', () => {
     expect(focusManager.get()).toBe('explorer');
   });
 
-  it('gezgin açıkken Esc kapatır ve odak editöre döner', async () => {
+  it('gezgin açıkken Esc odağı editöre döndürür, paneli açık bırakır', async () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
     act(() => {
@@ -186,8 +186,8 @@ describe('palet klavye akışı', () => {
     });
     expect(focusManager.get()).toBe('explorer');
     fireEvent.keyDown(window, { key: 'Escape' });
-    expect(explorerModel.getState().isOpen).toBe(false);
     expect(focusManager.get()).toBe('editor');
-    expect(screen.queryByRole('region', { name: 'Dosya gezgini' })).toBeNull();
+    expect(explorerModel.getState().isOpen).toBe(true);
+    expect(screen.getByRole('region', { name: 'Dosya gezgini' })).toBeInTheDocument();
   });
 });

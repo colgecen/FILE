@@ -271,7 +271,6 @@ export function registerNavCommands(registry: CommandRegistry): void {
     title: 'Gezginden çık',
     category: 'view',
     run: () => {
-      explorerModel.close();
       focusManager.returnToPrevious();
       return { ok: true };
     },

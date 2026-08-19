@@ -243,7 +243,7 @@
     - Commit: `feat: klasor ac kapat eylemini ekle`
 - [x] Enter: dosya → model oluştur + editör sekmesi + odak editöre geçer
     - Commit: `feat: dosya acma akisini ekle`
-- [ ] Esc: gezginden çıkış, odak editöre döner (odak bölgesi kuralı)
+- [x] Esc: gezginden çıkış, odak editöre döner (odak bölgesi kuralı)
     - Commit: `feat: gezginden cikis akisini ekle`
 
 ---
