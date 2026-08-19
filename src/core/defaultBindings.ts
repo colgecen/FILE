@@ -1,5 +1,5 @@
 import type { Keymap } from './keymap';
-import type { FocusZone, KeyBinding } from './types';
+import type { FocusZone } from './types';
 
 type BindingSeed = {
   readonly commandId: string;
