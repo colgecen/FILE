@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useCore } from '../layout/AppShell';
 import { useFocusZone } from '../core/focus';
 import { paletteModel, usePaletteState } from '../core/palette';
@@ -6,6 +7,14 @@ export function CommandHUD(): React.JSX.Element | null {
   const zone = useFocusZone();
   const state = usePaletteState();
   const { registry } = useCore();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (zone === 'palette') {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [zone]);
 
   if (zone !== 'palette') return null;
 
@@ -13,6 +22,7 @@ export function CommandHUD(): React.JSX.Element | null {
     <div className="command-hud" role="dialog" aria-label="Komut paleti">
       <div className="command-hud__panel">
         <input
+          ref={inputRef}
           className="command-hud__input"
           type="text"
           placeholder="Komut yaz…"

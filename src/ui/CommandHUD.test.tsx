@@ -125,4 +125,19 @@ describe('palet klavye akışı', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(paletteModel.getState().query).toBe('');
   });
+
+  it('açıldığında giriş kutusu DOM odağını alır', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    expect(screen.getByPlaceholderText('Komut yaz…')).toHaveFocus();
+  });
+
+  it('menü çubuğundayken de Ctrl+I paleti açar', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'F1' });
+    expect(focusManager.get()).toBe('menubar');
+    fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    expect(focusManager.get()).toBe('palette');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
 });
