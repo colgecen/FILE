@@ -20,6 +20,17 @@ const closeToPrevious = (): { ok: boolean } => {
   return { ok: true };
 };
 
+const goTop = (delta: number) => (): { ok: boolean } => {
+  const state = menuModel.getState();
+  if (state.openTop === null) {
+    menuModel.moveTop(delta);
+    menuModel.openAt(menuModel.getState().activeTop);
+  } else {
+    menuModel.openAt(state.activeTop + delta);
+  }
+  return { ok: true };
+};
+
 export function registerNavCommands(registry: CommandRegistry): void {
   registry.register({
     id: 'menubar.toggle',
@@ -40,13 +51,13 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'menubar.left',
     title: 'Üst buton: sol',
     category: 'view',
-    run: placeholder('menubar.left'),
+    run: goTop(-1),
   });
   registry.register({
     id: 'menubar.right',
     title: 'Üst buton: sağ',
     category: 'view',
-    run: placeholder('menubar.right'),
+    run: goTop(1),
   });
   registry.register({
     id: 'menubar.up',

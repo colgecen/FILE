@@ -32,4 +32,21 @@ describe('navCommands · menubar', () => {
     expect(focusManager.get()).toBe('editor');
     expect(menuModel.getState().openTop).toBeNull();
   });
+
+  it('sağ yön üst buton gezinmesi yapar ve paneli komşu menüye taşır', async () => {
+    const registry = setup();
+    await registry.run('menubar.toggle');
+    await registry.run('menubar.right');
+    const state = menuModel.getState();
+    expect(state.activeTop).toBe(1);
+    expect(state.openTop).toBe(1);
+    expect(state.activeItem).toBe(0);
+  });
+
+  it('sol yön en soldan en sağa sarar', async () => {
+    const registry = setup();
+    await registry.run('menubar.toggle');
+    await registry.run('menubar.left');
+    expect(menuModel.getState().activeTop).toBe(menuModel.topCount() - 1);
+  });
 });
