@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out",
+    "baseUrl": "..",
+    "paths": {
+      "@shared/*": ["electron/shared/*"],
+      "@main/*": ["electron/main/*"],
+      "@preload/*": ["electron/preload/*"]
+    },
+    "types": ["node"]
+  },
+  "include": [
+    "./main/**/*.ts",
+    "./preload/**/*.ts",
+    "./shared/**/*.ts"
+  ]
+}
