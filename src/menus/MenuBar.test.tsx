@@ -1,12 +1,16 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { AppShell } from '../layout/AppShell';
+import { focusManager } from '../core/focus';
 import { menuModel } from './menuModel';
+import { paletteModel } from '../core/palette';
 
 describe('MenuBar', () => {
   afterEach(() => {
     act(() => {
+      menuModel.openAt(0);
       menuModel.close();
+      paletteModel.reset([]);
     });
   });
 

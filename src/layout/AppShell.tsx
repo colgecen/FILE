@@ -3,6 +3,7 @@ import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
 import { MenuBar } from '../menus/MenuBar';
+import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 
@@ -34,6 +35,7 @@ export function AppShell({
       <div className={className}>
         <MenuBar />
         <ErrorIndicator />
+        <CommandHUD />
         {exitPending && (
           <ConfirmOverlay
             message="Kaydedilmemiş değişiklikler var. Kapatılsın mı?"
