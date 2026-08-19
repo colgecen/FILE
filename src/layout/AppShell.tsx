@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
-export function AppShell({ children }: { children?: ReactNode }): React.JSX.Element {
-  return <div className="app-shell">{children}</div>;
+export function AppShell({ children, glass }: { children?: ReactNode; glass?: boolean }): React.JSX.Element {
+  const className = glass ? 'app-shell glass' : 'app-shell';
+  return <div className={className}>{children}</div>;
 }

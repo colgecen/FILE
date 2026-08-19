@@ -9,6 +9,8 @@ const ACCENT = '#00D2FF';
 const BG_BASE = '#000000';
 const DEV_RENDERER_URL = 'http://localhost:5173';
 
+const TRANSPARENT = process.env['TRANSPARENT'] === '1';
+
 let mainWindow: BrowserWindow | null = null;
 
 function resolveRendererEntry(): { url?: string; file?: string } {
@@ -26,9 +28,10 @@ function createMainWindow(): void {
     height: 800,
     minWidth: 800,
     minHeight: 500,
-    backgroundColor: BG_BASE,
+    backgroundColor: TRANSPARENT ? '#00000000' : BG_BASE,
     title: 'File',
     autoHideMenuBar: true,
+    transparent: TRANSPARENT,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
