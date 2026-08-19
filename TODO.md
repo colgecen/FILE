@@ -7,7 +7,7 @@
 > İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor
 > Her görev bittiğinde kutucuklara tik atmayı unutma
 
-**Toplam planlanan commit: 135** (4'ü tamamlandı, 131'i kaldı).
+**Toplam planlanan commit: 142** (75'i tamamlandı, 67'si kaldı).
 
 ---
 
@@ -81,27 +81,27 @@
 ## Faz 2 — Çekirdek Katman (21 commit)
 
 ### 2.1 Tipler
-- [ ] `src/core/types.ts` — dosya/gezgin: `FileNode`, `DirEntry`, `OpenFile`
+- [x] `src/core/types.ts` — dosya/gezgin: `FileNode`, `DirEntry`, `OpenFile`
     - Commit: `feat: dosya ve gezgin tiplerini tanimla`
-- [ ] Düzen/editör: `CursorPos`, `PaneLayout`, `SplitDirection`, `OpenTab`
+- [x] Düzen/editör: `CursorPos`, `PaneLayout`, `SplitDirection`, `OpenTab`
     - Commit: `feat: duzen ve editor tiplerini ekle`
-- [ ] Sistem/komut: `TelemetrySnapshot`, `AIStatus`, `CommandDef`, `KeyBinding`, `FocusZone`
+- [x] Sistem/komut: `TelemetrySnapshot`, `AIStatus`, `CommandDef`, `KeyBinding`, `FocusZone`
     - Commit: `feat: sistem ve komut tiplerini tanimla`
 
 ### 2.2 Komut kaydı (CommandRegistry)
-- [ ] Registry çekirdeği: komut tanımı (id, başlık, kategori, çalıştırıcı), kayıt/sorgu API'si
+- [x] Registry çekirdeği: komut tanımı (id, başlık, kategori, çalıştırıcı), kayıt/sorgu API'si
     - Commit: `feat: komut kaydinin cekirdegini kur`
-- [ ] Menü ağacındaki tüm öğeler için komut tanımları (File/Edit/Selection/View/Go/Run/Terminal/Help)
+- [x] Menü ağacındaki tüm öğeler için komut tanımları (File/Edit/Selection/View/Go/Run/Terminal/Help)
     - Commit: `feat: menu komutlarini tanimla`
-- [ ] Çalıştırma sonucu: başarı/hata nesnesi döner; hata merkezî gösterime taşınır
+- [x] Çalıştırma sonucu: başarı/hata nesnesi döner; hata merkezî gösterime taşınır
     - Commit: `feat: komut sonucu ve hata yuzeyini ekle`
 
 ### 2.3 Tuş kaydı (Keymap)
-- [ ] Keymap çekirdeği: birleşim → komut id eşlemesi, çakışma tespiti ve raporlama
+- [x] Keymap çekirdeği: birleşim → komut id eşlemesi, çakışma tespiti ve raporlama
     - Commit: `feat: keymap kaydini kur`
-- [ ] Varsayılan eşlemeler: F1 (menü), sol/sağ (üst butonlar), Tab/yukarı-aşağı (alt menü + gezgin dosyaları), F3 (gezgin klasörleri), Ctrl+I (palet), Enter, Esc
+- [x] Varsayılan eşlemeler: F1 (menü), sol/sağ (üst butonlar), Tab/yukarı-aşağı (alt menü + gezgin dosyaları), F3 (gezgin klasörleri), Ctrl+I (palet), Enter, Esc
     - Commit: `feat: varsayilan tus eslemelerini tanimla`
-- [ ] Odak bölgesine göre eşleme: editör / menü / palet / gezgin ayrımı
+- [x] Odak bölgesine göre eşleme: editör / menü / palet / gezgin ayrımı
     - Commit: `feat: odak bolgesine ozel eslemeleri ekle`
 
 ### 2.4 IPC köprüsü
@@ -141,11 +141,11 @@
 ### 3.1 Menü ağacı verisi
 - [x] `src/menus/menuTree.ts`: veri yapısı + 9 üst başlık; her öğe komut id ile bağlı
     - Commit: `feat: menu agaci iskeletini kur`
-- [x] File + Edit katalogları: Yeni Dosya/Yeni Pencere/Yeni Terminal; Aç (Dosya/Klasör/Son Kullanılanlar); Kaydet/Kaydet As/Tümünü Kaydet; Çıkış; Geri Al/Yinele/Geri Alma Ağacı; Kes/Kopyala/Yapıştır; Ara/Bul/Değiştir (Regexp); Yorum Aç/Kapat
+- [x] File + Edit katalogları: Yeni Dosya/Yeni Pencere/Yeni Terminal; Aç (Dosya/Klasör/Son Kullanılanlar); Kaydet/Kaydet As/Tümünü Kaydet; Çıkış; Geri Al/Yinele/Geri Alma Ağacı; Kes/Kopyala/Yapıştır; Ara/Bul/Değiştir (Regexp); Yorum Aç/Kapat (katalog içeriği `feat: menu komutlarini tanimla` commit'inde birleştirildi)
     - Commit: `feat: dosya ve duzenleme menulerini tanimla`
-- [x] Selection + View katalogları: Tümünü Seç/Genişlet/Daralt; İmleç Yukarı/Aşağı/Tümü; Sütun/Dikdörtgen; Komut Paleti; Kenar Çubukları (Gezgin/Ara/Kaynak Kontrolü/Çalıştır); Tam Ekran/Zen Modu/Kelime Sarmalama; Tek Pencere/Dikey/Yatay Böl
+- [x] Selection + View katalogları: Tümünü Seç/Genişlet/Daralt; İmleç Yukarı/Aşağı/Tümü; Sütun/Dikdörtgen; Komut Paleti; Kenar Çubukları (Gezgin/Ara/Kaynak Kontrolü/Çalıştır); Tam Ekran/Zen Modu/Kelime Sarmalama; Tek Pencere/Dikey/Yatay Böl (katalog içeriği `feat: menu komutlarini tanimla` commit'inde birleştirildi)
     - Commit: `feat: secim ve gorunum menulerini tanimla`
-- [x] Go + Run + Terminal + Help + Local AI katalogları: Dosyaya/Sembole/Tanıma/Referans; Satıra Git; Geri/İleri; Yer İmleri; Hata Ayıklama komutları; Terminal/Görevler; Karşılama/Kısayollar/Hakkında; AI yer tutucuları
+- [x] Go + Run + Terminal + Help + Local AI katalogları: Dosyaya/Sembole/Tanıma/Referans; Satıra Git; Geri/İleri; Yer İmleri; Hata Ayıklama komutları; Terminal/Görevler; Karşılama/Kısayollar/Hakkında; AI yer tutucuları (katalog içeriği `feat: menu komutlarini tanimla` commit'inde birleştirildi)
     - Commit: `feat: gezinme calistirma terminal yardim ve ai menulerini tanimla`
 
 ### 3.2 MenuBar bileşeni
