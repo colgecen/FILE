@@ -186,6 +186,8 @@ export class MenuModel {
   }
 
   private itemsAtLevel(): readonly MenuItem[] {
+    return this.itemsAtPath(this.state.path);
+  }
 
   private itemsAtPath(path: readonly number[]): readonly MenuItem[] {
     if (this.state.openTop === null) return [];
