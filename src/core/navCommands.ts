@@ -1,6 +1,7 @@
 import type { CommandRegistry } from './commands';
 import { focusManager } from './focus';
 import { menuModel } from '../menus/menuModel';
+import { paletteModel } from './palette';
 import type { FocusZone } from './types';
 
 const placeholder =
@@ -119,7 +120,16 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'palette.toggle',
     title: 'Komut paletini aç/kapat',
     category: 'view',
-    run: toggleZone('palette'),
+    run: async () => {
+      if (focusManager.get() === 'palette') {
+        paletteModel.reset(registry.list());
+        focusManager.returnToPrevious();
+      } else {
+        focusManager.set('palette');
+        paletteModel.reset(registry.list());
+      }
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'palette.confirm',
