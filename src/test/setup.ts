@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest';
-import { vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import { afterEach, vi } from 'vitest';
 
 const api = {
   version: '0.1.0',
@@ -17,3 +18,5 @@ const api = {
 };
 
 Object.defineProperty(window, 'api', { value: api, configurable: true });
+
+afterEach(cleanup);
