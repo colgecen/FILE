@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { API_PLACEHOLDER } from '../../electron/shared/api-types';
+import { APP_VERSION } from '../../electron/shared/api-types';
 
-describe('API_PLACEHOLDER', () => {
+describe('APP_VERSION', () => {
   it('sürüm bilgisini taşır', () => {
-    expect(API_PLACEHOLDER.version).toBe('0.1.0');
+    expect(APP_VERSION).toBe('0.1.0');
   });
 });
