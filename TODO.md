@@ -225,7 +225,7 @@
     - Commit: `feat: gezgin veri kaynagini bagla`
 - [x] Kök klasör: açılışta yüklenir; kök değiştirme akışı
     - Commit: `feat: kok klasor yuklemesini ekle`
-- [ ] Yükleme ve hata durumları: bekleniyor göstergesi, hata → kırmızı gösterge
+- [x] Yükleme ve hata durumları: bekleniyor göstergesi, hata → kırmızı gösterge
     - Commit: `feat: gezgin yukleme ve hata durumlarini ekle`
 
 ### 5.3 Gezinme modeli (kullanıcı spesifikasyonu)

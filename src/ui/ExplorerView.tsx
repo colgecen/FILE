@@ -9,6 +9,11 @@ export function ExplorerView(): React.JSX.Element | null {
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
       <header className="explorer-view__header">GEZGİN</header>
       <div className="explorer-view__body" role="listbox" aria-label="Dosya listesi">
+        {state.loading && (
+          <div className="explorer-view__loading" role="status">
+            YÜKLENİYOR…
+          </div>
+        )}
         {explorerModel.rows().map((row) => {
           const active = row.path === state.selectedPath;
           const className = ['explorer-row', `explorer-row--depth-${row.depth}`]

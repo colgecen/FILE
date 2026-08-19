@@ -124,6 +124,26 @@ describe('ExplorerView', () => {
     );
     expect(fileState?.textContent).toBe('');
   });
+
+  it('yükleme sırasında bekleniyor göstergesi görünür', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.setLoading(true);
+    });
+    expect(screen.getByRole('status')).toHaveTextContent('YÜKLENİYOR…');
+  });
+
+  it('hata kırmızı göstergeyle yansıtılır', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.setError('Erişim reddedildi');
+    });
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveClass('explorer-view__error');
+    expect(alert).toHaveTextContent('Erişim reddedildi');
+  });
 });
 
 describe('ExplorerView kök yükleme', () => {

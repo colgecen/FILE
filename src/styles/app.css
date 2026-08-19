@@ -133,6 +133,14 @@ body,
   text-overflow: ellipsis;
 }
 
+.explorer-view__loading {
+  padding: 12px;
+  color: var(--accent-soft);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
 .explorer-view__error {
   padding: 8px 12px;
   border: 1px solid var(--error);
