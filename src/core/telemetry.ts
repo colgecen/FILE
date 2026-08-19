@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { TelemetrySnapshot } from '../../electron/shared/api-types';
+import type { Api, TelemetrySnapshot } from '../../electron/shared/api-types';
 
 const THROTTLE_MS = 500;
 
@@ -11,9 +11,9 @@ export class TelemetryStore {
   private unsubscribe: (() => void) | null = null;
   private lastEmittedAt = 0;
 
-  start(windowApi: Pick<typeof window.api, 'onMetrics' | 'sysStart'>): void {
+  start(windowApi: Pick<Api, 'onMetrics' | 'sysStart'>): void {
     if (this.unsubscribe !== null) return;
-    this.unsubscribe = windowApi.onMetrics((snapshot) => {
+    this.unsubscribe = windowApi.onMetrics((snapshot: TelemetrySnapshot) => {
       this.latest = snapshot;
       const now = Date.now();
       if (now - this.lastEmittedAt < THROTTLE_MS) return;
@@ -23,7 +23,7 @@ export class TelemetryStore {
     void windowApi.sysStart();
   }
 
-  stop(windowApi: Pick<typeof window.api, 'sysStop'>): void {
+  stop(windowApi: Pick<Api, 'sysStop'>): void {
     this.unsubscribe?.();
     this.unsubscribe = null;
     void windowApi.sysStop();
