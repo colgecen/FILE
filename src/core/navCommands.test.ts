@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { CommandRegistry } from './commands';
 import { focusManager } from './focus';
+import { registerMenuCommands } from './menuCommands';
 import { menuModel } from '../menus/menuModel';
 import { registerNavCommands } from './navCommands';
 
@@ -15,6 +16,7 @@ describe('navCommands · menubar', () => {
 
   const setup = (): CommandRegistry => {
     const registry = new CommandRegistry();
+    registerMenuCommands(registry);
     registerNavCommands(registry);
     return registry;
   };
