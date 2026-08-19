@@ -36,6 +36,7 @@ describe('ExplorerView', () => {
     act(() => {
       explorerModel.close();
       explorerModel.settle([], null);
+      while (focusManager.get() !== 'editor') focusManager.returnToPrevious();
     });
   });
 
@@ -143,6 +144,19 @@ describe('ExplorerView', () => {
     const alert = screen.getByRole('alert');
     expect(alert).toHaveClass('explorer-view__error');
     expect(alert).toHaveTextContent('Erişim reddedildi');
+  });
+
+  it('ok tuşları seçim klasördeyken klasörler arasında gezer', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      focusManager.set('explorer');
+    });
+    fireEvent.keyDown(window, { key: 'ArrowDown' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje/src');
+    fireEvent.keyDown(window, { key: 'ArrowUp' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje');
   });
 });
 

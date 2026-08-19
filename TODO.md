@@ -231,7 +231,7 @@
 ### 5.3 Gezinme modeli (kullanıcı spesifikasyonu)
 - [x] **Klasörler arası:** F3 tuşu ile gezinme
     - Commit: `feat: f3 ile klasor gezinmesini ekle`
-- [ ] **Klasörler arası:** yön tuşları ile gezinme
+- [x] **Klasörler arası:** yön tuşları ile gezinme
     - Commit: `feat: yon tuslari ile klasor gezinmesini ekle`
 - [ ] **Dosyalar arası:** Tab tuşu ile gezinme
     - Commit: `feat: tab ile dosya gezinmesini ekle`

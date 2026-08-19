@@ -174,3 +174,22 @@ describe('ExplorerModel klasör gezinmesi', () => {
     expect(model.getState().selectedPath).toBe('/proje/src');
   });
 });
+
+describe('ExplorerModel yön tuşu gezinmesi', () => {
+  it('seçim klasördeyken yukarı/aşağı klasörler arasında gezer', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    expect(model.getState().selectedPath).toBe('/proje');
+    model.moveArrow(1);
+    expect(model.getState().selectedPath).toBe('/proje/src');
+    model.moveArrow(-1);
+    expect(model.getState().selectedPath).toBe('/proje');
+  });
+
+  it('klasör seçiliyken yön tuşları dosyalara taşmaz', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.moveArrow(2);
+    expect(model.getState().selectedPath).toBe('/proje');
+  });
+});
