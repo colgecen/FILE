@@ -8,7 +8,8 @@
       "@main/*": ["electron/main/*"],
       "@preload/*": ["electron/preload/*"]
     },
-    "types": ["node"]
+    "types": ["node"],
+    "allowImportingTsExtensions": false
   },
   "include": [
     "./main/**/*.ts",

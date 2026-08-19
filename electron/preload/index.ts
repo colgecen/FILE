@@ -1,5 +1,5 @@
 import { contextBridge } from 'electron';
-import { API_PLACEHOLDER } from '../shared/api-types.ts';
+import { API_PLACEHOLDER } from '../shared/api-types';
 
 const api = {
   ...API_PLACEHOLDER,
