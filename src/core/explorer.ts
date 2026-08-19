@@ -188,6 +188,32 @@ export class ExplorerModel {
     this.emit();
   }
 
+  private moveWithinKind(delta: number, kind: ExplorerRow['kind']): void {
+    const rows = this.rows();
+    if (rows.length === 0) return;
+    const channel = rows.filter((row) => row.kind === kind);
+    if (channel.length === 0) return;
+    const currentIndex = channel.findIndex(
+      (row) => row.path === this.state.selectedPath,
+    );
+    const base = currentIndex >= 0 ? currentIndex : 0;
+    const next = (((base + delta) % channel.length) + channel.length) % channel.length;
+    this.select(channel[next]!.path);
+  }
+
+  moveFolder(delta: number): void {
+    this.moveWithinKind(delta, 'directory');
+  }
+
+  moveFile(delta: number): void {
+    this.moveWithinKind(delta, 'file');
+  }
+
+  moveArrow(delta: number): void {
+    const kind = this.selectedRow()?.kind ?? 'directory';
+    this.moveWithinKind(delta, kind);
+  }
+
   selectedRow(): ExplorerRow | undefined {
     const rows = this.rows();
     return rows.find((row) => row.path === this.state.selectedPath) ?? rows[0];

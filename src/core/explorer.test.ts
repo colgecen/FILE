@@ -139,3 +139,38 @@ describe('ExplorerModel veri kaynağı', () => {
     expect(model.getState().rootPath).toBeNull();
   });
 });
+
+describe('ExplorerModel klasör gezinmesi', () => {
+  it('F3 sonraki klasör satırına geçer ve sarar', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.moveFolder(1);
+    expect(model.getState().selectedPath).toBe('/proje/src');
+    model.moveFolder(1);
+    expect(model.getState().selectedPath).toBe('/proje');
+  });
+
+  it('Shift+F3 önceki klasör satırına geçer ve sarar', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.moveFolder(-1);
+    expect(model.getState().selectedPath).toBe('/proje/src');
+    model.moveFolder(-1);
+    expect(model.getState().selectedPath).toBe('/proje');
+  });
+
+  it('klasör yoksa hareket olmaz', () => {
+    const model = new ExplorerModel();
+    model.settle([file('/a.txt', 'a.txt')], '/');
+    model.moveFolder(1);
+    expect(model.getState().selectedPath).toBe('/a.txt');
+  });
+
+  it('seçim dosyadayken F3 dosyayı atlayıp sonraki klasöre gider', () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.select('/proje/src/main.ts');
+    model.moveFolder(1);
+    expect(model.getState().selectedPath).toBe('/proje/src');
+  });
+});

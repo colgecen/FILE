@@ -191,43 +191,55 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'explorer.folder.next',
     title: 'Klasör: sonraki',
     category: 'view',
-    run: placeholder('explorer.folder.next'),
-    placeholder: true,
+    run: () => {
+      explorerModel.moveFolder(1);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'explorer.folder.prev',
     title: 'Klasör: önceki',
     category: 'view',
-    run: placeholder('explorer.folder.prev'),
-    placeholder: true,
+    run: () => {
+      explorerModel.moveFolder(-1);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'explorer.up',
     title: 'Klasör/dosya: yukarı',
     category: 'view',
-    run: placeholder('explorer.up'),
-    placeholder: true,
+    run: () => {
+      explorerModel.moveArrow(-1);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'explorer.down',
     title: 'Klasör/dosya: aşağı',
     category: 'view',
-    run: placeholder('explorer.down'),
-    placeholder: true,
+    run: () => {
+      explorerModel.moveArrow(1);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'explorer.file.next',
     title: 'Dosya: sonraki',
     category: 'view',
-    run: placeholder('explorer.file.next'),
-    placeholder: true,
+    run: () => {
+      explorerModel.moveFile(1);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'explorer.file.prev',
     title: 'Dosya: önceki',
     category: 'view',
-    run: placeholder('explorer.file.prev'),
-    placeholder: true,
+    run: () => {
+      explorerModel.moveFile(-1);
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'explorer.activate',

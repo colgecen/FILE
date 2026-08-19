@@ -229,7 +229,7 @@
     - Commit: `feat: gezgin yukleme ve hata durumlarini ekle`
 
 ### 5.3 Gezinme modeli (kullanıcı spesifikasyonu)
-- [ ] **Klasörler arası:** F3 tuşu ile gezinme
+- [x] **Klasörler arası:** F3 tuşu ile gezinme
     - Commit: `feat: f3 ile klasor gezinmesini ekle`
 - [ ] **Klasörler arası:** yön tuşları ile gezinme
     - Commit: `feat: yon tuslari ile klasor gezinmesini ekle`
