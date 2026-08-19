@@ -157,19 +157,19 @@
     - Commit: `feat: alt menu seviyelerini ekle`
 
 ### 3.3 Klavye gezinmesi
-- [ ] F1: menü bölgesine geçiş / menüden çıkış
+- [x] F1: menü bölgesine geçiş / menüden çıkış
     - Commit: `feat: f1 odak gecisini ekle`
-- [ ] Sol/sağ yön: üst butonlar arasında dolanım
+- [x] Sol/sağ yön: üst butonlar arasında dolanım
     - Commit: `feat: ust buton gezinmesini ekle`
-- [ ] Tab/yukarı-aşağı: açık alt menü öğeleri arasında gezinme
+- [x] Tab/yukarı-aşağı: açık alt menü öğeleri arasında gezinme
     - Commit: `feat: alt menu gezinmesini ekle`
-- [ ] Enter: öğeyi çalıştırır; Esc: adım adım kapatır; alt menü açıkken odak kilidi (üst butonlara kaçış yok)
+- [x] Enter: öğeyi çalıştırır; Esc: adım adım kapatır; alt menü açıkken odak kilidi (üst butonlara kaçış yok)
     - Commit: `feat: enter esc ve odak kilidi mantigini ekle`
 
 ### 3.4 Menü → komut bağlama
-- [ ] Tüm alt öğeler CommandRegistry komutlarına bağlanır (dosya işlemleri ilk etapta yer tutucu; tam akış Faz 9)
+- [x] Tüm alt öğeler CommandRegistry komutlarına bağlanır (dosya işlemleri ilk etapta yer tutucu; tam akış Faz 9)
     - Commit: `feat: menu ogelerini komutlara bagla`
-- [ ] Çalıştırılamayan öğeler "Yakında" işaretiyle görünür, Enter'da bilgi gösterir
+- [x] Çalıştırılamayan öğeler "Yakında" işaretiyle görünür, Enter'da bilgi gösterir
     - Commit: `feat: yer tutucu komut durumlarini ekle`
 
 ---
