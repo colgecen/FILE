@@ -18,3 +18,11 @@ body,
   overflow: hidden;
   background: var(--bg-base);
 }
+
+@media (prefers-reduced-transparency: no-preference) {
+  .app-shell.glass {
+    background: var(--bg-overlay);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+}
