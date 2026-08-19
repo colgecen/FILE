@@ -1,4 +1,4 @@
-import { CommandRegistry } from './commands';
+import { type CommandRegistry } from './commands';
 import type { CommandCategory } from './types';
 
 const PLACEHOLDER = (id: string) => (): { ok: boolean; error: string } => ({
