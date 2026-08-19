@@ -90,4 +90,35 @@ describe('ExplorerView', () => {
     expect(dirIcon?.textContent).toBe('▣');
     expect(fileIcon?.textContent).toBe('◦');
   });
+
+  it('genişletilmiş klasör aşağı, daraltılmış sağa oku gösterir', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    const rootState = screen.getByText('proje').closest('.explorer-row')!.querySelector(
+      '.explorer-row__state',
+    );
+    expect(rootState?.textContent).toBe('▾');
+    act(() => {
+      explorerModel.toggleExpanded('/proje');
+    });
+    const collapsedState = screen.getByText('proje').closest('.explorer-row')!.querySelector(
+      '.explorer-row__state',
+    );
+    expect(collapsedState?.textContent).toBe('▸');
+  });
+
+  it('dosya satırında durum göstergesi boştur', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    const fileState = screen.getByText('main.ts').closest('.explorer-row')!.querySelector(
+      '.explorer-row__state',
+    );
+    expect(fileState?.textContent).toBe('');
+  });
 });

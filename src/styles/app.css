@@ -108,6 +108,18 @@ body,
   color: var(--accent);
 }
 
+.explorer-row__state {
+  width: 12px;
+  flex-shrink: 0;
+  color: var(--accent-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.explorer-row__icon {
+  flex-shrink: 0;
+}
+
 .explorer-row__icon--dir {
   color: var(--accent-soft);
 }

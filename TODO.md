@@ -213,11 +213,11 @@
 ### 5.1 Panel çizimi
 - [x] ExplorerView iskelet: sol panel, genişlik 1/7, sağ 1px vurgu mavisi sınır, keskin köşeler (Faz 4: `feat: tree komutuyla gezgin acilisini ekle`)
     - Commit: `feat: gezgin panel iskeletini ciz`
-- [ ] Klasör/dosya satırları: girinti hiyerarşisi, satır yükseklikleri
+- [x] Klasör/dosya satırları: girinti hiyerarşisi, satır yükseklikleri
     - Commit: `feat: gezgin satir gorunumlerini ekle`
 - [x] Tip ikonları: klasör/dosya ayraçları (metin tabanlı, ikon kütüphanesi yok)
     - Commit: `feat: gezgin tip ikonlarini ekle`
-- [ ] Klasör durum göstergesi: genişletilmiş/daraltılmış oku
+- [x] Klasör durum göstergesi: genişletilmiş/daraltılmış oku
     - Commit: `feat: klasor durum gostergesini ekle`
 
 ### 5.2 Veri bağlama
