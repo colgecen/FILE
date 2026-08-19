@@ -7,6 +7,8 @@ import '@fontsource/orbitron/400.css';
 import '@fontsource/orbitron/500.css';
 import '@fontsource/orbitron/700.css';
 import './theme/tokens.css';
+import './styles/app.css';
+import { AppShell } from './layout/AppShell';
 
 const container = document.getElementById('root');
 if (!container) {
@@ -15,6 +17,8 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    <p>iskelet · api v{window.api.version}</p>
+    <AppShell>
+      <p>iskelet · api v{window.api.version}</p>
+    </AppShell>
   </StrictMode>,
 );
