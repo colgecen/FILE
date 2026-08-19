@@ -1,9 +1,11 @@
 import { reportError } from './appErrors';
 import { CommandRegistry } from './commands';
 import { registerDefaultBindings } from './defaultBindings';
+import { registerFocusCommands } from './focus';
 import { KeyboardController } from './input';
 import { Keymap } from './keymap';
 import { registerMenuCommands } from './menuCommands';
+import { registerNavCommands } from './navCommands';
 
 export type Core = {
   readonly registry: CommandRegistry;
@@ -24,6 +26,8 @@ export function createCore(): Core {
     },
   });
   registerMenuCommands(registry);
+  registerNavCommands(registry);
+  registerFocusCommands(registry);
   registerDefaultBindings(keymap);
   coreInstance = { registry, keymap, controller: new KeyboardController(keymap, registry) };
   return coreInstance;
