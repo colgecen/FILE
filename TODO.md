@@ -5,6 +5,7 @@
 > Commit mesajları Türkçe, conventional style: `docs:`, `feat:`, `fix:`, `chore:`, `refactor:`, `test:`.
 > Her commit'ten önce: `typecheck` + `lint` + `build` çalışır; test varsa testler geçer.
 > İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor
+> Her görev bittiğinde kutucuklara tik atmayı unutma
 
 **Toplam planlanan commit: 135** (4'ü tamamlandı, 131'i kaldı).
 
@@ -26,53 +27,53 @@
 ## Faz 1 — Proje İskeleti (20 commit)
 
 ### 1.1 Vite + React + TypeScript kurulumu
-- [ ] `export PATH="$HOME/node/bin:$PATH"` ile node v24.x doğrulanır; boş depoya Vite react-ts şablonu kurulur (mevcut 4 dokümana dokunulmaz); `npm install` çalışır
+- [x] `export PATH="$HOME/node/bin:$PATH"` ile node v24.x doğrulanır; boş depoya Vite react-ts şablonu kurulur (mevcut 4 dokümana dokunulmaz); `npm install` çalışır
     - Commit: `chore: vite react-ts iskeletini kur`
-- [ ] Çalışma bağımlılıkları: `react`, `react-dom`, `monaco-editor`; geliştirme: `electron`, `electron-vite`, `vite`, `@vitejs/plugin-react`, `typescript`, `eslint`, `prettier`, `vitest` — tek `npm install` ile temiz kurulum
+- [x] Çalışma bağımlılıkları: `react`, `react-dom`, `monaco-editor`; geliştirme: `electron`, `electron-vite`, `vite`, `@vitejs/plugin-react`, `typescript`, `eslint`, `prettier`, `vitest` — tek `npm install` ile temiz kurulum
     - Commit: `chore: bagimlilik listesini kur`
 
 ### 1.2 Electron kabuğu
-- [ ] `electron/main` + `electron/preload` klasörleri; electron-vite yapılandırması (main/preload/renderer tsconfig ayrımı)
+- [x] `electron/main` + `electron/preload` klasörleri; electron-vite yapılandırması (main/preload/renderer tsconfig ayrımı)
     - Commit: `chore: electron-vite yapilandirmasini ekle`
-- [ ] Main: BrowserWindow — siyah arka plan, 1px vurgu mavisi kenarlık, `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`; app yaşam döngüsü
+- [x] Main: BrowserWindow — siyah arka plan, 1px vurgu mavisi kenarlık, `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`; app yaşam döngüsü
     - Commit: `feat: ana pencereyi olustur`
-- [ ] Preload: `contextBridge` ile tip tanımlı boş `window.api` yüzeyi + `api.d.ts`
+- [x] Preload: `contextBridge` ile tip tanımlı boş `window.api` yüzeyi + `api.d.ts`
     - Commit: `feat: preload api yuzeyini ekle`
-- [ ] Dev akışı: `npm run dev` renderer'ı derler, pencereyi açar, HMR çalışır
+- [x] Dev akışı: `npm run dev` renderer'ı derler, pencereyi açar, HMR çalışır
     - Commit: `feat: dev baslatma akisini dogrula`
 
 ### 1.3 Kalite araçları
-- [ ] tsconfig: strict, `noUnusedLocals`, dizi/nesne tipleri sıkı
+- [x] tsconfig: strict, `noUnusedLocals`, dizi/nesne tipleri sıkı
     - Commit: `chore: strict typescript ayarlarini yapilandir`
-- [ ] ESLint (flat config) + Prettier: tutarlı biçimlendirme, `semi`, `quotes` kuralları
+- [x] ESLint (flat config) + Prettier: tutarlı biçimlendirme, `semi`, `quotes` kuralları
     - Commit: `chore: lint ve bicimlendirme araclarini kur`
-- [ ] npm script'leri: `dev`, `build`, `typecheck`, `lint`, `test`
+- [x] npm script'leri: `dev`, `build`, `typecheck`, `lint`, `test`
     - Commit: `chore: npm scriptlerini tanimla`
-- [ ] Vitest + React Testing Library kurulumu; açılan ilk test (yapı doğrulaması)
+- [x] Vitest + React Testing Library kurulumu; açılan ilk test (yapı doğrulaması)
     - Commit: `test: vitest ortamini kur`
 
 ### 1.4 Görsel temel
-- [ ] `src/theme/tokens.css`: renk tokenları (ARCHITECTURE Bölüm 7.1 tablosu birebir)
+- [x] `src/theme/tokens.css`: renk tokenları (ARCHITECTURE Bölüm 7.1 tablosu birebir)
     - Commit: `feat: renk tokenlarini css olarak ekle`
-- [ ] `src/theme/theme.ts`: tokenların TS karşılığı (tek kaynak, css ile senkron)
+- [x] `src/theme/theme.ts`: tokenların TS karşılığı (tek kaynak, css ile senkron)
     - Commit: `feat: tema tokenlarini ts olarak ekle`
-- [ ] Font katmanı: JetBrains Mono (ligatür hazırlığı) + Orbitron yükleme ve ön yükleme
+- [x] Font katmanı: JetBrains Mono (ligatür hazırlığı) + Orbitron yükleme ve ön yükleme
     - Commit: `feat: yazi tiplerini ekle`
 
 ### 1.5 İlk çalışan pencere
-- [ ] AppShell iskeleti render edilir: saf siyah zemin
+- [x] AppShell iskeleti render edilir: saf siyah zemin
     - Commit: `feat: ilk appshell iskeletini ciz`
-- [ ] Pencere çerçevesi: 1px vurgu mavisi kenarlık, keskin köşeler (`border-radius: 0`)
+- [x] Pencere çerçevesi: 1px vurgu mavisi kenarlık, keskin köşeler (`border-radius: 0`)
     - Commit: `feat: pencere cercevesi stillerini ekle`
-- [ ] Saydam pencere + `backdrop-filter` cam/hologram denemesi (Linux compositor)
+- [x] Saydam pencere + `backdrop-filter` cam/hologram denemesi (Linux compositor)
     - Commit: `feat: saydam pencere ve cam efekti denemesi`
-- [ ] Compositor desteklemezse fallback: mat siyah zemin, görsel bütünlük korunur
+- [x] Compositor desteklemezse fallback: mat siyah zemin, görsel bütünlük korunur
     - Commit: `feat: mat siyah fallback zemin`
-- [ ] Renderer güvenlik başlıkları: CSP yalnızca yerel kaynakları yükler
+- [x] Renderer güvenlik başlıkları: CSP yalnızca yerel kaynakları yükler
     - Commit: `chore: renderer icin csp basliklarini ekle`
-- [ ] `.gitignore` + temel depo düzeni (node_modules, out, dist dışı)
+- [x] `.gitignore` + temel depo düzeni (node_modules, out, dist dışı)
     - Commit: `chore: gitignore ve depo duzenini kur`
-- [ ] README.md: proje tanımı, kurulum ve komutlar (Türkçe)
+- [x] README.md: proje tanımı, kurulum ve komutlar (Türkçe)
     - Commit: `docs: readme dosyasini ekle`
 
 ---
