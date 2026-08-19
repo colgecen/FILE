@@ -6,6 +6,7 @@ import { registerNavCommands } from './navCommands';
 
 describe('navCommands · menubar', () => {
   afterEach(() => {
+    menuModel.openAt(0);
     menuModel.close();
     while (focusManager.get() !== 'editor') {
       focusManager.returnToPrevious();
