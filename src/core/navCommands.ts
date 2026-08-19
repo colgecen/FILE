@@ -31,6 +31,11 @@ const goTop = (delta: number) => (): { ok: boolean } => {
   return { ok: true };
 };
 
+const goItem = (delta: number) => (): { ok: boolean } => {
+  menuModel.moveItem(delta);
+  return { ok: true };
+};
+
 export function registerNavCommands(registry: CommandRegistry): void {
   registry.register({
     id: 'menubar.toggle',
@@ -63,19 +68,19 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'menubar.up',
     title: 'Alt menü: yukarı',
     category: 'view',
-    run: placeholder('menubar.up'),
+    run: goItem(-1),
   });
   registry.register({
     id: 'menubar.down',
     title: 'Alt menü: aşağı',
     category: 'view',
-    run: placeholder('menubar.down'),
+    run: goItem(1),
   });
   registry.register({
     id: 'menubar.next',
     title: 'Alt menü: sonraki',
     category: 'view',
-    run: placeholder('menubar.next'),
+    run: goItem(1),
   });
   registry.register({
     id: 'menubar.activate',
