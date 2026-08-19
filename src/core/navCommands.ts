@@ -1,5 +1,6 @@
 import type { CommandRegistry } from './commands';
 import { focusManager } from './focus';
+import { menuModel } from '../menus/menuModel';
 import type { FocusZone } from './types';
 
 const placeholder =
@@ -24,7 +25,16 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'menubar.toggle',
     title: 'Menü çubuğunu aç/kapat',
     category: 'view',
-    run: toggleZone('menubar'),
+    run: () => {
+      if (focusManager.get() === 'menubar') {
+        menuModel.close();
+        focusManager.returnToPrevious();
+      } else {
+        focusManager.set('menubar');
+        menuModel.openAt(menuModel.getState().activeTop);
+      }
+      return { ok: true };
+    },
   });
   registry.register({
     id: 'menubar.left',
