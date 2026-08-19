@@ -26,9 +26,8 @@ describe('menuTree', () => {
     expect(menuCommandsMatch(registry)).toBe(true);
   });
 
-  it('her komut idsi katalogda karşılık bulur', () => {
-    for (const id of collectMenuCommandIds()) {
-      expect(id.startsWith('file.') || id.startsWith('edit.')).toBe(true);
-    }
+  it('komut idleri benzersizdir', () => {
+    const ids = collectMenuCommandIds();
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });
