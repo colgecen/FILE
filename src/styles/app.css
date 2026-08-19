@@ -87,3 +87,34 @@ body,
   font-size: 11px;
   letter-spacing: 1px;
 }
+
+.menubar {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-base);
+}
+
+.menubar__item {
+  appearance: none;
+  padding: 0 14px;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  border-radius: 0;
+}
+
+.menubar__item:hover,
+.menubar__item:focus-visible {
+  outline: none;
+  color: var(--accent);
+}
+
+.menubar__item--active {
+  background: var(--selection);
+  color: var(--accent);
+}

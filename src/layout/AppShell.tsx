@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'r
 import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
+import { MenuBar } from '../menus/MenuBar';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 
@@ -31,6 +32,7 @@ export function AppShell({
   return (
     <CoreContext.Provider value={core}>
       <div className={className}>
+        <MenuBar />
         <ErrorIndicator />
         {exitPending && (
           <ConfirmOverlay

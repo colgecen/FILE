@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import type { CommandRegistry } from './commands';
 import type { FocusZone } from './types';
 
@@ -51,6 +52,12 @@ export function setFocusZone(zone: FocusZone): void {
 
 export function onFocusZoneChange(listener: FocusZoneListener): () => void {
   return focusManager.subscribe(listener);
+}
+
+export function useFocusZone(): FocusZone {
+  const [zone, setZone] = useState<FocusZone>(() => focusManager.get());
+  useEffect(() => focusManager.subscribe(setZone), []);
+  return zone;
 }
 
 export function registerFocusCommands(registry: CommandRegistry): void {
