@@ -72,4 +72,22 @@ describe('ExplorerView', () => {
     });
     expect(screen.getByText('proje').closest('.explorer-row')).toHaveClass('explorer-row--active');
   });
+
+  it('klasör ve dosya tipleri farklı ikonla gösterilir', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    const dirIcon = screen.getByText('proje').closest('.explorer-row')!.querySelector(
+      '.explorer-row__icon',
+    );
+    const fileIcon = screen.getByText('main.ts').closest('.explorer-row')!.querySelector(
+      '.explorer-row__icon',
+    );
+    expect(dirIcon).toHaveClass('explorer-row__icon--dir');
+    expect(fileIcon).toHaveClass('explorer-row__icon--file');
+    expect(dirIcon?.textContent).toBe('▣');
+    expect(fileIcon?.textContent).toBe('◦');
+  });
 });

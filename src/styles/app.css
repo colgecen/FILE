@@ -108,6 +108,14 @@ body,
   color: var(--accent);
 }
 
+.explorer-row__icon--dir {
+  color: var(--accent-soft);
+}
+
+.explorer-row__icon--file {
+  color: var(--accent-dim);
+}
+
 .explorer-row__name {
   overflow: hidden;
   text-overflow: ellipsis;

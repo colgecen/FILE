@@ -21,6 +21,14 @@ export function ExplorerView(): React.JSX.Element | null {
               aria-selected={active}
               className={className}
             >
+              <span
+                className={[
+                  'explorer-row__icon',
+                  row.kind === 'directory' ? 'explorer-row__icon--dir' : 'explorer-row__icon--file',
+                ].join(' ')}
+              >
+                {row.kind === 'directory' ? '▣' : '◦'}
+              </span>
               <span className="explorer-row__name">{row.name}</span>
             </div>
           );
