@@ -1,0 +1,15 @@
+:root {
+  --bg-base: #000000;
+  --bg-editor: #03050a;
+  --bg-overlay: rgba(0, 0, 0, 0.9);
+  --text-primary: #ffffff;
+  --accent: #00d2ff;
+  --accent-soft: #82aaff;
+  --accent-dim: #4a6b8c;
+  --selection: rgba(0, 85, 255, 0.4);
+  --line-active: rgba(0, 210, 255, 0.05);
+  --error: #ff5252;
+  --border: #00d2ff;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --font-display: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
+}
