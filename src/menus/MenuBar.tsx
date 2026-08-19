@@ -1,5 +1,6 @@
 import { useCore } from '../layout/AppShell';
 import { useFocusZone } from '../core/focus';
+import { MenuPanel } from './MenuPanel';
 import { menuModel, useMenuModelState } from './menuModel';
 
 export function MenuBar(): React.JSX.Element {
@@ -16,21 +17,23 @@ export function MenuBar(): React.JSX.Element {
       .filter(Boolean)
       .join(' ');
     items.push(
-      <button
-        key={label}
-        type="button"
-        className={className}
-        data-menutop={i}
-        onMouseEnter={() => {
-          if (menubarActive) menuModel.openAt(i);
-        }}
-        onClick={() => {
-          menuModel.openAt(i);
-          void registry.run('focus.menubar');
-        }}
-      >
-        {label}
-      </button>,
+      <div key={label} className="menubar__cell">
+        <button
+          type="button"
+          className={className}
+          data-menutop={i}
+          onMouseEnter={() => {
+            if (menubarActive) menuModel.openAt(i);
+          }}
+          onClick={() => {
+            menuModel.openAt(i);
+            void registry.run('focus.menubar');
+          }}
+        >
+          {label}
+        </button>
+        {state.openTop === i && <MenuPanel />}
+      </div>,
     );
   }
 

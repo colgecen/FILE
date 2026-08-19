@@ -32,6 +32,10 @@ function selectableIndexOf(items: readonly MenuItem[], realIndex: number): numbe
   return position;
 }
 
+export function selectableIndexOfItems(items: readonly MenuItem[], realIndex: number): number {
+  return selectableIndexOf(items, realIndex);
+}
+
 export class MenuModel {
   private state: MenuModelState = {
     activeTop: 0,
@@ -90,6 +94,15 @@ export class MenuModel {
     const current = this.state.activeItem ?? 0;
     const next = (((current + delta) % count) + count) % count;
     this.set({ activeItem: next });
+  }
+
+  setActiveItem(selectableIndex: number): void {
+    const items = this.itemsAtLevel();
+    const count = selectableCount(items);
+    if (this.state.openTop === null || count === 0 || selectableIndex < 0 || selectableIndex >= count) {
+      return;
+    }
+    this.set({ activeItem: selectableIndex });
   }
 
   activate(): MenuActivateResult {
@@ -162,9 +175,17 @@ export class MenuModel {
     return item === undefined ? null : item.label;
   }
 
-  private itemsAtLevel(): readonly MenuItem[] {
-    return this.itemsAtPath(this.state.path);
+  currentItems(): readonly MenuItem[] {
+    return this.itemsAtLevel();
   }
+
+  currentPathLabel(): string {
+    return this.state.path.length === 0
+      ? menuTree[this.state.openTop ?? 0]?.label ?? ''
+      : this.itemLabel() ?? '';
+  }
+
+  private itemsAtLevel(): readonly MenuItem[] {
 
   private itemsAtPath(path: readonly number[]): readonly MenuItem[] {
     if (this.state.openTop === null) return [];
