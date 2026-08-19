@@ -3,11 +3,16 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "main": "out/main/index.js",
   "description": "Klavye-oncelikli masaustu kod editoru",
   "scripts": {
-    "dev": "echo 'dev henuz tanimli degil (Faz 1.2 ile gelir)'",
-    "build": "echo 'build henuz tanimli degil'",
-    "preview": "echo 'preview henuz tanimli degil'"
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "preview": "electron-vite preview",
+    "typecheck:node": "tsc --noEmit -p electron/tsconfig.json",
+    "typecheck:web": "tsc --noEmit",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

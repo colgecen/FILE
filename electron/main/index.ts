@@ -7,8 +7,16 @@ const __dirname = dirname(__filename);
 
 const ACCENT = '#00D2FF';
 const BG_BASE = '#000000';
+const DEV_RENDERER_URL = 'http://localhost:5173';
 
 let mainWindow: BrowserWindow | null = null;
+
+function resolveRendererEntry(): { url?: string; file?: string } {
+  if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
+    return { url: process.env['ELECTRON_RENDERER_URL'] };
+  }
+  return { file: join(__dirname, '../renderer/index.html') };
+}
 
 function createMainWindow(): void {
   if (mainWindow !== null) return;
@@ -33,8 +41,15 @@ function createMainWindow(): void {
     mainWindow = null;
   });
 
-  // Henuz URL yok (commit 6 ile baglanacak).
+  const entry = resolveRendererEntry();
+  if (entry.url !== undefined) {
+    void mainWindow.loadURL(entry.url);
+  } else if (entry.file !== undefined) {
+    void mainWindow.loadFile(entry.file);
+  }
+
   void ACCENT;
+  void DEV_RENDERER_URL;
 }
 
 void app.whenReady().then((): void => {
