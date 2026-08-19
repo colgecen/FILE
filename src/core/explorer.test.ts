@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ExplorerModel } from './explorer';
-import type { FileNode } from './types';
+import type { DirEntry, FileNode } from './types';
 
 const folder = (path: string, name: string, children: readonly FileNode[]): FileNode => ({
   path,
@@ -57,5 +57,63 @@ describe('ExplorerModel satırlar', () => {
     const model = new ExplorerModel();
     model.settle(TREE, '/proje');
     expect(model.getState().expanded.has('/proje')).toBe(true);
+  });
+});
+
+describe('ExplorerModel veri kaynağı', () => {
+  it('loadRoot ağacı kurar ve yükleme durumunu temizler', async () => {
+    const model = new ExplorerModel();
+    const readDir = vi.fn(async (): Promise<DirEntry[]> => [
+      { name: 'src', path: '/proje/src', kind: 'directory' },
+      { name: 'main.ts', path: '/proje/main.ts', kind: 'file' },
+    ]);
+    const ok = await model.loadRoot('/proje', readDir);
+    expect(ok).toBe(true);
+    expect(model.getState().loading).toBe(false);
+    expect(model.getState().error).toBeNull();
+    expect(model.getState().rootPath).toBe('/proje');
+    expect(model.rows().map((row) => row.name)).toEqual(['proje', 'src', 'main.ts']);
+  });
+
+  it('loadRoot hata durumunda kırmızı göstergeyi besler', async () => {
+    const model = new ExplorerModel();
+    const readDir = vi.fn(async (): Promise<DirEntry[]> => {
+      throw new Error('Erişim reddedildi');
+    });
+    const ok = await model.loadRoot('/proje', readDir);
+    expect(ok).toBe(false);
+    expect(model.getState().loading).toBe(false);
+    expect(model.getState().error).toBe('Erişim reddedildi');
+  });
+
+  it('expandDirectory çocukları tembel okur ve genişletir', async () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    model.toggleExpanded('/proje/src');
+    const readDir = vi.fn(async (): Promise<DirEntry[]> => [
+      { name: 'deep.ts', path: '/proje/src/deep.ts', kind: 'file' },
+    ]);
+    const ok = await model.expandDirectory('/proje/src', readDir);
+    expect(ok).toBe(true);
+    expect(model.rows().map((row) => row.name)).toEqual([
+      'proje',
+      'src',
+      'deep.ts',
+      'readme.md',
+    ]);
+    expect(readDir).toHaveBeenCalledWith('/proje/src');
+  });
+
+  it('toggleFolder daraltır, tembel okumada genişletir', async () => {
+    const model = new ExplorerModel();
+    model.settle(TREE, '/proje');
+    await model.toggleFolder('/proje/src', vi.fn());
+    expect(model.getState().expanded.has('/proje/src')).toBe(false);
+    const readDir = vi.fn(async (): Promise<DirEntry[]> => [
+      { name: 'yeni.ts', path: '/proje/src/yeni.ts', kind: 'file' },
+    ]);
+    await model.toggleFolder('/proje/src', readDir);
+    expect(model.getState().expanded.has('/proje/src')).toBe(true);
+    expect(model.rows().map((row) => row.name)).toContain('yeni.ts');
   });
 });

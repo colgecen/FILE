@@ -221,7 +221,7 @@
     - Commit: `feat: klasor durum gostergesini ekle`
 
 ### 5.2 Veri bağlama
-- [ ] `fs:read-dir` IPC ile klasör ağacı çekimi; genişletilen klasörler isteğe bağlı okunur
+- [x] `fs:read-dir` IPC ile klasör ağacı çekimi; genişletilen klasörler isteğe bağlı okunur
     - Commit: `feat: gezgin veri kaynagini bagla`
 - [ ] Kök klasör: açılışta yüklenir; kök değiştirme akışı
     - Commit: `feat: kok klasor yuklemesini ekle`

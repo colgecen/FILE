@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import type { FileNode } from './types';
+import type { DirEntry, FileNode } from './types';
+import { buildTree, replaceChildren } from './explorerTree';
+
+export type ReadDir = (path: string) => Promise<DirEntry[]>;
 
 export type ExplorerState = {
   readonly isOpen: boolean;
@@ -91,6 +94,7 @@ export class ExplorerModel {
       expanded,
       selectedPath: files[0]?.path ?? null,
       error: null,
+      loading: false,
     };
     this.emit();
   }
@@ -103,6 +107,41 @@ export class ExplorerModel {
   setLoading(loading: boolean): void {
     this.state = { ...this.state, loading };
     this.emit();
+  }
+
+  async loadRoot(path: string, readDir: ReadDir): Promise<boolean> {
+    this.state = { ...this.state, loading: true, error: null };
+    this.emit();
+    try {
+      const entries = await readDir(path);
+      const root = buildTree(path, entries);
+      this.settle([root], path);
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.setError(message);
+      return false;
+    }
+  }
+
+  async expandDirectory(path: string, readDir: ReadDir): Promise<boolean> {
+    const files = this.state.files;
+    if (files.length === 0) return false;
+    try {
+      const entries = await readDir(path);
+      this.state = {
+        ...this.state,
+        files: replaceChildren(files, path, entries),
+        expanded: new Set(this.state.expanded).add(path),
+        error: null,
+      };
+      this.emit();
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.setError(message);
+      return false;
+    }
   }
 
   rows(): readonly ExplorerRow[] {
@@ -119,6 +158,20 @@ export class ExplorerModel {
     }
     this.state = { ...this.state, expanded };
     this.emit();
+  }
+
+  async toggleFolder(path: string, readDir?: ReadDir): Promise<void> {
+    const row = this.rows().find((candidate) => candidate.path === path);
+    if (row === undefined || row.kind !== 'directory') return;
+    if (row.expanded) {
+      this.toggleExpanded(path);
+      return;
+    }
+    if (readDir !== undefined) {
+      await this.expandDirectory(path, readDir);
+      return;
+    }
+    this.toggleExpanded(path);
   }
 
   select(path: string): void {
