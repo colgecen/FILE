@@ -189,7 +189,7 @@
     - Commit: `feat: komut bulanik aramasini ekle`
 - [x] Kısaltma eşanlamları + açık dosya adları ile genişletilmiş arama
     - Commit: `feat: esanlam ve dosya aramasini ekle`
-- [ ] Sonuç sıralama; yukarı/aşağı seçim; Enter çalıştırır; Esc kapatır
+- [x] Sonuç sıralama; yukarı/aşağı seçim; Enter çalıştırır; Esc kapatır
     - Commit: `feat: palet secim akisini ekle`
 
 ### 4.3 Kısayol + odak yönetimi
