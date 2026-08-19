@@ -76,7 +76,7 @@ export class ExplorerModel {
     this.emit();
   }
 
-  settle(files: readonly FileNode[], rootPath: string): void {
+  settle(files: readonly FileNode[], rootPath: string | null): void {
     const expanded = new Set<string>();
     const collect = (nodes: readonly FileNode[]): void => {
       for (const node of nodes) {
@@ -122,6 +122,15 @@ export class ExplorerModel {
       this.setError(message);
       return false;
     }
+  }
+
+  async pickAndLoad(
+    openFolder: () => Promise<{ readonly path: string; readonly name: string } | null>,
+    readDir: ReadDir,
+  ): Promise<boolean> {
+    const picked = await openFolder();
+    if (picked === null) return false;
+    return this.loadRoot(picked.path, readDir);
   }
 
   async expandDirectory(path: string, readDir: ReadDir): Promise<boolean> {

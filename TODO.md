@@ -223,7 +223,7 @@
 ### 5.2 Veri bağlama
 - [x] `fs:read-dir` IPC ile klasör ağacı çekimi; genişletilen klasörler isteğe bağlı okunur
     - Commit: `feat: gezgin veri kaynagini bagla`
-- [ ] Kök klasör: açılışta yüklenir; kök değiştirme akışı
+- [x] Kök klasör: açılışta yüklenir; kök değiştirme akışı
     - Commit: `feat: kok klasor yuklemesini ekle`
 - [ ] Yükleme ve hata durumları: bekleniyor göstergesi, hata → kırmızı gösterge
     - Commit: `feat: gezgin yukleme ve hata durumlarini ekle`

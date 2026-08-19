@@ -172,7 +172,10 @@ export function registerNavCommands(registry: CommandRegistry): void {
     id: 'explorer.tree',
     title: 'tree — Dosya Gezgini',
     category: 'view',
-    run: () => {
+    run: async () => {
+      if (explorerModel.getState().rootPath === null) {
+        await explorerModel.pickAndLoad(window.api.openFolder, window.api.readDir);
+      }
       explorerModel.open();
       focusManager.set('explorer');
       return { ok: true };

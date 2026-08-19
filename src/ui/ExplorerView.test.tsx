@@ -1,8 +1,11 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppShell } from '../layout/AppShell';
 import { explorerModel } from '../core/explorer';
+import { createCore } from '../core/instances';
+import { paletteModel } from '../core/palette';
+import { focusManager } from '../core/focus';
 import type { FileNode } from '../core/types';
 
 const folder = (path: string, name: string, children: readonly FileNode[]): FileNode => ({
@@ -32,7 +35,7 @@ describe('ExplorerView', () => {
   afterEach(() => {
     act(() => {
       explorerModel.close();
-      explorerModel.settle([], '/');
+      explorerModel.settle([], null);
     });
   });
 
@@ -120,5 +123,36 @@ describe('ExplorerView', () => {
       '.explorer-row__state',
     );
     expect(fileState?.textContent).toBe('');
+  });
+});
+
+describe('ExplorerView kök yükleme', () => {
+  afterEach(() => {
+    act(() => {
+      explorerModel.close();
+      explorerModel.settle([], null);
+    });
+    vi.mocked(window.api.openFolder).mockResolvedValue(null);
+  });
+
+  it('tree komutu kök klasörü seçtirip yükler', async () => {
+    vi.mocked(window.api.openFolder).mockResolvedValue({ path: '/proje', name: 'proje' });
+    vi.mocked(window.api.readDir).mockResolvedValue([
+      { name: 'main.ts', path: '/proje/main.ts', kind: 'file' },
+      { name: 'docs', path: '/proje/docs', kind: 'directory' },
+    ]);
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    act(() => {
+      paletteModel.setQuery('tree', createCore().registry.list());
+    });
+    await act(async () => {
+      fireEvent.keyDown(window, { key: 'Enter' });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(explorerModel.getState().rootPath).toBe('/proje');
+    expect(screen.getByText('main.ts')).toBeInTheDocument();
+    expect(focusManager.get()).toBe('explorer');
   });
 });

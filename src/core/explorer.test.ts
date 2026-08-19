@@ -116,4 +116,26 @@ describe('ExplorerModel veri kaynağı', () => {
     expect(model.getState().expanded.has('/proje/src')).toBe(true);
     expect(model.rows().map((row) => row.name)).toContain('yeni.ts');
   });
+
+  it('pickAndLoad seçilen klasörü kök olarak yükler', async () => {
+    const model = new ExplorerModel();
+    const openFolder = vi.fn(async () => ({ path: '/proje', name: 'proje' }));
+    const readDir = vi.fn(async (): Promise<DirEntry[]> => [
+      { name: 'main.ts', path: '/proje/main.ts', kind: 'file' },
+    ]);
+    const ok = await model.pickAndLoad(openFolder, readDir);
+    expect(ok).toBe(true);
+    expect(model.getState().rootPath).toBe('/proje');
+    expect(model.rows().map((row) => row.name)).toEqual(['proje', 'main.ts']);
+  });
+
+  it('pickAndLoad iptalde ağacı değiştirmez', async () => {
+    const model = new ExplorerModel();
+    const ok = await model.pickAndLoad(
+      vi.fn(async () => null),
+      vi.fn(async (): Promise<DirEntry[]> => []),
+    );
+    expect(ok).toBe(false);
+    expect(model.getState().rootPath).toBeNull();
+  });
 });
