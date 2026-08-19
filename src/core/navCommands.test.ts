@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { CommandRegistry } from './commands';
 import { focusManager } from './focus';
 import { menuModel } from '../menus/menuModel';
@@ -7,6 +7,9 @@ import { registerNavCommands } from './navCommands';
 describe('navCommands · menubar', () => {
   afterEach(() => {
     menuModel.close();
+    while (focusManager.get() !== 'editor') {
+      focusManager.returnToPrevious();
+    }
   });
 
   const setup = (): CommandRegistry => {
