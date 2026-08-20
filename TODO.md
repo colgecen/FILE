@@ -320,7 +320,7 @@
 
 ## Faz 9 — Dosya İşlemleri (5 commit)
 
-- [ ] Dosya açma akışı: dialog → `fs:read-file` → sekte/model; hatalar merkezî gösterime
+- [x] Dosya açma akışı: dialog → `fs:read-file` → sekte/model; hatalar merkezî gösterime
     - Commit: `feat: dosya acma akisini ekle`
 - [ ] Son Kullanılanlar listesi: kalıcı depo, menüden erişim
     - Commit: `feat: son kullanilanlar listesini ekle`

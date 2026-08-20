@@ -2,6 +2,7 @@ import { reportError } from './appErrors';
 import { CommandRegistry } from './commands';
 import { registerDefaultBindings } from './defaultBindings';
 import { registerExitCommands } from './exit';
+import { registerFileCommands } from './fileCommands';
 import { registerFocusCommands } from './focus';
 import { KeyboardController } from './input';
 import { Keymap } from './keymap';
@@ -36,6 +37,7 @@ export function createCore(): Core {
   registerTabCommands(registry);
   registerEditCommands(registry.register.bind(registry));
   registerPaneCommands(registry.register.bind(registry));
+  registerFileCommands(registry.register.bind(registry));
   registerDefaultBindings(keymap);
   coreInstance = { registry, keymap, controller: new KeyboardController(keymap, registry) };
   return coreInstance;
