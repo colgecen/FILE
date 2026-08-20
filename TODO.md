@@ -313,7 +313,7 @@
     - Commit: `feat: git branch gostergesini ekle`
 - [x] CPU/RAM göstergeleri (telemetri itkisi; 500 ms throttle)
     - Commit: `feat: sistem metrik gostergelerini ekle`
-- [ ] AI durum göstergesi (ilk değer `IDLE`) + hata rozeti (kırmızı, yalnızca hata)
+- [x] AI durum göstergesi (ilk değer `IDLE`) + hata rozeti (kırmızı, yalnızca hata)
     - Commit: `feat: ai durum ve hata rozetini ekle`
 
 ---

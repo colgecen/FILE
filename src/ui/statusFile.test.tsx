@@ -1,6 +1,9 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { aiStatusModel } from '../core/aiStatus';
+import { reportError } from '../core/appErrors';
 import { cursorModel } from '../core/cursor';
+import { errorStore } from '../core/errorStore';
 import { tabsModel } from '../core/tabs';
 import { telemetryStore } from '../core/telemetry';
 import type { OpenFile } from '../core/types';
@@ -20,6 +23,8 @@ describe('StatusBar dosya bilgisi', () => {
       tabsModel.reset();
       cursorModel.reset();
       telemetryStore.reset();
+      aiStatusModel.reset();
+      errorStore.clear();
     });
   });
 
@@ -82,5 +87,36 @@ describe('StatusBar dosya bilgisi', () => {
   it('telemetri yokken metrik göstergesi çizilmez', () => {
     render(<AppShell />);
     expect(screen.queryByTestId('status-metrics')).not.toBeInTheDocument();
+  });
+
+  it('AI durumu başlangıçta IDLE gösterir', () => {
+    render(<AppShell />);
+    expect(screen.getByTestId('status-ai')).toHaveTextContent('IDLE');
+  });
+
+  it('AI durumu değişince etiket güncellenir', () => {
+    render(<AppShell />);
+    act(() => {
+      aiStatusModel.setStatus('computing');
+    });
+    expect(screen.getByTestId('status-ai')).toHaveTextContent('COMPUTING');
+    act(() => {
+      aiStatusModel.setStatus('error');
+    });
+    expect(screen.getByTestId('status-ai')).toHaveTextContent('HATA');
+    expect(screen.getByTestId('status-ai').className).toContain('--error');
+  });
+
+  it('hata oluşunca kırmızı rozet görünür ve temizlenebilir', () => {
+    render(<AppShell />);
+    expect(screen.queryByTestId('status-errors')).not.toBeInTheDocument();
+    act(() => {
+      reportError('Örnek hata');
+    });
+    expect(screen.getByTestId('status-errors')).toHaveTextContent('1 hata');
+    act(() => {
+      screen.getByTestId('status-errors').click();
+    });
+    expect(screen.queryByTestId('status-errors')).not.toBeInTheDocument();
   });
 });

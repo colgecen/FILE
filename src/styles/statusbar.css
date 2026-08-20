@@ -28,3 +28,25 @@
   gap: 6px;
   white-space: nowrap;
 }
+
+.status-bar__ai--idle {
+  color: var(--accent-dim);
+}
+
+.status-bar__ai--computing {
+  color: var(--accent);
+}
+
+.status-bar__ai--error {
+  color: var(--error);
+}
+
+.status-bar__badge--error {
+  border: 1px solid var(--error);
+  color: var(--error);
+  background: transparent;
+  padding: 1px 8px;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+}
