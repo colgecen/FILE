@@ -12,6 +12,15 @@ export function registerTerminalCommands(register: (command: CommandDef) => void
     },
   });
   register({
+    id: 'terminal.split',
+    category: 'terminal',
+    title: 'Terminali Böl',
+    run: (): CommandResult => {
+      terminalModel.open();
+      return { ok: true };
+    },
+  });
+  register({
     id: 'terminal.kill',
     category: 'terminal',
     title: 'Terminali Kapat',
