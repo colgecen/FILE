@@ -309,7 +309,7 @@
     - Commit: `feat: durum cubugu iskeletini ciz`
 - [x] Dosya adı + satır:sütun göstergesi (EditorCore olaylarıyla beslenir)
     - Commit: `feat: dosya bilgisi gostergesini ekle`
-- [ ] Git branch göstergesi (`git:branch` IPC; yoksa gizlenir)
+- [x] Git branch göstergesi (`git:branch` IPC; yoksa gizlenir)
     - Commit: `feat: git branch gostergesini ekle`
 - [ ] CPU/RAM göstergeleri (telemetri itkisi; 500 ms throttle)
     - Commit: `feat: sistem metrik gostergelerini ekle`

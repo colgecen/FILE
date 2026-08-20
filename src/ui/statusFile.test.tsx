@@ -12,6 +12,7 @@ vi.mock('../editor/EditorCore', () => ({
 
 describe('StatusBar dosya bilgisi', () => {
   const file: OpenFile = { path: '/proje/main.ts', name: 'main.ts', content: 'x', language: 'ts' };
+  const otherFile: OpenFile = { path: '/depo/a.txt', name: 'a.txt', content: 'x', language: 'text' };
 
   afterEach(() => {
     act(() => {
@@ -45,5 +46,24 @@ describe('StatusBar dosya bilgisi', () => {
   it('imleç hareket etmemişse 1:1 gösterir', () => {
     render(<AppShell />);
     expect(screen.getByTestId('status-position')).toHaveTextContent('1:1');
+  });
+
+  it('git branch varsa gösterir ve kirliyse işaretler', async () => {
+    vi.mocked(window.api.gitBranch).mockResolvedValue({ name: 'main', dirty: true });
+    render(<AppShell />);
+    await act(async () => {
+      tabsModel.open(file);
+    });
+    expect(await screen.findByTestId('status-branch')).toHaveTextContent('* main');
+    vi.mocked(window.api.gitBranch).mockResolvedValue(null);
+  });
+
+  it('git branch yoksa gösterge gizlenir', async () => {
+    vi.mocked(window.api.gitBranch).mockResolvedValue(null);
+    render(<AppShell />);
+    await act(async () => {
+      tabsModel.open(otherFile);
+    });
+    expect(screen.queryByTestId('status-branch')).not.toBeInTheDocument();
   });
 });
