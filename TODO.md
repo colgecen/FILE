@@ -7,7 +7,7 @@
 > İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor
 > Her görev bittiğinde kutucuklara tik atmayı unutma
 
-**Toplam planlanan commit: 140** (96'sı tamamlandı, 44'ü kaldı).
+**Toplam planlanan commit: 140** (112'si tamamlandı, 28'i kaldı).
 
 ---
 
@@ -318,7 +318,7 @@
 
 ---
 
-## Faz 9 — Dosya İşlemleri (5 commit)
+## Faz 9 — Dosya İşlemleri (5 commit · TAMAMLANDI)
 
 - [x] Dosya açma akışı: dialog → `fs:read-file` → sekte/model; hatalar merkezî gösterime
     - Commit: `feat: dosya acma akisini ekle`
