@@ -1,16 +1,11 @@
-import { useAIStatus } from '../core/aiStatus';
+import { useAIEngine } from '../ai/engine';
+import { statusLabel } from '../ai/format';
+import { modelName } from '../ai/models';
 import { useCursorState } from '../core/cursor';
 import { errorStore, useErrorStore } from '../core/errorStore';
 import { dirOf, useGitBranch } from '../core/gitInfo';
 import { useTabsState } from '../core/tabs';
 import { useTelemetry } from '../core/telemetry';
-import type { AIStatus } from '../core/types';
-
-const AI_LABELS: Record<AIStatus, string> = {
-  idle: 'IDLE',
-  computing: 'COMPUTING',
-  error: 'HATA',
-};
 
 export function StatusBar(): React.JSX.Element {
   const cursor = useCursorState();
@@ -18,8 +13,15 @@ export function StatusBar(): React.JSX.Element {
   const activeFile = tabs.find((tab) => tab.id === activeId)?.file ?? null;
   const gitBranch = useGitBranch(window.api, activeFile === null ? null : dirOf(activeFile.path));
   const telemetry = useTelemetry();
-  const aiStatus = useAIStatus();
+  const ai = useAIEngine();
   const errors = useErrorStore();
+
+  const aiText =
+    ai.modelId === null
+      ? 'YZ: —'
+      : `YZ: ${modelName(ai.modelId)} · ${statusLabel(ai.status)}${
+          ai.progress !== null ? ` %${ai.progress.percent}` : ''
+        }`;
 
   return (
     <footer className="status-bar" aria-label="Durum çubuğu">
@@ -42,10 +44,11 @@ export function StatusBar(): React.JSX.Element {
           </span>
         )}
         <span
-          className={`status-bar__cell status-bar__ai status-bar__ai--${aiStatus}`}
+          className={`status-bar__cell status-bar__ai status-bar__ai--${ai.status}`}
           data-testid="status-ai"
+          data-status={ai.status}
         >
-          {AI_LABELS[aiStatus]}
+          {aiText}
         </span>
         <span className="status-bar__cell status-bar__position" data-testid="status-position">
           {cursor.path === null ? '1:1' : `${cursor.line}:${cursor.column}`}

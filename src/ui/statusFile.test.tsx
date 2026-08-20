@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { aiStatusModel } from '../core/aiStatus';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { aiEngine } from '../ai/engine';
 import { reportError } from '../core/appErrors';
 import { cursorModel } from '../core/cursor';
 import { errorStore } from '../core/errorStore';
@@ -18,14 +18,26 @@ describe('StatusBar dosya bilgisi', () => {
   const file: OpenFile = { path: '/proje/main.ts', name: 'main.ts', content: 'x', language: 'ts' };
   const otherFile: OpenFile = { path: '/depo/a.txt', name: 'a.txt', content: 'x', language: 'text' };
 
+  beforeEach(() => {
+    vi.stubGlobal(
+      'Worker',
+      class {
+        postMessage = () => {};
+        terminate = () => {};
+        onmessage: unknown = null;
+      } as unknown as typeof Worker,
+    );
+  });
+
   afterEach(() => {
     act(() => {
       tabsModel.reset();
       cursorModel.reset();
       telemetryStore.reset();
-      aiStatusModel.reset();
       errorStore.clear();
+      aiEngine.cancel();
     });
+    vi.unstubAllGlobals();
   });
 
   it('aktif dosya adını gösterir', () => {
@@ -89,21 +101,26 @@ describe('StatusBar dosya bilgisi', () => {
     expect(screen.queryByTestId('status-metrics')).not.toBeInTheDocument();
   });
 
-  it('AI durumu başlangıçta IDLE gösterir', () => {
+  it('AI durumu model yokken — gösterir', () => {
     render(<AppShell />);
-    expect(screen.getByTestId('status-ai')).toHaveTextContent('IDLE');
+    expect(screen.getByTestId('status-ai')).toHaveTextContent('YZ: —');
   });
 
-  it('AI durumu değişince etiket güncellenir', () => {
+  it('AI modeli yüklenince ad ve durum gösterilir', () => {
     render(<AppShell />);
     act(() => {
-      aiStatusModel.setStatus('computing');
+      aiEngine.init('Qwen/Qwen2.5-0.5B-Instruct');
     });
-    expect(screen.getByTestId('status-ai')).toHaveTextContent('COMPUTING');
+    expect(screen.getByTestId('status-ai')).toHaveTextContent('Qwen2.5 0.5B · Yükleniyor');
+  });
+
+  it('AI hatası kırmızı durum etiketiyle görünür', () => {
+    render(<AppShell />);
     act(() => {
-      aiStatusModel.setStatus('error');
+      aiEngine.init('Qwen/Qwen2.5-1.5B-Instruct');
+      aiEngine.setError('bağlantı yok');
     });
-    expect(screen.getByTestId('status-ai')).toHaveTextContent('HATA');
+    expect(screen.getByTestId('status-ai')).toHaveTextContent('Qwen2.5 1.5B · Hata');
     expect(screen.getByTestId('status-ai').className).toContain('--error');
   });
 

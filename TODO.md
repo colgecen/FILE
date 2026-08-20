@@ -379,7 +379,7 @@
     - Commit: `feat: model secimi ve durum yonetimini ekle`
 - [x] Model indirme akışı: ilerleme, iptal, hata yönetimi
     - Commit: `feat: model indirme akisini ekle`
-- [ ] StatusBar entegrasyonu (IDLE/COMPUTING/ERROR) + motor seçimi ADR'si sonrası gerçek bağlantı
+- [x] StatusBar entegrasyonu (IDLE/COMPUTING/ERROR) + gerçek motor bağlantısı
     - Commit: `feat: ai durumunu durum cubuguna bagla`
 
 ---
