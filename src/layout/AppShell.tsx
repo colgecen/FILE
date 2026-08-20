@@ -9,6 +9,7 @@ import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 import { ExplorerView } from '../ui/ExplorerView';
 import { PaneManager } from '../ui/PaneManager';
+import { StatusBar } from '../ui/StatusBar';
 import { TabBar } from '../ui/TabBar';
 
 const CoreContext = createContext<Core | null>(null);
@@ -58,6 +59,7 @@ export function AppShell({
           <PaneManager file={activeFile} />
           {children}
         </div>
+        <StatusBar />
       </div>
     </CoreContext.Provider>
   );

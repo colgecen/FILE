@@ -305,7 +305,7 @@
 
 ## Faz 8 — Durum Çubuğu / StatusBar (5 commit)
 
-- [ ] StatusBar iskelet: siyah zemin, 1px vurgu mavisi üst sınır, Orbitron
+- [x] StatusBar iskelet: siyah zemin, 1px vurgu mavisi üst sınır, Orbitron
     - Commit: `feat: durum cubugu iskeletini ciz`
 - [ ] Dosya adı + satır:sütun göstergesi (EditorCore olaylarıyla beslenir)
     - Commit: `feat: dosya bilgisi gostergesini ekle`
