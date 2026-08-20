@@ -7,6 +7,7 @@ vi.mock('../editor/EditorCore', () => ({
 }));
 import { menuModel } from './menuModel';
 import { paletteModel } from '../core/palette';
+import { recentFiles } from '../core/recentFiles';
 
 describe('MenuBar', () => {
   afterEach(() => {
@@ -14,6 +15,7 @@ describe('MenuBar', () => {
       menuModel.openAt(0);
       menuModel.close();
       paletteModel.reset([]);
+      recentFiles.reset();
     });
   });
 
@@ -64,5 +66,19 @@ describe('MenuBar', () => {
       menuModel.openAt(0);
     });
     expect(screen.getAllByText('Yakında').length).toBeGreaterThan(0);
+  });
+
+  it('son kullanılanlar varsa dinamik olarak alt menüde listelenir', () => {
+    renderShell();
+    act(() => {
+      recentFiles.add('/proje/main.ts');
+      recentFiles.add('/proje/util.ts');
+      menuModel.openAt(0);
+      menuModel.setActiveItem(5);
+      menuModel.activate();
+    });
+    expect(screen.getByText('main.ts')).toBeInTheDocument();
+    expect(screen.getByText('util.ts')).toBeInTheDocument();
+    expect(screen.queryByText('Kayıt Yok')).not.toBeInTheDocument();
   });
 });

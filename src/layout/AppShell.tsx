@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'r
 import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
+import { recentFiles } from '../core/recentFiles';
 import { useTabsState } from '../core/tabs';
 import { MenuBar } from '../menus/MenuBar';
 import { CommandHUD } from '../ui/CommandHUD';
@@ -33,6 +34,7 @@ export function AppShell({
   const exitPending = useExitPending();
   const { tabs, activeId } = useTabsState();
   useIpcLifecycle(window.api);
+  useEffect(() => recentFiles.attach(window.localStorage), []);
   useEffect(() => core.controller.attach(window), [core]);
 
   const activeFile = tabs.find((tab) => tab.id === activeId)?.file ?? null;

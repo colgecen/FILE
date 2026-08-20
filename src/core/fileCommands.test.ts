@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Api } from '../../electron/shared/api-types';
 import { CommandRegistry } from './commands';
-import { adoptFile, registerFileCommands, runOpenFile } from './fileCommands';
+import { adoptFile, registerFileCommands, runOpenFile, runOpenRecent } from './fileCommands';
 import { openFilesModel } from './openFiles';
 import { recentFiles } from './recentFiles';
 import { tabsModel } from './tabs';
@@ -45,5 +45,34 @@ describe('dosya açma akışı', () => {
     const registry = new CommandRegistry();
     registerFileCommands(registry.register.bind(registry));
     expect(registry.get('file.open.file')).toBeDefined();
+  });
+
+  it('son kullanılan dosyayı okur ve sekte açar', async () => {
+    recentFiles.add('/gecici/x.txt');
+    const api = {
+      readFile: vi.fn().mockResolvedValue({ path: '/gecici/x.txt', name: 'x.txt', content: 'z', language: 'text' }),
+    } satisfies Pick<Api, 'readFile'>;
+
+    const result = await runOpenRecent(api, 0);
+
+    expect(result).toEqual({ ok: true });
+    expect(tabsModel.getState().tabs.map((tab) => tab.id)).toContain('/gecici/x.txt');
+  });
+
+  it('son kullanılan dosya okunamazsa listeden çıkarılır ve hata döner', async () => {
+    recentFiles.add('/kayip/y.txt');
+    const api = { readFile: vi.fn().mockResolvedValue(null) } satisfies Pick<Api, 'readFile'>;
+
+    const result = await runOpenRecent(api, 0);
+
+    expect(result).toEqual({ ok: false, error: 'Dosya okunamadı' });
+    expect(recentFiles.list().map((entry) => entry.path)).not.toContain('/kayip/y.txt');
+  });
+
+  it('beş son kullanılan komutu kaydeder', () => {
+    const registry = new CommandRegistry();
+    registerFileCommands(registry.register.bind(registry));
+    expect(registry.get('file.open.recent.0')).toBeDefined();
+    expect(registry.get('file.open.recent.4')).toBeDefined();
   });
 });

@@ -322,7 +322,7 @@
 
 - [x] Dosya açma akışı: dialog → `fs:read-file` → sekte/model; hatalar merkezî gösterime
     - Commit: `feat: dosya acma akisini ekle`
-- [ ] Son Kullanılanlar listesi: kalıcı depo, menüden erişim
+- [x] Son Kullanılanlar listesi: kalıcı depo, menüden erişim
     - Commit: `feat: son kullanilanlar listesini ekle`
 - [ ] Kaydet / Kaydet As / Tümünü Kaydet + `:w` palet komutu; kirli işareti temizlenir
     - Commit: `feat: kaydetme komutlarini ekle`

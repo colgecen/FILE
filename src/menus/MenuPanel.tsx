@@ -1,11 +1,26 @@
 import { useCore } from '../layout/AppShell';
+import { recentFiles } from '../core/recentFiles';
 import { menuModel, selectableIndexOfItems, useMenuModelState } from './menuModel';
 
 export function MenuPanel({ level = 0 }: { level?: number }): React.JSX.Element {
   const state = useMenuModelState();
   const { registry } = useCore();
   if (state.openTop === null) return <></>;
-  const items = menuModel.itemsAt(state.path.slice(0, level));
+  let items = menuModel.itemsAt(state.path.slice(0, level));
+  if (level === 1 && state.path[0] !== undefined) {
+    const topItem = menuModel.itemsAt([])[state.path[0]];
+    if (topItem?.kind === 'submenu' && topItem.id === 'file.open.recent') {
+      const recent = recentFiles.list().slice(0, 5);
+      if (recent.length > 0) {
+        items = recent.map((entry, index) => ({
+          kind: 'command' as const,
+          id: `file.open.recent.item.${index}`,
+          commandId: `file.open.recent.${index}`,
+          label: entry.name,
+        }));
+      }
+    }
+  }
   const openSubLevel = state.path[level];
 
   const children = items.map((item, realIndex) => {
