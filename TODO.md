@@ -375,7 +375,7 @@
     - Commit: `feat: ai worker mimarisini kur`
 - [x] AI menü kataloğu: sohbet, satır içi tamamlama, kodu açıkla
     - Commit: `feat: ai menu katalogunu tanimla`
-- [ ] Model seçimi + durum yönetimi (model listesi, aktif model)
+- [x] Model seçimi + durum yönetimi (model listesi, aktif model)
     - Commit: `feat: model secimi ve durum yonetimini ekle`
 - [ ] Model indirme akışı: ilerleme, iptal, hata yönetimi
     - Commit: `feat: model indirme akisini ekle`

@@ -149,6 +149,11 @@ export function registerNavCommands(registry: CommandRegistry): void {
         tabsModel.activate(item.filePath);
         return { ok: true };
       }
+      if (item.modelId !== undefined) {
+        const { selectModel } = await import('../ai/aiCommands');
+        selectModel(item.modelId as Parameters<typeof selectModel>[0]);
+        return { ok: true };
+      }
       await registry.run(item.commandId);
       return { ok: true };
     },

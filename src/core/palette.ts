@@ -13,6 +13,7 @@ export type PaletteItem = {
   readonly filePath?: string;
   readonly bookmark?: Bookmark;
   readonly history?: HistoryEntry;
+  readonly modelId?: string;
 };
 
 export type PaletteState = {
@@ -59,6 +60,20 @@ export class PaletteModel {
         title: file.name,
         category: 'file',
         filePath: file.path,
+      })),
+      activeIndex: 0,
+    };
+    this.emit();
+  }
+
+  showModels(models: readonly { readonly id: string; readonly name: string }[]): void {
+    this.state = {
+      query: '',
+      items: models.map((model) => ({
+        commandId: 'ai.model.select',
+        title: model.name,
+        category: 'model',
+        modelId: model.id,
       })),
       activeIndex: 0,
     };

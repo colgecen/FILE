@@ -86,6 +86,15 @@ export class AIEngine {
     });
   }
 
+  appendSystemMessage(content: string): void {
+    this.patch({
+      chat: {
+        ...this.state.chat,
+        messages: [...this.state.chat.messages, { role: 'system', content }],
+      },
+    });
+  }
+
   async generate(request: CompletionRequest): Promise<string> {
     const modelId = this.state.modelId;
     if (modelId === null) {

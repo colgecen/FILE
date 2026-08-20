@@ -2,9 +2,13 @@ import { aiEngine } from './engine';
 import { aiChatModel } from '../core/chatModel';
 import { focusManager } from '../core/focus';
 import { getActiveEditor } from '../editor/activeEditor';
+import { paletteModel } from '../core/palette';
 import { buildPrompt } from './prompt';
-import { DEFAULT_MODEL } from './models';
+import { statusLabel } from './format';
+import { MODEL_LIST, modelName } from './models';
+import { loadActiveModel, saveActiveModel } from './modelStore';
 import type { CommandDef } from '../core/types';
+import type { ModelId } from './types';
 
 const MAX_CONTEXT_MESSAGES = 6;
 
@@ -21,7 +25,7 @@ function editorSourceText(): string | null {
 }
 
 async function runAssistant(instruction: string): Promise<void> {
-  const modelId = aiEngine.getState().modelId ?? DEFAULT_MODEL;
+  const modelId = aiEngine.getState().modelId ?? loadActiveModel();
   aiEngine.appendUserMessage(instruction);
   aiChatModel.open();
   try {
@@ -39,7 +43,52 @@ async function runAssistant(instruction: string): Promise<void> {
   }
 }
 
+export async function setActiveModel(modelId: ModelId): Promise<boolean> {
+  try {
+    await aiEngine.ensureModel(modelId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    aiEngine.setError(message);
+    return false;
+  }
+  saveActiveModel(modelId);
+  aiEngine.appendSystemMessage(`Model: ${modelName(modelId)} (${statusLabel('idle')})`);
+  return true;
+}
+
+export function selectModel(modelId: ModelId): void {
+  void setActiveModel(modelId);
+}
+
 export function registerAICommands(register: (command: CommandDef) => void): void {
+  register({
+    id: 'ai.model.select',
+    category: 'ai',
+    title: 'Model Seç',
+    run: () => {
+      paletteModel.showModels(MODEL_LIST);
+      focusManager.set('palette');
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.model.status',
+    category: 'ai',
+    title: 'Model Durumu',
+    run: () => {
+      const state = aiEngine.getState();
+      const model = state.modelId === null ? null : modelName(state.modelId);
+      aiEngine.appendSystemMessage(
+        model === null
+          ? 'Model seçilmedi. "Yapay Zekâ → Model Seç" ile başlayın.'
+          : `Model: ${model} — ${statusLabel(state.status)}`,
+      );
+      aiChatModel.open();
+      return { ok: true };
+    },
+  });
+
   register({
     id: 'ai.chat',
     category: 'ai',
