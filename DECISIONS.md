@@ -86,10 +86,11 @@ Format: **Durum** — Bağlam — Karar — Sonuçlar.
 
 ## D-012 Terminal: xterm.js + node-pty (ileri faz)
 
-- **Durum:** Kabul edildi (gerçekleştirme ileri fazda)
+- **Durum:** Kabul edildi (gerçekleştirme 2026-08-20 — kullanıcı onayıyla başladı)
 - **Bağlam:** Emacs tarzı terminal özellikleri (yeni/split terminal, görev çalıştırma) terminal çekirdeği gerektirir.
 - **Karar:** Görünüm `xterm.js`, arka uç `node-pty` (Main Process). Node-pty native bir modül olduğundan `@electron/rebuild` ile Electron ABI'sına derlenir.
 - **Sonuçlar:** Terminal, native modül derleme iş hattını da beraberinde getirir; önceki fazlarda terminal menüsü yer tutucudur.
+- **Uygulama notu (2026-08-20):** Geliştirme ortamında derleyici (make/g++) ve paket yöneticisi (sudo/apt) bulunmadığından kaynaktan derleme yapılamaz; bunun yerine kullanıcı onayıyla `@homebridge/node-pty-prebuilt-multiarch` kullanılır (Electron ABI v130 için ön derlemeli binary, aynı node-pty API'si). Kurallar ve bağımlılık listesi aynı kalır; adresleme VSZ API yüzeyinde değişmez.
 
 ## D-013 Yerel yapay zekâ: kontrat önce, motor sonra
 
