@@ -12,6 +12,8 @@ const api = vi.hoisted(() => ({
   dispose: vi.fn(),
   defineTheme: vi.fn(),
   setTheme: vi.fn(),
+  onDidChangeCursorPosition: vi.fn(),
+  getScrolledVisiblePosition: vi.fn(),
 }));
 
 vi.mock('./monacoSetup', () => ({
@@ -30,7 +32,12 @@ vi.mock('./monacoSetup', () => ({
   },
 }));
 
-const editorInstance = { dispose: api.dispose, setModel: api.setModel };
+const editorInstance = {
+  dispose: api.dispose,
+  setModel: api.setModel,
+  onDidChangeCursorPosition: api.onDidChangeCursorPosition,
+  getScrolledVisiblePosition: api.getScrolledVisiblePosition,
+};
 
 const file: OpenFile = {
   path: '/belge/dosya.ts',
@@ -49,6 +56,9 @@ beforeEach(() => {
   api.dispose.mockReset();
   api.defineTheme.mockReset();
   api.setTheme.mockReset();
+  api.onDidChangeCursorPosition.mockReset();
+  api.onDidChangeCursorPosition.mockImplementation(() => ({ dispose: () => undefined }));
+  api.getScrolledVisiblePosition.mockReset();
 });
 
 describe('EditorCore', () => {
@@ -112,5 +122,33 @@ describe('EditorCore', () => {
     const { unmount } = render(<EditorCore file={file} />);
     unmount();
     expect(api.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it('imleç konumu değişince sönümlenen iz işareti çizer', () => {
+    const cursor = {
+      current: null as ((event: unknown) => void) | null,
+    };
+    api.onDidChangeCursorPosition.mockImplementation((fn: (event: unknown) => void) => {
+      cursor.current = fn;
+      return { dispose: () => undefined };
+    });
+    api.getScrolledVisiblePosition.mockReturnValue({ left: 40, top: 12, height: 20 });
+    const { container } = render(<EditorCore file={file} />);
+    cursor.current?.({ position: {} });
+    expect(container.querySelectorAll('.editor-trail__mark')).toHaveLength(1);
+  });
+
+  it('görünür konum yoksa iz işareti çizmez', () => {
+    const cursor = {
+      current: null as ((event: unknown) => void) | null,
+    };
+    api.onDidChangeCursorPosition.mockImplementation((fn: (event: unknown) => void) => {
+      cursor.current = fn;
+      return { dispose: () => undefined };
+    });
+    api.getScrolledVisiblePosition.mockReturnValue(null);
+    const { container } = render(<EditorCore file={file} />);
+    cursor.current?.({ position: {} });
+    expect(container.querySelectorAll('.editor-trail__mark')).toHaveLength(0);
   });
 });

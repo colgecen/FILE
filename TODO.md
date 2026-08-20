@@ -267,7 +267,7 @@
 ### 6.3 İmleç ve iz efekti
 - [x] İçi boş blok imleç (`block-outline`) + `cursorSmoothCaretAnimation`
     - Commit: `feat: blok imlec ayarini ekle`
-- [ ] Sönümlenen mavi iz: editör overlay katmanı (düşük maliyetli çizim)
+- [x] Sönümlenen mavi iz: editör overlay katmanı (düşük maliyetli çizim)
     - Commit: `feat: imlec iz efektini ekle`
 
 ### 6.4 Sekme ve model yönetimi

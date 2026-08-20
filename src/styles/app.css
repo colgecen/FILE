@@ -39,6 +39,29 @@ body,
   inset: 0;
 }
 
+.editor-core__trail {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.editor-trail__mark {
+  position: absolute;
+  left: var(--trail-x);
+  top: var(--trail-y);
+  width: 2px;
+  height: var(--trail-h);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  opacity: 0.8;
+  transition: opacity 320ms ease-out;
+}
+
+.editor-trail__mark--fade {
+  opacity: 0;
+}
+
 .editor-core__placeholder {
   position: absolute;
   inset: 0;
