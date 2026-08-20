@@ -12,6 +12,8 @@ const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   fontLigatures: true,
   fontSize: 13,
   lineHeight: 20,
+  cursorStyle: 'block-outline',
+  cursorSmoothCaretAnimation: 'on',
 };
 
 export function EditorCore({ file }: { readonly file: OpenFile | null }): React.JSX.Element {

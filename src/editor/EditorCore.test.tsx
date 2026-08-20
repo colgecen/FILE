@@ -72,6 +72,13 @@ describe('EditorCore', () => {
     expect(options.fontFamily).toContain('JetBrains Mono');
   });
 
+  it('içi boş blok imleç ve yumuşak hareket ayarlarını uygular', () => {
+    render(<EditorCore file={null} />);
+    const options = api.create.mock.calls[0]?.[1] as Record<string, unknown>;
+    expect(options.cursorStyle).toBe('block-outline');
+    expect(options.cursorSmoothCaretAnimation).toBe('on');
+  });
+
   it('dosya yokken yer tutucu gösterir ve modeli boşaltır', () => {
     render(<EditorCore file={null} />);
     expect(screen.getByText('Dosya seçin')).not.toBeNull();

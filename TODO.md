@@ -265,7 +265,7 @@
     - Commit: `feat: sozdizimi renklendirmesini ekle`
 
 ### 6.3 İmleç ve iz efekti
-- [ ] İçi boş blok imleç (`block-outline`) + `cursorSmoothCaretAnimation`
+- [x] İçi boş blok imleç (`block-outline`) + `cursorSmoothCaretAnimation`
     - Commit: `feat: blok imlec ayarini ekle`
 - [ ] Sönümlenen mavi iz: editör overlay katmanı (düşük maliyetli çizim)
     - Commit: `feat: imlec iz efektini ekle`
