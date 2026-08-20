@@ -283,7 +283,7 @@
     - Commit: `feat: duzenleme komutlarini bagla`
 - [x] Bul/değiştir (regexp destekli); uygulama içi arama yüzeyi
     - Commit: `feat: bul ve degistir komutlarini ekle`
-- [ ] Çoklu imleç/sütun-dikdörtgen seçim/yer imleri temel bağlamaları (tam akış Faz 11)
+- [x] Çoklu imleç/sütun-dikdörtgen seçim/yer imleri temel bağlamaları (tam akış Faz 11)
     - Commit: `feat: coklu secim ve yer imi temellerini ekle`
 
 ---

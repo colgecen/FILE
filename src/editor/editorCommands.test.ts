@@ -39,8 +39,14 @@ describe('editorCommands', () => {
     runEditorAction('edit.comment.toggle.block');
     runEditorAction('edit.find');
     runEditorAction('edit.replace');
+    runEditorAction('selection.select.all');
+    runEditorAction('selection.expand');
+    runEditorAction('selection.shrink');
+    runEditorAction('cursor.up');
+    runEditorAction('cursor.down');
+    runEditorAction('cursor.all');
 
-    expect(fake.focuses()).toBe(9);
+    expect(fake.focuses()).toBe(15);
     expect(fake.triggers).toEqual([
       { source: 'keyboard', action: 'undo', payload: null },
       { source: 'keyboard', action: 'redo', payload: null },
@@ -51,6 +57,12 @@ describe('editorCommands', () => {
       { source: 'keyboard', action: 'editor.action.blockComment', payload: null },
       { source: 'keyboard', action: 'actions.find', payload: null },
       { source: 'keyboard', action: 'editor.action.startFindReplaceAction', payload: null },
+      { source: 'keyboard', action: 'editor.action.selectAll', payload: null },
+      { source: 'keyboard', action: 'editor.action.smartSelect.expand', payload: null },
+      { source: 'keyboard', action: 'editor.action.smartSelect.shrink', payload: null },
+      { source: 'keyboard', action: 'editor.action.insertCursorAbove', payload: null },
+      { source: 'keyboard', action: 'editor.action.insertCursorBelow', payload: null },
+      { source: 'keyboard', action: 'editor.action.selectAllMatches', payload: null },
     ]);
   });
 
@@ -71,7 +83,7 @@ describe('editorCommands', () => {
     expect(runEditorAction('edit.undo')).toEqual({ ok: false, error: 'Düzenleyici etkin değil' });
   });
 
-  it('kayıt sırasında on düzenleme komutu tanımlar', () => {
+  it('kayıt sırasında on altı düzenleme/yer imi komutu tanımlar', () => {
     const ids: string[] = [];
     registerEditCommands((command) => ids.push(command.id));
     expect(ids).toEqual([
@@ -85,6 +97,37 @@ describe('editorCommands', () => {
       'edit.find',
       'edit.replace',
       'edit.replace.regexp',
+      'selection.select.all',
+      'selection.expand',
+      'selection.shrink',
+      'cursor.up',
+      'cursor.down',
+      'cursor.all',
+      'selection.column',
+      'selection.rectangular',
+      'bookmark.toggle',
+      'bookmark.jump',
+      'bookmark.list',
+    ]);
+  });
+
+  it('sütun modu ve yer imi komutlarını yer tutucu olarak tanımlar', () => {
+    const placeholders: Array<{ id: string; category: string; placeholder: boolean | undefined }> = [];
+    registerEditCommands((command) => {
+      if (command.placeholder === true) {
+        placeholders.push({
+          id: command.id,
+          category: command.category,
+          placeholder: command.placeholder,
+        });
+      }
+    });
+    expect(placeholders).toEqual([
+      { id: 'selection.column', category: 'selection', placeholder: true },
+      { id: 'selection.rectangular', category: 'selection', placeholder: true },
+      { id: 'bookmark.toggle', category: 'go', placeholder: true },
+      { id: 'bookmark.jump', category: 'go', placeholder: true },
+      { id: 'bookmark.list', category: 'go', placeholder: true },
     ]);
   });
 });
