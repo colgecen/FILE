@@ -326,7 +326,7 @@
     - Commit: `feat: son kullanilanlar listesini ekle`
 - [x] Kaydet / Kaydet As / Tümünü Kaydet + `:w` palet komutu; kirli işareti temizlenir
     - Commit: `feat: kaydetme komutlarini ekle`
-- [ ] Kaydetme geri bildirimi: pencere çerçevesinde kısa mavi glow animasyonu
+- [x] Kaydetme geri bildirimi: pencere çerçevesinde kısa mavi glow animasyonu
     - Commit: `feat: kaydetme isigi efektini ekle`
 - [ ] Hata geri bildirimi: ilgili panel çerçevesi kırmızı yanıp söner + durum çubuğu rozeti
     - Commit: `feat: hata geribildirim efektini ekle`

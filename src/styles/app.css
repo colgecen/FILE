@@ -21,6 +21,19 @@ body,
   background: var(--bg-base);
 }
 
+.app-shell--saved {
+  animation: saved-glow 600ms ease-out;
+}
+
+@keyframes saved-glow {
+  from {
+    box-shadow: 0 0 0 var(--accent);
+  }
+  to {
+    box-shadow: 0 0 14px var(--accent);
+  }
+}
+
 .app-shell__tabbar {
   display: flex;
   flex-direction: column;

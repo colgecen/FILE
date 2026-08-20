@@ -3,6 +3,7 @@ import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
 import { recentFiles } from '../core/recentFiles';
+import { useSaveFlash } from '../core/saveSignal';
 import { useTabsState } from '../core/tabs';
 import { MenuBar } from '../menus/MenuBar';
 import { CommandHUD } from '../ui/CommandHUD';
@@ -33,12 +34,15 @@ export function AppShell({
   const core = useMemo(() => createCore(), []);
   const exitPending = useExitPending();
   const { tabs, activeId } = useTabsState();
+  const savedFlash = useSaveFlash();
   useIpcLifecycle(window.api);
   useEffect(() => recentFiles.attach(window.localStorage), []);
   useEffect(() => core.controller.attach(window), [core]);
 
   const activeFile = tabs.find((tab) => tab.id === activeId)?.file ?? null;
-  const className = glass ? 'app-shell glass' : 'app-shell';
+  const className = ['app-shell', savedFlash ? 'app-shell--saved' : '', glass ? 'glass' : '']
+    .filter(Boolean)
+    .join(' ');
   return (
     <CoreContext.Provider value={core}>
       <div className={className}>

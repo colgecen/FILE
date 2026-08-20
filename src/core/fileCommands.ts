@@ -3,6 +3,7 @@ import { reportError } from './appErrors';
 import { dirtyTracker } from './dirty';
 import { openFilesModel } from './openFiles';
 import { recentFiles } from './recentFiles';
+import { saveSignal } from './saveSignal';
 import { tabsModel } from './tabs';
 import type { CommandDef, CommandResult } from './types';
 
@@ -26,6 +27,7 @@ export async function runSave(
     return { ok: false, error: result.error ?? 'Dosya kaydedilemedi' };
   }
   dirtyTracker.clearDirty(path);
+  saveSignal.emit();
   return { ok: true };
 }
 
