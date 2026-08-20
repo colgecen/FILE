@@ -290,7 +290,7 @@
 
 ## Faz 7 — Panel Yönetimi / PaneManager (5 commit)
 
-- [ ] PaneManager iskelet: ızgara düzeni, aktif panel takibi, EditorCore render
+- [x] PaneManager iskelet: ızgara düzeni, aktif panel takibi, EditorCore render
     - Commit: `feat: panel yoneticisi iskeletini kur`
 - [ ] Dikey bölme komutu (View menüsü, split vertical) çalışır durumda
     - Commit: `feat: dikey bolme komutunu ekle`

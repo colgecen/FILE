@@ -1,0 +1,40 @@
+.pane-manager {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pane-split {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pane-split--vertical {
+  flex-direction: row;
+}
+
+.pane-split--horizontal {
+  flex-direction: column;
+}
+
+.pane {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  background: var(--bg-editor);
+}
+
+.pane-split--vertical .pane + .pane {
+  border-left: 1px solid var(--border);
+}
+
+.pane-split--horizontal .pane + .pane {
+  border-top: 1px solid var(--border);
+}

@@ -3,12 +3,12 @@ import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
 import { useTabsState } from '../core/tabs';
-import { EditorCore } from '../editor/EditorCore';
 import { MenuBar } from '../menus/MenuBar';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 import { ExplorerView } from '../ui/ExplorerView';
+import { PaneManager } from '../ui/PaneManager';
 import { TabBar } from '../ui/TabBar';
 
 const CoreContext = createContext<Core | null>(null);
@@ -55,7 +55,7 @@ export function AppShell({
         </div>
         <div className="app-shell__workspace">
           <ExplorerView />
-          <EditorCore file={activeFile} />
+          <PaneManager file={activeFile} />
           {children}
         </div>
       </div>
