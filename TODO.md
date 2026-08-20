@@ -275,7 +275,7 @@
     - Commit: `feat: sekme durumlarini ekle`
 - [x] LRU üst sınır: açık model sayısı sınırlanır, en az kullanılan geri yazılır (ARCHITECTURE 6.3)
     - Commit: `feat: model bellek sinirini ekle`
-- [ ] İmleç satır/sütun olayları → StatusBar'a akış
+- [x] İmleç satır/sütun olayları → StatusBar'a akış
     - Commit: `feat: imlec konum olaylarini ekle`
 
 ### 6.5 Editör komutları (Keymap → editor)

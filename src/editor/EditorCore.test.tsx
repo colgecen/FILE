@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
@@ -69,6 +70,7 @@ beforeEach(() => {
   api.onDidChangeModelContent.mockImplementation(() => ({ dispose: () => undefined }));
   api.editorGetModel.mockReset();
   dirtyTracker.clearDirty(file.path);
+  cursorModel.reset();
 });
 
 describe('EditorCore', () => {
@@ -143,6 +145,7 @@ describe('EditorCore', () => {
       return { dispose: () => undefined };
     });
     api.getScrolledVisiblePosition.mockReturnValue({ left: 40, top: 12, height: 20 });
+    api.editorGetModel.mockReturnValue({ uri: { path: file.path } });
     const { container } = render(<EditorCore file={file} />);
     cursor.current?.({ position: {} });
     expect(container.querySelectorAll('.editor-trail__mark')).toHaveLength(1);
@@ -157,9 +160,27 @@ describe('EditorCore', () => {
       return { dispose: () => undefined };
     });
     api.getScrolledVisiblePosition.mockReturnValue(null);
+    api.editorGetModel.mockReturnValue({ uri: { path: file.path } });
     const { container } = render(<EditorCore file={file} />);
     cursor.current?.({ position: {} });
     expect(container.querySelectorAll('.editor-trail__mark')).toHaveLength(0);
+  });
+
+  it('imleç konumu değişince konum modelini günceller', () => {
+    const cursor = {
+      current: null as ((event: { position: { lineNumber: number; column: number } }) => void) | null,
+    };
+    api.onDidChangeCursorPosition.mockImplementation(
+      (fn: (event: { position: { lineNumber: number; column: number } }) => void) => {
+        cursor.current = fn;
+        return { dispose: () => undefined };
+      },
+    );
+    api.editorGetModel.mockReturnValue({ uri: { path: file.path } });
+    api.getScrolledVisiblePosition.mockReturnValue(null);
+    render(<EditorCore file={file} />);
+    cursor.current?.({ position: { lineNumber: 5, column: 3 } });
+    expect(cursorModel.getState()).toEqual({ path: file.path, line: 5, column: 3 });
   });
 
   it('içerik değişince dosyayı kirli işaretler ve içeriği günceller', () => {

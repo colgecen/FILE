@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
@@ -47,15 +48,17 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     const editor = monaco.editor.create(host, BASE_OPTIONS);
     editorRef.current = editor;
     const trailHost = trailHostRef.current;
-    const cursorDisposable =
-      trailHost === null
-        ? null
-        : editor.onDidChangeCursorPosition((event) => {
-            const box = editor.getScrolledVisiblePosition(event.position);
-            if (box !== null) {
-              spawnTrail(trailHost, box);
-            }
-          });
+    const cursorDisposable = editor.onDidChangeCursorPosition((event) => {
+      const model = editor.getModel();
+      if (model === null) return;
+      cursorModel.update(model.uri.path, event.position.lineNumber, event.position.column);
+      if (trailHost !== null) {
+        const box = editor.getScrolledVisiblePosition(event.position);
+        if (box !== null) {
+          spawnTrail(trailHost, box);
+        }
+      }
+    });
     const contentDisposable = editor.onDidChangeModelContent(() => {
       const model = editor.getModel();
       if (model === null) return;
@@ -67,7 +70,7 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       }
     });
     return () => {
-      cursorDisposable?.dispose();
+      cursorDisposable.dispose();
       contentDisposable.dispose();
       editor.dispose();
       editorRef.current = null;
