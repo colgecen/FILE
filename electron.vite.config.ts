@@ -8,7 +8,13 @@ export default defineConfig({
     build: {
       outDir: 'out/main',
       rollupOptions: {
-        input: { index: resolve(__dirname, 'electron/main/index.ts') },
+        input: {
+          index: resolve(__dirname, 'electron/main/index.ts'),
+          'pty-helper': resolve(__dirname, 'electron/main/pty/helper.ts'),
+        },
+        output: {
+          entryFileNames: '[name].js',
+        },
       },
     },
   },

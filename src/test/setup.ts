@@ -17,6 +17,8 @@ const api = {
   appExit: vi.fn().mockResolvedValue(undefined),
 };
 
-Object.defineProperty(window, 'api', { value: api, configurable: true });
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'api', { value: api, configurable: true });
+}
 
 afterEach(cleanup);

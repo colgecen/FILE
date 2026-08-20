@@ -1,12 +1,15 @@
 import { app, BrowserWindow } from 'electron';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { spawn } from 'node:child_process';
 import { registerAppHandlers } from './appHandlers';
 import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
 import { registerTelemetry } from './telemetry';
 import { registerWindowHandlers } from './windowHandlers';
+import { createPtyManager, type PtySpawnFn } from './pty/manager';
+import { registerPtyIpc } from './pty/ipc';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,6 +21,7 @@ const DEV_RENDERER_URL = 'http://localhost:5173';
 const TRANSPARENT = process.env['TRANSPARENT'] === '1';
 
 let mainWindow: BrowserWindow | null = null;
+const ptyManager = createPtyManager(spawn as unknown as PtySpawnFn, join(__dirname, 'pty-helper.js'));
 
 function resolveRendererEntry(): { url?: string; file?: string } {
   if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
@@ -69,6 +73,8 @@ void app.whenReady().then((): void => {
   registerAppHandlers(getWindow);
   registerTelemetry(getWindow);
   registerWindowHandlers(getWindow);
+  registerPtyIpc(getWindow, ptyManager);
+  ptyManager.start();
 
   createMainWindow();
 
@@ -81,6 +87,7 @@ void app.whenReady().then((): void => {
 
 app.on('window-all-closed', (): void => {
   if (process.platform !== 'darwin') {
+    ptyManager.dispose();
     app.quit();
   }
 });

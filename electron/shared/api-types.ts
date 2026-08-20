@@ -36,6 +36,18 @@ export type WriteFileResult = {
   readonly path: string;
 };
 
+export type PtySpawnOptions = {
+  readonly cols: number;
+  readonly rows: number;
+  readonly cwd?: string;
+};
+
+export type PtyEvent = {
+  readonly id: string;
+  readonly data?: string;
+  readonly exitCode?: number;
+};
+
 export type Api = {
   readonly version: string;
   readonly glass: boolean;
@@ -51,4 +63,10 @@ export type Api = {
   onMetrics(listener: (snapshot: TelemetrySnapshot) => void): () => void;
   setFullscreen(enabled: boolean): Promise<boolean>;
   appExit(): Promise<void>;
+  ptySpawn(options: PtySpawnOptions): Promise<{ id: string } | null>;
+  ptyWrite(id: string, data: string): Promise<boolean>;
+  ptyResize(id: string, cols: number, rows: number): Promise<boolean>;
+  ptyKill(id: string): Promise<boolean>;
+  onPtyData(listener: (id: string, data: string) => void): () => void;
+  onPtyExit(listener: (id: string, exitCode: number) => void): () => void;
 };

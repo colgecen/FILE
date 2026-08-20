@@ -24,6 +24,28 @@ const api: Api = {
   },
   setFullscreen: (enabled) => ipcRenderer.invoke('window:set-fullscreen', enabled),
   appExit: () => ipcRenderer.invoke('app:exit'),
+  ptySpawn: (options) => ipcRenderer.invoke('pty:spawn', options),
+  ptyWrite: (id, data) => ipcRenderer.invoke('pty:write', id, data),
+  ptyResize: (id, cols, rows) => ipcRenderer.invoke('pty:resize', id, cols, rows),
+  ptyKill: (id) => ipcRenderer.invoke('pty:kill', id),
+  onPtyData: (listener) => {
+    const handler = (_event: unknown, id: string, data: string): void => {
+      listener(id, data);
+    };
+    ipcRenderer.on('pty:data', handler);
+    return () => {
+      ipcRenderer.removeListener('pty:data', handler);
+    };
+  },
+  onPtyExit: (listener) => {
+    const handler = (_event: unknown, id: string, exitCode: number): void => {
+      listener(id, exitCode);
+    };
+    ipcRenderer.on('pty:exit', handler);
+    return () => {
+      ipcRenderer.removeListener('pty:exit', handler);
+    };
+  },
 };
 
 export type WindowApi = typeof api;

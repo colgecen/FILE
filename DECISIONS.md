@@ -91,6 +91,7 @@ Format: **Durum** — Bağlam — Karar — Sonuçlar.
 - **Karar:** Görünüm `xterm.js`, arka uç `node-pty` (Main Process). Node-pty native bir modül olduğundan `@electron/rebuild` ile Electron ABI'sına derlenir.
 - **Sonuçlar:** Terminal, native modül derleme iş hattını da beraberinde getirir; önceki fazlarda terminal menüsü yer tutucudur.
 - **Uygulama notu (2026-08-20):** Geliştirme ortamında derleyici (make/g++) ve paket yöneticisi (sudo/apt) bulunmadığından kaynaktan derleme yapılamaz; bunun yerine kullanıcı onayıyla `@homebridge/node-pty-prebuilt-multiarch` kullanılır (Electron ABI v130 için ön derlemeli binary, aynı node-pty API'si). Kurallar ve bağımlılık listesi aynı kalır; adresleme VSZ API yüzeyinde değişmez.
+- **Uygulama notu 2 (2026-08-20):** Pakette yalnızca Node ABI prebuild'leri bulunduğundan (Electron 33 = ABI 130 için prebuild yok) kullanıcı kararıyla pty, **ayrı bir Node sürecinde (helper)** çalıştırılır: `out/main/pty-helper.js` Node ile spawn edilir (`PTY_NODE_BIN` ortam değişkeniyle seçilebilir), Main Process ile JSONL/stdin-stdout üzerinden haberleşir (`pty:spawn | pty:write | pty:resize | pty:kill` → `pty:data | pty:exit`). Böylece Electron ABI derleme ihtiyacı ortadan kalkar; prebuild Node ABI'sıyla eşleşmeyen Node sürümlerinde `node-gyp rebuild` fallback'i kullanılır.
 
 ## D-013 Yerel yapay zekâ: kontrat önce, motor sonra
 
