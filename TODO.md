@@ -7,7 +7,7 @@
 > İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor
 > Her görev bittiğinde kutucuklara tik atmayı unutma
 
-**Toplam planlanan commit: 140** (125. tamamlandı, 15. kaldı).
+**Toplam planlanan commit: 140** (131. tamamlandı; kalan: node-pty ertelemeleri 10.2–10.5 + Kullanıcı Kararı Bekleyenler).
 
 ---
 
@@ -384,7 +384,7 @@
 
 ---
 
-## Faz 13 — Test ve Parlatma (6 commit)
+## Faz 13 — Test ve Parlatma (6 commit · TAMAMLANDI)
 
 - [x] Komut paleti (Ctrl+I) end-to-end testleri; `tree` → gezgin açılış senaryosu
     - Commit: `test: komut paleti akislarini test et`
