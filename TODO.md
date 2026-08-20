@@ -394,7 +394,7 @@
     - Commit: `test: gezgin gezinme testlerini ekle`
 - [x] Dosya aç/kaydet testleri (IPC mock'ları ile)
     - Commit: `test: dosya akisi testlerini ekle`
-- [ ] `npm run typecheck` + `lint` + `build` tam zincir; hata yok, uyarı paketlenir
+- [x] `npm run typecheck` + `lint` + `build` tam zincir; hata yok, uyarı paketlenir
     - Commit: `chore: uretim paketini dogrula`
 - [ ] Electron başlatma doğrulaması: pencere açılır, telemetri itkisi gelir, kapanış temiz
     - Commit: `chore: electron baslatma dogrulamasini yap`
