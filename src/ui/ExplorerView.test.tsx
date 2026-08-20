@@ -164,6 +164,35 @@ describe('ExplorerView', () => {
     expect(explorerModel.getState().selectedPath).toBe('/proje');
   });
 
+  it('F3 klasörler arasında döngüsel gezinir, Shift+F3 geri döndürür', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      focusManager.set('explorer');
+    });
+    fireEvent.keyDown(window, { key: 'F3' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje/src');
+    fireEvent.keyDown(window, { key: 'F3' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje');
+    fireEvent.keyDown(window, { key: 'F3', shiftKey: true });
+    expect(explorerModel.getState().selectedPath).toBe('/proje/src');
+  });
+
+  it('F3 dosya seçimindeyken klasör kanalına atlar ve ileri sarar', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      explorerModel.select('/proje/src/main.ts');
+      focusManager.set('explorer');
+    });
+    fireEvent.keyDown(window, { key: 'F3' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje/src');
+    fireEvent.keyDown(window, { key: 'F3' });
+    expect(explorerModel.getState().selectedPath).toBe('/proje');
+  });
+
   it('Tab dosyalar arasında gezer, Shift+Tab geri döner', () => {
     render(<AppShell />);
     act(() => {

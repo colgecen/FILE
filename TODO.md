@@ -390,7 +390,7 @@
     - Commit: `test: komut paleti akislarini test et`
 - [x] F1 menü modeli testleri (klavye senaryoları: gezinme, kilit, Esc)
     - Commit: `test: menü modeli klavye testlerini ekle`
-- [ ] Gezgin gezinme testleri (F3/Tab/yön tuşları, Enter/Esc)
+- [x] Gezgin gezinme testleri (F3/Tab/yön tuşları, Enter/Esc)
     - Commit: `test: gezgin gezinme testlerini ekle`
 - [ ] Dosya aç/kaydet testleri (IPC mock'ları ile)
     - Commit: `test: dosya akisi testlerini ekle`
