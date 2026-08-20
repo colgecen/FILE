@@ -307,7 +307,7 @@
 
 - [x] StatusBar iskelet: siyah zemin, 1px vurgu mavisi üst sınır, Orbitron
     - Commit: `feat: durum cubugu iskeletini ciz`
-- [ ] Dosya adı + satır:sütun göstergesi (EditorCore olaylarıyla beslenir)
+- [x] Dosya adı + satır:sütun göstergesi (EditorCore olaylarıyla beslenir)
     - Commit: `feat: dosya bilgisi gostergesini ekle`
 - [ ] Git branch göstergesi (`git:branch` IPC; yoksa gizlenir)
     - Commit: `feat: git branch gostergesini ekle`
