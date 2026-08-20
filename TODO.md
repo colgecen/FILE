@@ -354,7 +354,7 @@
     - Commit: `feat: coklu imlec komutlarini ekle`
 - [x] Sütun modu / dikdörtgen seçim
     - Commit: `feat: sutun ve dikdortgen secimini ekle`
-- [ ] Yer imleri: aç/kapat, atla, liste (Go menüsü)
+- [x] Yer imleri: aç/kapat, atla, liste (Go menüsü)
     - Commit: `feat: yer imi komutlarini ekle`
 - [ ] Geri alma ağacı (Undo Tree) görünümü ve komutları
     - Commit: `feat: geri alma agaci komutlarini ekle`

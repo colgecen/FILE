@@ -1,4 +1,5 @@
 import { reportError } from './appErrors';
+import { registerBookmarkCommands } from './bookmarkCommands';
 import { CommandRegistry } from './commands';
 import { registerDefaultBindings } from './defaultBindings';
 import { registerExitCommands } from './exit';
@@ -40,6 +41,7 @@ export function createCore(): Core {
   registerPaneCommands(registry.register.bind(registry));
   registerFileCommands(registry.register.bind(registry));
   registerTerminalCommands(registry.register.bind(registry));
+  registerBookmarkCommands(registry.register.bind(registry));
   registerDefaultBindings(keymap);
   coreInstance = { registry, keymap, controller: new KeyboardController(keymap, registry) };
   return coreInstance;

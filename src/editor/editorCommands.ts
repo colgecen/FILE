@@ -26,11 +26,7 @@ const EDITOR_SEQUENCES: Partial<Record<EditActionId, readonly string[]>> = {
   'edit.replace.regexp': ['editor.action.startFindReplaceAction', 'toggleFindRegex'],
 };
 
-const PLACEHOLDER_COMMANDS: ReadonlyArray<[string, string, CommandCategory]> = [
-  ['bookmark.toggle', 'Yer İmi Aç/Kapat', 'go'],
-  ['bookmark.jump', 'Yer İmine Atla', 'go'],
-  ['bookmark.list', 'Yer İmi Listesi', 'go'],
-];
+const PLACEHOLDER_COMMANDS: ReadonlyArray<[string, string, CommandCategory]> = [];
 
 export type EditActionId = keyof typeof EDITOR_ACTIONS | 'edit.replace.regexp';
 

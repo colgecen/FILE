@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { bookmarkModel } from '../core/bookmarks';
 import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { tabsModel } from '../core/tabs';
@@ -33,6 +34,7 @@ const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   lineHeight: 20,
   cursorStyle: 'block-outline',
   cursorSmoothCaretAnimation: 'on',
+  glyphMargin: true,
 };
 
 export function EditorCore({ file }: { readonly file: OpenFile | null }): React.JSX.Element {
@@ -71,9 +73,25 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
         dirtyTracker.markDirty(path);
       }
     });
+    const renderBookmarks = (): void => {
+      const model = editor.getModel();
+      if (model === null) return;
+      const decorations = bookmarkModel
+        .list()
+        .filter((bookmark) => bookmark.path === model.uri.path)
+        .map((bookmark) => ({
+          range: new monaco.Range(bookmark.line, 1, bookmark.line, 1),
+          options: { glyphMarginClassName: 'editor-bookmark-glyph' },
+        }));
+      editor.deltaDecorations([], decorations);
+    };
+    const bookmarkDisposable = bookmarkModel.subscribe(renderBookmarks);
+    const modelDisposable = editor.onDidChangeModel(renderBookmarks);
     return () => {
       cursorDisposable.dispose();
       contentDisposable.dispose();
+      bookmarkDisposable();
+      modelDisposable.dispose();
       editor.dispose();
       if (editorRef.current === editor) {
         editorRef.current = null;

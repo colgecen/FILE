@@ -1,4 +1,5 @@
 import type { CommandRegistry } from './commands';
+import { gotoBookmark } from './bookmarkNav';
 import { explorerModel } from './explorer';
 import { focusManager } from './focus';
 import { menuModel } from '../menus/menuModel';
@@ -135,6 +136,10 @@ export function registerNavCommands(registry: CommandRegistry): void {
       if (item === undefined) return { ok: false, error: 'Seçilecek komut yok' };
       paletteModel.reset(registry.list());
       focusManager.returnToPrevious();
+      if (item.bookmark !== undefined) {
+        gotoBookmark(item.bookmark);
+        return { ok: true };
+      }
       await registry.run(item.commandId);
       return { ok: true };
     },

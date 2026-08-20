@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { Bookmark } from './bookmarks';
 import { fuzzyScore } from './fuzzy';
 import { openFilesModel, type OpenFileRef } from './openFiles';
 import type { CommandDef } from './types';
@@ -9,6 +10,7 @@ export type PaletteItem = {
   readonly category: string;
   readonly keys?: string;
   readonly filePath?: string;
+  readonly bookmark?: Bookmark;
 };
 
 export type PaletteState = {
@@ -35,6 +37,15 @@ export class PaletteModel {
   reset(commands: readonly CommandDef[]): void {
     this.state = { query: '', items: this.buildItems(commands, ''), activeIndex: 0 };
     this.emit();
+  }
+
+  showBookmarks(bookmarks: readonly PaletteItem[]): void {
+    this.state = { query: '', items: bookmarks, activeIndex: 0 };
+    this.emit();
+  }
+
+  activeBookmark(): Bookmark | undefined {
+    return this.state.items[this.state.activeIndex]?.bookmark;
   }
 
   setQuery(query: string, commands: readonly CommandDef[]): void {

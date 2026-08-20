@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { bookmarkModel } from '../core/bookmarks';
 import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { tabsModel } from '../core/tabs';
@@ -19,6 +20,9 @@ const api = vi.hoisted(() => ({
   getScrolledVisiblePosition: vi.fn(),
   onDidChangeModelContent: vi.fn(),
   editorGetModel: vi.fn(),
+  onDidChangeModel: vi.fn(),
+  deltaDecorations: vi.fn(),
+  Range: vi.fn((startLine, startCol, endLine, endCol) => ({ startLine, startCol, endLine, endCol })),
 }));
 
 vi.mock('./monacoSetup', () => ({
@@ -33,6 +37,7 @@ vi.mock('./monacoSetup', () => ({
       createModel: api.createModel,
       defineTheme: api.defineTheme,
       setTheme: api.setTheme,
+      Range: api.Range,
     },
   },
 }));
@@ -44,6 +49,8 @@ const editorInstance = {
   getScrolledVisiblePosition: api.getScrolledVisiblePosition,
   getModel: api.editorGetModel,
   onDidChangeModelContent: api.onDidChangeModelContent,
+  onDidChangeModel: api.onDidChangeModel,
+  deltaDecorations: api.deltaDecorations,
 };
 
 const file: OpenFile = {
@@ -69,6 +76,12 @@ beforeEach(() => {
   api.onDidChangeModelContent.mockReset();
   api.onDidChangeModelContent.mockImplementation(() => ({ dispose: () => undefined }));
   api.editorGetModel.mockReset();
+  api.onDidChangeModel.mockReset();
+  api.onDidChangeModel.mockImplementation(() => ({ dispose: () => undefined }));
+  api.deltaDecorations.mockReset();
+  api.deltaDecorations.mockReturnValue([]);
+  api.Range.mockReset();
+  bookmarkModel.reset();
   dirtyTracker.clearDirty(file.path);
   cursorModel.reset();
 });

@@ -87,7 +87,7 @@ describe('editorCommands', () => {
     expect(runEditorAction('edit.undo')).toEqual({ ok: false, error: 'Düzenleyici etkin değil' });
   });
 
-  it('kayıt sırasında on altı düzenleme/yer imi komutu tanımlar', () => {
+  it('kayıt sırasında on sekiz düzenleme komutu tanımlar', () => {
     const ids: string[] = [];
     registerEditCommands((command) => ids.push(command.id));
     expect(ids).toEqual([
@@ -109,27 +109,16 @@ describe('editorCommands', () => {
       'cursor.all',
       'selection.column',
       'selection.rectangular',
-      'bookmark.toggle',
-      'bookmark.jump',
-      'bookmark.list',
     ]);
   });
 
-  it('yalnız yer imi komutlarını yer tutucu olarak tanımlar', () => {
-    const placeholders: Array<{ id: string; category: string; placeholder: boolean | undefined }> = [];
+  it('yer tutucu komut tanımlamaz', () => {
+    const placeholders: string[] = [];
     registerEditCommands((command) => {
       if (command.placeholder === true) {
-        placeholders.push({
-          id: command.id,
-          category: command.category,
-          placeholder: command.placeholder,
-        });
+        placeholders.push(command.id);
       }
     });
-    expect(placeholders).toEqual([
-      { id: 'bookmark.toggle', category: 'go', placeholder: true },
-      { id: 'bookmark.jump', category: 'go', placeholder: true },
-      { id: 'bookmark.list', category: 'go', placeholder: true },
-    ]);
+    expect(placeholders).toEqual([]);
   });
 });
