@@ -34,6 +34,7 @@ export type AIWorkerInit = {
 };
 export type AIWorkerGenerate = {
   readonly type: 'generate';
+  readonly modelId: ModelId;
   readonly request: CompletionRequest;
 };
 export type AIWorkerMessage = AIWorkerInit | AIWorkerGenerate;

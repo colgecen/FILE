@@ -371,7 +371,7 @@
 
 - [x] AI kontrat tipleri: `AIStatus`, `ModelInfo`, `ChatMessage`, tamamlama istekleri
     - Commit: `feat: ai kontrat tiplerini tanimla`
-- [ ] Worker mimarisi: ağır işlemler izole worker'da (contextIsolation kuralı korunur)
+- [x] Worker mimarisi: ağır işlemler izole worker'da (contextIsolation kuralı korunur)
     - Commit: `feat: ai worker mimarisini kur`
 - [ ] AI menü kataloğu: sohbet, satır içi tamamlama, kodu açıkla
     - Commit: `feat: ai menu katalogunu tanimla`
