@@ -29,6 +29,11 @@ export class TelemetryStore {
     void windowApi.sysStop();
   }
 
+  reset(): void {
+    this.latest = null;
+    this.lastEmittedAt = 0;
+  }
+
   getLatest(): TelemetrySnapshot | null {
     return this.latest;
   }

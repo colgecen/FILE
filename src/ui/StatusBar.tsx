@@ -1,12 +1,14 @@
 import { useCursorState } from '../core/cursor';
 import { dirOf, useGitBranch } from '../core/gitInfo';
 import { useTabsState } from '../core/tabs';
+import { useTelemetry } from '../core/telemetry';
 
 export function StatusBar(): React.JSX.Element {
   const cursor = useCursorState();
   const { tabs, activeId } = useTabsState();
   const activeFile = tabs.find((tab) => tab.id === activeId)?.file ?? null;
   const gitBranch = useGitBranch(window.api, activeFile === null ? null : dirOf(activeFile.path));
+  const telemetry = useTelemetry();
 
   return (
     <footer className="status-bar" aria-label="Durum çubuğu">
@@ -22,6 +24,12 @@ export function StatusBar(): React.JSX.Element {
         )}
       </div>
       <div className="status-bar__group">
+        {telemetry !== null && (
+          <span className="status-bar__cell status-bar__metrics" data-testid="status-metrics">
+            CPU %{telemetry.cpuPercent.toFixed(0)} ·{' '}
+            {(telemetry.memUsedMb / 1024).toFixed(1)}GB/{(telemetry.memTotalMb / 1024).toFixed(1)}GB
+          </span>
+        )}
         <span className="status-bar__cell status-bar__position" data-testid="status-position">
           {cursor.path === null ? '1:1' : `${cursor.line}:${cursor.column}`}
         </span>

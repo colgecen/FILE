@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cursorModel } from '../core/cursor';
 import { tabsModel } from '../core/tabs';
+import { telemetryStore } from '../core/telemetry';
 import type { OpenFile } from '../core/types';
 import { AppShell } from '../layout/AppShell';
 import { StatusBar } from './StatusBar';
@@ -18,6 +19,7 @@ describe('StatusBar dosya bilgisi', () => {
     act(() => {
       tabsModel.reset();
       cursorModel.reset();
+      telemetryStore.reset();
     });
   });
 
@@ -65,5 +67,20 @@ describe('StatusBar dosya bilgisi', () => {
       tabsModel.open(otherFile);
     });
     expect(screen.queryByTestId('status-branch')).not.toBeInTheDocument();
+  });
+
+  it('telemetri itkisiyle CPU ve bellek göstergesini günceller', async () => {
+    render(<AppShell />);
+    const emit = vi.mocked(window.api.onMetrics).mock.calls[0]?.[0];
+    expect(emit).toBeDefined();
+    await act(async () => {
+      emit({ cpuPercent: 42.7, memUsedMb: 1536, memTotalMb: 8192, platform: 'linux' });
+    });
+    expect(await screen.findByTestId('status-metrics')).toHaveTextContent('CPU %43 · 1.5GB/8.0GB');
+  });
+
+  it('telemetri yokken metrik göstergesi çizilmez', () => {
+    render(<AppShell />);
+    expect(screen.queryByTestId('status-metrics')).not.toBeInTheDocument();
   });
 });
