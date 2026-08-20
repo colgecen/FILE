@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { OpenFile } from '../core/types';
+import { defineEditorTheme, EDITOR_THEME_NAME } from './editorTheme';
 import { resolveModel } from './editorModel';
 import { installMonacoEnvironment, monaco } from './monacoSetup';
 
@@ -21,6 +22,8 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     const host = hostRef.current;
     if (host === null) return;
     installMonacoEnvironment();
+    defineEditorTheme();
+    monaco.editor.setTheme(EDITOR_THEME_NAME);
     const editor = monaco.editor.create(host, BASE_OPTIONS);
     editorRef.current = editor;
     return () => {

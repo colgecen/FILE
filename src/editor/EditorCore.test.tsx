@@ -10,6 +10,8 @@ const api = vi.hoisted(() => ({
   createModel: vi.fn(),
   setModel: vi.fn(),
   dispose: vi.fn(),
+  defineTheme: vi.fn(),
+  setTheme: vi.fn(),
 }));
 
 vi.mock('./monacoSetup', () => ({
@@ -22,6 +24,8 @@ vi.mock('./monacoSetup', () => ({
       create: api.create,
       getModel: api.getModel,
       createModel: api.createModel,
+      defineTheme: api.defineTheme,
+      setTheme: api.setTheme,
     },
   },
 }));
@@ -43,6 +47,8 @@ beforeEach(() => {
   api.createModel.mockReset();
   api.setModel.mockReset();
   api.dispose.mockReset();
+  api.defineTheme.mockReset();
+  api.setTheme.mockReset();
 });
 
 describe('EditorCore', () => {
@@ -51,6 +57,12 @@ describe('EditorCore', () => {
     expect(api.install).toHaveBeenCalledTimes(1);
     expect(api.create).toHaveBeenCalledTimes(1);
     expect(container.querySelector('.editor-core__host')).not.toBeNull();
+  });
+
+  it('mountta özel temayı tanımlar ve uygular', () => {
+    render(<EditorCore file={null} />);
+    expect(api.defineTheme).toHaveBeenCalled();
+    expect(api.setTheme).toHaveBeenCalled();
   });
 
   it('font ve ligatür ayarlarını uygular', () => {
