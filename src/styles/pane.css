@@ -24,11 +24,15 @@
 
 .pane {
   position: relative;
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
   min-height: 0;
   display: flex;
   background: var(--bg-editor);
+}
+
+.pane-split > .pane-split {
+  flex: 1 1 0;
 }
 
 .pane-split--vertical .pane + .pane {
@@ -37,4 +41,26 @@
 
 .pane-split--horizontal .pane + .pane {
   border-top: 1px solid var(--border);
+}
+
+.pane-split--vertical .pane-split + .pane,
+.pane-split--vertical .pane + .pane-split,
+.pane-split--vertical .pane-split + .pane-split {
+  border-left: 1px solid var(--border);
+}
+
+.pane-split--horizontal .pane-split + .pane,
+.pane-split--horizontal .pane + .pane-split,
+.pane-split--horizontal .pane-split + .pane-split {
+  border-top: 1px solid var(--border);
+}
+
+.pane-split--vertical > .pane:first-child,
+.pane-split--vertical > .pane-split:first-child {
+  border-left: 0;
+}
+
+.pane-split--horizontal > .pane:first-child,
+.pane-split--horizontal > .pane-split:first-child {
+  border-top: 0;
 }

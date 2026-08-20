@@ -296,7 +296,7 @@
     - Commit: `feat: dikey bolme komutunu ekle`
 - [x] Yatay bölme komutu (split horizontal) çalışır durumda
     - Commit: `feat: yatay bolme komutunu ekle`
-- [ ] Panel ayraçları: 1px vurgu mavisi, keskin köşeler, bölme oranları
+- [x] Panel ayraçları: 1px vurgu mavisi, keskin köşeler, bölme oranları
     - Commit: `feat: panel ayraclarini ekle`
 - [ ] Paneller arası gezinme + panel kapatma komutları
     - Commit: `feat: panel gezinmesini ve kapatmayi ekle`
