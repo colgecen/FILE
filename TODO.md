@@ -7,7 +7,7 @@
 > İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor
 > Her görev bittiğinde kutucuklara tik atmayı unutma
 
-**Toplam planlanan commit: 140** (119.si tamamlandı, 21.i kaldı).
+**Toplam planlanan commit: 140** (125. tamamlandı, 15. kaldı).
 
 ---
 
@@ -367,7 +367,7 @@
 
 ---
 
-## Faz 12 — Yerel Yapay Zekâ (ileri faz · 6 commit)
+## Faz 12 — Yerel Yapay Zekâ (6 commit · TAMAMLANDI)
 
 - [x] AI kontrat tipleri: `AIStatus`, `ModelInfo`, `ChatMessage`, tamamlama istekleri
     - Commit: `feat: ai kontrat tiplerini tanimla`
