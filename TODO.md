@@ -369,7 +369,7 @@
 
 ## Faz 12 — Yerel Yapay Zekâ (ileri faz · 6 commit)
 
-- [ ] AI kontrat tipleri: `AIStatus`, `ModelInfo`, `ChatMessage`, tamamlama istekleri
+- [x] AI kontrat tipleri: `AIStatus`, `ModelInfo`, `ChatMessage`, tamamlama istekleri
     - Commit: `feat: ai kontrat tiplerini tanimla`
 - [ ] Worker mimarisi: ağır işlemler izole worker'da (contextIsolation kuralı korunur)
     - Commit: `feat: ai worker mimarisini kur`

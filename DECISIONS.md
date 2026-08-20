@@ -105,6 +105,13 @@ Format: **Durum** — Bağlam — Karar — Sonuçlar.
 - **Karar:** İlk aşamada native modül derlenmez; tüm sistem işlemleri Electron Main Process'te. İleride native modül, IPC sözleşmesinin Main tarafını devralabilir (kanallar korunur).
 - **Sonuçlar:** Şimdilik native/maddi ABI bağımlılığı yok; mimari buna hazır.
 
+## D-016 Yerel yapay zekâ motoru: transformers.js (WebAssembly)
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Faz 12 gerçek yerel inference ister; sistemde derleyici yok, native modül derlenemez (D-014); Electron 33 renderer'ında WebGPU garanti değildir; LLM motoru worker'da çalışmalı (D-013).
+- **Karar:** Motor `@huggingface/transformers` (transformers.js) — saf WebAssembly (onnxruntime-web), native/AABB derleme gerektirmez; ONNX modelleri (Qwen2.5-Instruct, q4, ~400 MB–1 GB) Web Worker içinde çalışır; model indirme Hugging Face Hub'dan `progress_callback` ile izlenir, iptal worker terminate ile sağlanır.
+- **Sonuçlar:** `contextIsolation`/`sandbox` korunur (worker renderer içindedir); ilk model indirme internet gerektirir; UI ve StatusBar (D-013 kontratları) motordan bağımsız kalır; WebGPU'suz WASM backend garantili çalışır.
+
 ## D-015 Doküman ve iletişim dili
 
 - **Durum:** Kabul edildi
