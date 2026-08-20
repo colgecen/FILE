@@ -38,6 +38,26 @@ export class TabsModel {
     this.emit();
   }
 
+  activate(id: string): void {
+    const exists = this.state.tabs.some((tab) => tab.id === id);
+    if (!exists || this.state.activeId === id) return;
+    this.state = { ...this.state, activeId: id };
+    this.emit();
+  }
+
+  close(id: string): void {
+    const index = this.state.tabs.findIndex((tab) => tab.id === id);
+    if (index === -1) return;
+    const tabs = this.state.tabs.filter((tab) => tab.id !== id);
+    let activeId = this.state.activeId;
+    if (activeId === id) {
+      const replacement = tabs[index] ?? tabs[index - 1] ?? null;
+      activeId = replacement === null ? null : replacement.id;
+    }
+    this.state = { tabs, activeId };
+    this.emit();
+  }
+
   reset(): void {
     this.state = { tabs: [], activeId: null };
     this.emit();

@@ -9,6 +9,7 @@ import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 import { ExplorerView } from '../ui/ExplorerView';
+import { TabBar } from '../ui/TabBar';
 
 const CoreContext = createContext<Core | null>(null);
 
@@ -49,6 +50,9 @@ export function AppShell({
             onCancel={() => exitController.cancel()}
           />
         )}
+        <div className="app-shell__tabbar">
+          <TabBar />
+        </div>
         <div className="app-shell__workspace">
           <ExplorerView />
           <EditorCore file={activeFile} />

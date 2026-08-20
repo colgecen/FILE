@@ -35,6 +35,11 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'explorer.file.prev', keys: ['Shift+Tab'], label: 'Dosya: önceki', zone: 'explorer' },
   { commandId: 'explorer.activate', keys: ['Enter'], label: 'Dosya aç / klasör aç-kapat', zone: 'explorer' },
   { commandId: 'explorer.close', keys: ['Escape'], label: 'Gezginden çık', zone: 'explorer' },
+
+  // Sekmeler
+  { commandId: 'tab.close', keys: ['Control+w'], label: 'Aktif sekmeyi kapat' },
+  { commandId: 'tab.next', keys: ['Control+Tab'], label: 'Sonraki sekme' },
+  { commandId: 'tab.prev', keys: ['Control+Shift+Tab'], label: 'Önceki sekme' },
 ];
 
 export function registerDefaultBindings(keymap: Keymap): void {

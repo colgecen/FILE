@@ -67,7 +67,7 @@ describe('ExplorerView', () => {
       explorerModel.open();
       explorerModel.settle(TREE, '/proje');
     });
-    const row = screen.getByText('main.ts').closest('.explorer-row');
+    const row = screen.getByText('main.ts', { selector: '.explorer-row__name' }).closest('.explorer-row');
     expect(row).toHaveClass('explorer-row--depth-2');
     const root = screen.getByText('proje').closest('.explorer-row');
     expect(root).toHaveClass('explorer-row--depth-0');
@@ -91,7 +91,7 @@ describe('ExplorerView', () => {
     const dirIcon = screen.getByText('proje').closest('.explorer-row')!.querySelector(
       '.explorer-row__icon',
     );
-    const fileIcon = screen.getByText('main.ts').closest('.explorer-row')!.querySelector(
+    const fileIcon = screen.getByText('main.ts', { selector: '.explorer-row__name' }).closest('.explorer-row')!.querySelector(
       '.explorer-row__icon',
     );
     expect(dirIcon).toHaveClass('explorer-row__icon--dir');
@@ -125,7 +125,7 @@ describe('ExplorerView', () => {
       explorerModel.open();
       explorerModel.settle(TREE, '/proje');
     });
-    const fileState = screen.getByText('main.ts').closest('.explorer-row')!.querySelector(
+    const fileState = screen.getByText('main.ts', { selector: '.explorer-row__name' }).closest('.explorer-row')!.querySelector(
       '.explorer-row__state',
     );
     expect(fileState?.textContent).toBe('');
@@ -275,7 +275,7 @@ describe('ExplorerView kök yükleme', () => {
       await Promise.resolve();
     });
     expect(explorerModel.getState().rootPath).toBe('/proje');
-    expect(screen.getByText('main.ts')).toBeInTheDocument();
+    expect(screen.getByText('main.ts', { selector: '.explorer-row__name' })).toBeInTheDocument();
     expect(focusManager.get()).toBe('explorer');
   });
 });

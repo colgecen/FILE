@@ -271,7 +271,7 @@
     - Commit: `feat: imlec iz efektini ekle`
 
 ### 6.4 Sekme ve model yönetimi
-- [ ] Sekme listesi, kirli işareti, kapama akışı; yeniden açma modeli
+- [x] Sekme listesi, kirli işareti, kapama akışı; yeniden açma modeli
     - Commit: `feat: sekme durumlarini ekle`
 - [ ] LRU üst sınır: açık model sayısı sınırlanır, en az kullanılan geri yazılır (ARCHITECTURE 6.3)
     - Commit: `feat: model bellek sinirini ekle`

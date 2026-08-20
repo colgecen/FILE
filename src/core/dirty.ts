@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 type DirtyListener = (paths: ReadonlySet<string>) => void;
 
 export class DirtyTracker {
@@ -41,3 +43,9 @@ export class DirtyTracker {
 }
 
 export const dirtyTracker = new DirtyTracker();
+
+export function useDirtyPaths(): ReadonlySet<string> {
+  const [paths, setPaths] = useState<ReadonlySet<string>>(() => dirtyTracker.snapshot());
+  useEffect(() => dirtyTracker.subscribe((snapshot) => setPaths(snapshot)), []);
+  return paths;
+}
