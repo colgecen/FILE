@@ -261,7 +261,7 @@
 ### 6.2 Özel tema
 - [x] `defineTheme`: ARCHITECTURE Bölüm 7.1 tokenları birebir (zemin `#03050A`, metin beyaz, imleç mavi)
     - Commit: `feat: monaco temasini tanimla`
-- [ ] Sözdizimi renkleri: anahtar kelime `#00D2FF`, string `#82AAFF`, yorum `#4A6B8C`, seçim `rgba(0,85,255,0.4)`, aktif satır `rgba(0,210,255,0.05)`, teşhis hatası `#FF5252`
+- [x] Sözdizimi renkleri: anahtar kelime `#00D2FF`, string `#82AAFF`, yorum `#4A6B8C`, seçim `rgba(0,85,255,0.4)`, aktif satır `rgba(0,210,255,0.05)`, teşhis hatası `#FF5252`
     - Commit: `feat: sozdizimi renklendirmesini ekle`
 
 ### 6.3 İmleç ve iz efekti
