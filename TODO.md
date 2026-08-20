@@ -377,7 +377,7 @@
     - Commit: `feat: ai menu katalogunu tanimla`
 - [x] Model seçimi + durum yönetimi (model listesi, aktif model)
     - Commit: `feat: model secimi ve durum yonetimini ekle`
-- [ ] Model indirme akışı: ilerleme, iptal, hata yönetimi
+- [x] Model indirme akışı: ilerleme, iptal, hata yönetimi
     - Commit: `feat: model indirme akisini ekle`
 - [ ] StatusBar entegrasyonu (IDLE/COMPUTING/ERROR) + motor seçimi ADR'si sonrası gerçek bağlantı
     - Commit: `feat: ai durumunu durum cubuguna bagla`

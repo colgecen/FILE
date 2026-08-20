@@ -62,6 +62,33 @@ export function selectModel(modelId: ModelId): void {
 
 export function registerAICommands(register: (command: CommandDef) => void): void {
   register({
+    id: 'ai.models.download',
+    category: 'ai',
+    title: 'Model İndir',
+    run: () => {
+      const modelId = aiEngine.getState().modelId ?? loadActiveModel();
+      aiChatModel.open();
+      void setActiveModel(modelId);
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.models.cancel',
+    category: 'ai',
+    title: 'İndirmeyi İptal Et',
+    run: () => {
+      const status = aiEngine.getState().status;
+      if (status !== 'loading' && status !== 'computing') {
+        return { ok: false, error: 'Aktif işlem yok' };
+      }
+      aiEngine.cancel();
+      aiEngine.appendSystemMessage('İndirme iptal edildi.');
+      return { ok: true };
+    },
+  });
+
+  register({
     id: 'ai.model.select',
     category: 'ai',
     title: 'Model Seç',

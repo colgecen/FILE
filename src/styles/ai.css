@@ -40,6 +40,48 @@
   color: var(--error);
 }
 
+.ai-chat__progress {
+  position: relative;
+  height: 22px;
+  margin: 0 14px;
+  border: 1px solid var(--accent);
+}
+
+.ai-chat__progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--accent);
+  opacity: 0.35;
+}
+
+.ai-chat__progress-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--fg);
+}
+
+.ai-chat__stop {
+  align-self: flex-end;
+  margin: 0 14px 10px;
+  background: transparent;
+  border: 1px solid var(--error);
+  border-radius: 0;
+  color: var(--error);
+  padding: 4px 14px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.ai-chat__stop:focus-visible {
+  outline: 1px solid var(--error);
+}
+
 .ai-chat__messages {
   flex: 1;
   overflow-y: auto;

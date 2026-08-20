@@ -3,7 +3,7 @@ import { useAIEngine } from '../ai/engine';
 import { aiChatModel, useAIChat } from '../core/chatModel';
 import { useFocusZone } from '../core/focus';
 import { useCore } from '../layout/AppShell';
-import { statusLabel } from '../ai/format';
+import { phaseLabel, statusLabel } from '../ai/format';
 
 export function AIChatPanel(): React.JSX.Element | null {
   const zone = useFocusZone();
@@ -36,6 +36,23 @@ export function AIChatPanel(): React.JSX.Element | null {
             : statusLabel(ai.status)}
         </span>
       </header>
+      {ai.status === 'loading' && ai.progress !== null && (
+        <div className="ai-chat__progress" aria-label="Model indirme ilerlemesi">
+          <div className="ai-chat__progress-bar" style={{ width: `${ai.progress.percent}%` }} />
+          <span className="ai-chat__progress-label">
+            %{ai.progress.percent} · {phaseLabel(ai.progress.phase)}
+          </span>
+        </div>
+      )}
+      {(ai.status === 'loading' || ai.status === 'computing') && (
+        <button
+          type="button"
+          className="ai-chat__stop"
+          onClick={() => registry.run('ai.models.cancel')}
+        >
+          Durdur
+        </button>
+      )}
       <div className="ai-chat__messages" aria-live="polite">
         {ai.chat.messages.map((message, index) => (
           <div key={index} className={`ai-chat__message ai-chat__message--${message.role}`}>
