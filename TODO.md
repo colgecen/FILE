@@ -7,7 +7,7 @@
 > İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor
 > Her görev bittiğinde kutucuklara tik atmayı unutma
 
-**Toplam planlanan commit: 142** (84'ü tamamlandı, 58'i kaldı).
+**Toplam planlanan commit: 140** (96'sı tamamlandı, 44'ü kaldı).
 
 ---
 
