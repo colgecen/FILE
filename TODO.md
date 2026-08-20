@@ -7,7 +7,7 @@
 > İşaretler: `[ ]` yapılacak · `[x]` yapıldı · `[~]` devam ediyor
 > Her görev bittiğinde kutucuklara tik atmayı unutma
 
-**Toplam planlanan commit: 140** (112'si tamamlandı, 28'i kaldı).
+**Toplam planlanan commit: 140** (119.si tamamlandı, 21.i kaldı).
 
 ---
 
@@ -348,7 +348,7 @@
 
 ---
 
-## Faz 11 — Gelişmiş Editör Özellikleri (7 commit)
+## Faz 11 — Gelişmiş Editör Özellikleri (7 commit · TAMAMLANDI)
 
 - [x] Çoklu imleç: yukarı/aşağı/tümü (Selection menüsü + keymap)
     - Commit: `feat: coklu imlec komutlarini ekle`
@@ -362,7 +362,7 @@
     - Commit: `feat: go to komutlarini ekle`
 - [x] Görünüm modları: zen modu, tam ekran, kelime sarmalama
     - Commit: `feat: gorunum modlarini ekle`
-- [ ] Yardım ekranları: karşılama, tuş listesi, hakkında
+- [x] Yardım ekranları: karşılama, tuş listesi, hakkında
     - Commit: `feat: yardim ekranlarini ekle`
 
 ---
