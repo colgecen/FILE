@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { bookmarkModel } from '../core/bookmarks';
 import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
+import { historyModel } from '../core/history';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
 import { setActiveEditor } from './activeEditor';
@@ -69,6 +70,7 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       const path = model.uri.path;
       touchModel(path);
       tabsModel.updateContent(path, model.getValue());
+      historyModel.capture(path, model.getValue());
       if (!dirtyTracker.isDirty(path)) {
         dirtyTracker.markDirty(path);
       }

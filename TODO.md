@@ -356,7 +356,7 @@
     - Commit: `feat: sutun ve dikdortgen secimini ekle`
 - [x] Yer imleri: aç/kapat, atla, liste (Go menüsü)
     - Commit: `feat: yer imi komutlarini ekle`
-- [ ] Geri alma ağacı (Undo Tree) görünümü ve komutları
+- [x] Geri alma ağacı (Undo Tree) görünümü ve komutları
     - Commit: `feat: geri alma agaci komutlarini ekle`
 - [ ] Go to: dosyaya/sembole/tanıma/referansa git; geri/ileri gezinme
     - Commit: `feat: go to komutlarini ekle`

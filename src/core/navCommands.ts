@@ -3,6 +3,7 @@ import { gotoBookmark } from './bookmarkNav';
 import { explorerModel } from './explorer';
 import { focusManager } from './focus';
 import { menuModel } from '../menus/menuModel';
+import { restoreHistory } from './historyCommands';
 import { openFilesModel } from './openFiles';
 import { paletteModel } from './palette';
 import { tabsModel } from './tabs';
@@ -139,6 +140,10 @@ export function registerNavCommands(registry: CommandRegistry): void {
       if (item.bookmark !== undefined) {
         gotoBookmark(item.bookmark);
         return { ok: true };
+      }
+      if (item.history !== undefined) {
+        const ok = restoreHistory(item.history);
+        return ok ? { ok: true } : { ok: false, error: 'Geçmiş dosyası açık değil' };
       }
       await registry.run(item.commandId);
       return { ok: true };

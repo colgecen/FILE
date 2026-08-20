@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Bookmark } from './bookmarks';
 import { fuzzyScore } from './fuzzy';
+import type { HistoryEntry } from './history';
 import { openFilesModel, type OpenFileRef } from './openFiles';
 import type { CommandDef } from './types';
 
@@ -11,6 +12,7 @@ export type PaletteItem = {
   readonly keys?: string;
   readonly filePath?: string;
   readonly bookmark?: Bookmark;
+  readonly history?: HistoryEntry;
 };
 
 export type PaletteState = {
@@ -41,6 +43,11 @@ export class PaletteModel {
 
   showBookmarks(bookmarks: readonly PaletteItem[]): void {
     this.state = { query: '', items: bookmarks, activeIndex: 0 };
+    this.emit();
+  }
+
+  showHistory(historyItems: readonly PaletteItem[]): void {
+    this.state = { query: '', items: historyItems, activeIndex: 0 };
     this.emit();
   }
 
