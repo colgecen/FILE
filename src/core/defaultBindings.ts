@@ -48,6 +48,10 @@ const SEEDS: readonly BindingSeed[] = [
 
   // Yardım
   { commandId: 'help.close', keys: ['Escape'], label: 'Yardım ekranını kapat', zone: 'help' },
+
+  // Yapay zekâ sohbeti
+  { commandId: 'ai.chat.close', keys: ['Escape'], label: 'Sohbeti kapat', zone: 'ai' },
+  { commandId: 'ai.chat.send', keys: ['Enter'], label: 'Mesajı gönder', zone: 'ai' },
 ];
 
 export function registerDefaultBindings(keymap: Keymap): void {

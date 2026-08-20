@@ -1,0 +1,108 @@
+import { aiEngine } from './engine';
+import { aiChatModel } from '../core/chatModel';
+import { focusManager } from '../core/focus';
+import { getActiveEditor } from '../editor/activeEditor';
+import { buildPrompt } from './prompt';
+import { DEFAULT_MODEL } from './models';
+import type { CommandDef } from '../core/types';
+
+const MAX_CONTEXT_MESSAGES = 6;
+
+function editorSourceText(): string | null {
+  const editor = getActiveEditor();
+  if (editor === null) return null;
+  const model = editor.getModel();
+  if (model === null) return null;
+  const selection = editor.getSelection();
+  if (selection !== null && !selection.isEmpty()) {
+    return model.getValueInRange(selection);
+  }
+  return model.getValue();
+}
+
+async function runAssistant(instruction: string): Promise<void> {
+  const modelId = aiEngine.getState().modelId ?? DEFAULT_MODEL;
+  aiEngine.appendUserMessage(instruction);
+  aiChatModel.open();
+  try {
+    await aiEngine.ensureModel(modelId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    aiEngine.setError(message);
+    return;
+  }
+  const recent = aiEngine.getState().chat.messages.slice(-MAX_CONTEXT_MESSAGES);
+  try {
+    await aiEngine.generate({ prompt: buildPrompt(recent), maxNewTokens: 256, temperature: 0.4 });
+  } catch {
+    // generate hata durumunu zaten engine'e işler
+  }
+}
+
+export function registerAICommands(register: (command: CommandDef) => void): void {
+  register({
+    id: 'ai.chat',
+    category: 'ai',
+    title: 'Yapay Zekâ ile Sohbet',
+    run: () => {
+      const wasOpen = aiChatModel.isOpen();
+      aiChatModel.toggle();
+      if (!wasOpen) {
+        focusManager.set('ai');
+      } else {
+        focusManager.returnToPrevious();
+      }
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.chat.close',
+    category: 'ai',
+    title: 'Yapay zekâ sohbetini kapat',
+    run: () => {
+      aiChatModel.close();
+      focusManager.returnToPrevious();
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.chat.send',
+    category: 'ai',
+    title: 'Mesajı gönder',
+    run: () => {
+      const draft = aiChatModel.getDraft().trim();
+      if (draft.length === 0) return { ok: false, error: 'Mesaj boş' };
+      aiChatModel.setDraft('');
+      void runAssistant(draft);
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.inline.complete',
+    category: 'ai',
+    title: 'Satır İçi Tamamlama',
+    run: () => {
+      const source = editorSourceText();
+      if (source === null) return { ok: false, error: 'Açık kod yok' };
+      void runAssistant(
+        `İmleçteki koda satır içi tamamlama öner. Yalnızca önerilen kod parçasını yaz:\n\n${source}`,
+      );
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.explain',
+    category: 'ai',
+    title: 'Kodu Açıkla',
+    run: () => {
+      const source = editorSourceText();
+      if (source === null) return { ok: false, error: 'Açık kod yok' };
+      void runAssistant(`Aşağıdaki kodu satır satır Türkçe açıkla:\n\n${source}`);
+      return { ok: true };
+    },
+  });
+}

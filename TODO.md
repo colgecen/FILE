@@ -373,7 +373,7 @@
     - Commit: `feat: ai kontrat tiplerini tanimla`
 - [x] Worker mimarisi: ağır işlemler izole worker'da (contextIsolation kuralı korunur)
     - Commit: `feat: ai worker mimarisini kur`
-- [ ] AI menü kataloğu: sohbet, satır içi tamamlama, kodu açıkla
+- [x] AI menü kataloğu: sohbet, satır içi tamamlama, kodu açıkla
     - Commit: `feat: ai menu katalogunu tanimla`
 - [ ] Model seçimi + durum yönetimi (model listesi, aktif model)
     - Commit: `feat: model secimi ve durum yonetimini ekle`

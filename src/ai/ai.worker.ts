@@ -1,7 +1,7 @@
 import { AutoTokenizer, TextStreamer, env, pipeline } from '@huggingface/transformers';
 import type { ProgressInfo } from '@huggingface/transformers';
-import ortWasmMjs from 'onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs?url';
-import ortWasm from 'onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url';
+import ortWasmMjs from './wasm/ort-wasm-simd-threaded.asyncify.mjs?url';
+import ortWasm from './wasm/ort-wasm-simd-threaded.asyncify.wasm?url';
 import { extractAssistantText } from './prompt';
 import type { AIProgress, AIWorkerEvent, AIWorkerMessage, ModelId } from './types';
 

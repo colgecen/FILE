@@ -8,6 +8,7 @@ import { useTabsState } from '../core/tabs';
 import { useTerminalOpen } from '../core/terminalModel';
 import { useViewMode } from '../core/viewMode';
 import { MenuBar } from '../menus/MenuBar';
+import { AIChatPanel } from '../ui/AIChatPanel';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
@@ -61,6 +62,7 @@ export function AppShell({
         <ErrorIndicator />
         <CommandHUD />
         <HelpOverlay />
+        <AIChatPanel />
         {exitPending && (
           <ConfirmOverlay
             message="Kaydedilmemiş değişiklikler var. Kapatılsın mı?"

@@ -61,6 +61,31 @@ export class AIEngine {
     worker.postMessage({ type: 'init', modelId });
   }
 
+  async ensureModel(modelId: ModelId): Promise<void> {
+    if (this.state.modelId === modelId && this.state.status !== 'loading') return;
+    this.init(modelId);
+    return new Promise<void>((resolve, reject) => {
+      const unsubscribe = this.subscribe((state) => {
+        if (state.modelId === modelId && state.status === 'idle') {
+          unsubscribe();
+          resolve();
+        } else if (state.status === 'error') {
+          unsubscribe();
+          reject(new Error(state.error ?? 'Model yüklenemedi'));
+        }
+      });
+    });
+  }
+
+  appendUserMessage(content: string): void {
+    this.patch({
+      chat: {
+        ...this.state.chat,
+        messages: [...this.state.chat.messages, { role: 'user', content }],
+      },
+    });
+  }
+
   async generate(request: CompletionRequest): Promise<string> {
     const modelId = this.state.modelId;
     if (modelId === null) {
@@ -91,6 +116,10 @@ export class AIEngine {
 
   resetChat(): void {
     this.patch({ chat: { messages: [], error: null } });
+  }
+
+  setError(message: string): void {
+    this.patch({ status: 'error', error: message });
   }
 
   private handle(event: AIWorkerEvent): void {
