@@ -255,7 +255,7 @@
     - Commit: `chore: monaco ve worker kurulumunu ekle`
 - [x] İlk mount: EditorCore bileşeni model ile monte edilir
     - Commit: `feat: ilk monaco mountunu ekle`
-- [ ] JetBrains Mono + `fontLigatures: true`, doğru tema altında okunabilirlik
+- [x] JetBrains Mono + `fontLigatures: true`, doğru tema altında okunabilirlik
     - Commit: `feat: editor font ve ligatur ayarlarini ekle`
 
 ### 6.2 Özel tema

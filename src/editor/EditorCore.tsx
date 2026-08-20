@@ -7,6 +7,10 @@ const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
   minimap: { enabled: false },
   scrollBeyondLastLine: false,
+  fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+  fontLigatures: true,
+  fontSize: 13,
+  lineHeight: 20,
 };
 
 export function EditorCore({ file }: { readonly file: OpenFile | null }): React.JSX.Element {

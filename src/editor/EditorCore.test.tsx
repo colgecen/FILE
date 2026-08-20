@@ -53,6 +53,13 @@ describe('EditorCore', () => {
     expect(container.querySelector('.editor-core__host')).not.toBeNull();
   });
 
+  it('font ve ligatür ayarlarını uygular', () => {
+    render(<EditorCore file={null} />);
+    const options = api.create.mock.calls[0]?.[1] as Record<string, unknown>;
+    expect(options.fontLigatures).toBe(true);
+    expect(options.fontFamily).toContain('JetBrains Mono');
+  });
+
   it('dosya yokken yer tutucu gösterir ve modeli boşaltır', () => {
     render(<EditorCore file={null} />);
     expect(screen.getByText('Dosya seçin')).not.toBeNull();
