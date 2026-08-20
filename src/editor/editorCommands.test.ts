@@ -45,8 +45,10 @@ describe('editorCommands', () => {
     runEditorAction('cursor.up');
     runEditorAction('cursor.down');
     runEditorAction('cursor.all');
+    runEditorAction('selection.column');
+    runEditorAction('selection.rectangular');
 
-    expect(fake.focuses()).toBe(15);
+    expect(fake.focuses()).toBe(17);
     expect(fake.triggers).toEqual([
       { source: 'keyboard', action: 'undo', payload: null },
       { source: 'keyboard', action: 'redo', payload: null },
@@ -63,6 +65,8 @@ describe('editorCommands', () => {
       { source: 'keyboard', action: 'editor.action.insertCursorAbove', payload: null },
       { source: 'keyboard', action: 'editor.action.insertCursorBelow', payload: null },
       { source: 'keyboard', action: 'editor.action.selectAllMatches', payload: null },
+      { source: 'keyboard', action: 'editor.action.toggleColumnSelection', payload: null },
+      { source: 'keyboard', action: 'editor.action.toggleColumnSelection', payload: null },
     ]);
   });
 
@@ -111,7 +115,7 @@ describe('editorCommands', () => {
     ]);
   });
 
-  it('sütun modu ve yer imi komutlarını yer tutucu olarak tanımlar', () => {
+  it('yalnız yer imi komutlarını yer tutucu olarak tanımlar', () => {
     const placeholders: Array<{ id: string; category: string; placeholder: boolean | undefined }> = [];
     registerEditCommands((command) => {
       if (command.placeholder === true) {
@@ -123,8 +127,6 @@ describe('editorCommands', () => {
       }
     });
     expect(placeholders).toEqual([
-      { id: 'selection.column', category: 'selection', placeholder: true },
-      { id: 'selection.rectangular', category: 'selection', placeholder: true },
       { id: 'bookmark.toggle', category: 'go', placeholder: true },
       { id: 'bookmark.jump', category: 'go', placeholder: true },
       { id: 'bookmark.list', category: 'go', placeholder: true },

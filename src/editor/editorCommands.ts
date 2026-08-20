@@ -18,6 +18,8 @@ const EDITOR_ACTIONS = {
   'cursor.up': 'editor.action.insertCursorAbove',
   'cursor.down': 'editor.action.insertCursorBelow',
   'cursor.all': 'editor.action.selectAllMatches',
+  'selection.column': 'editor.action.toggleColumnSelection',
+  'selection.rectangular': 'editor.action.toggleColumnSelection',
 } as const;
 
 const EDITOR_SEQUENCES: Partial<Record<EditActionId, readonly string[]>> = {
@@ -25,8 +27,6 @@ const EDITOR_SEQUENCES: Partial<Record<EditActionId, readonly string[]>> = {
 };
 
 const PLACEHOLDER_COMMANDS: ReadonlyArray<[string, string, CommandCategory]> = [
-  ['selection.column', 'Sütun Modu', 'selection'],
-  ['selection.rectangular', 'Dikdörtgen Seçim', 'selection'],
   ['bookmark.toggle', 'Yer İmi Aç/Kapat', 'go'],
   ['bookmark.jump', 'Yer İmine Atla', 'go'],
   ['bookmark.list', 'Yer İmi Listesi', 'go'],
@@ -51,6 +51,8 @@ const REGISTER_ORDER: readonly EditActionId[] = [
   'cursor.up',
   'cursor.down',
   'cursor.all',
+  'selection.column',
+  'selection.rectangular',
 ];
 
 const COMMAND_TITLES: Record<EditActionId, string> = {
@@ -70,6 +72,8 @@ const COMMAND_TITLES: Record<EditActionId, string> = {
   'cursor.up': 'İmleç Yukarı',
   'cursor.down': 'İmleç Aşağı',
   'cursor.all': 'Her Yerde İmleç',
+  'selection.column': 'Sütun Modu',
+  'selection.rectangular': 'Dikdörtgen Seçim',
 };
 
 function triggerEditor(editor: monaco.editor.IStandaloneCodeEditor, action: string): void {

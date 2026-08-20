@@ -352,7 +352,7 @@
 
 - [x] Çoklu imleç: yukarı/aşağı/tümü (Selection menüsü + keymap)
     - Commit: `feat: coklu imlec komutlarini ekle`
-- [ ] Sütun modu / dikdörtgen seçim
+- [x] Sütun modu / dikdörtgen seçim
     - Commit: `feat: sutun ve dikdortgen secimini ekle`
 - [ ] Yer imleri: aç/kapat, atla, liste (Go menüsü)
     - Commit: `feat: yer imi komutlarini ekle`
