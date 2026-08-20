@@ -333,7 +333,7 @@
 
 ---
 
-## Faz 10 — Terminal (5 commit)
+## Faz 10 — Terminal (5 commit · 10.1 TAMAMLANDI, 10.2–10.5 ERTELENDİ)
 
 - [x] `xterm.js` panel bileşeni: menüden yeni terminal açılabilir (ilk aşamada taklit kabuk)
     - Commit: `feat: xterm terminal panelini ekle` *(10.2–10.5 ertelendi: node-pty native derleme    gerektirir — kullanıcı kararı 2026-08-20)*
