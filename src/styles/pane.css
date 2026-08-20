@@ -7,6 +7,19 @@
   flex-direction: column;
 }
 
+.pane-manager--error {
+  animation: error-pulse 600ms ease-out;
+}
+
+@keyframes error-pulse {
+  from {
+    box-shadow: inset 0 0 0 var(--error);
+  }
+  to {
+    box-shadow: inset 0 0 0 1px var(--error);
+  }
+}
+
 .pane-split {
   display: flex;
   flex: 1;

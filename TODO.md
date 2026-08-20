@@ -328,7 +328,7 @@
     - Commit: `feat: kaydetme komutlarini ekle`
 - [x] Kaydetme geri bildirimi: pencere çerçevesinde kısa mavi glow animasyonu
     - Commit: `feat: kaydetme isigi efektini ekle`
-- [ ] Hata geri bildirimi: ilgili panel çerçevesi kırmızı yanıp söner + durum çubuğu rozeti
+- [x] Hata geri bildirimi: ilgili panel çerçevesi kırmızı yanıp söner + durum çubuğu rozeti
     - Commit: `feat: hata geribildirim efektini ekle`
 
 ---

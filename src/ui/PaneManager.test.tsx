@@ -1,5 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { reportError } from '../core/appErrors';
+import { errorStore } from '../core/errorStore';
 import { createCore } from '../core/instances';
 import { panesModel } from '../core/panes';
 import { menuModel, selectableIndexOfItems } from '../menus/menuModel';
@@ -16,6 +18,12 @@ describe('PaneManager', () => {
   beforeEach(() => {
     panesModel.reset();
     menuModel.close();
+  });
+
+  afterEach(() => {
+    act(() => {
+      errorStore.clear();
+    });
   });
 
   it('tek pane için bir düzenleyici çizer', () => {
@@ -122,5 +130,19 @@ describe('PaneManager', () => {
       await createCore().registry.run('menubar.activate');
     });
     expect(panesModel.getState().activePaneId).not.toBe(before);
+  });
+
+  it('hata oluşunca panel çerçevesi kırmızı yanıp söner', () => {
+    vi.useFakeTimers();
+    render(<PaneManager file={null} />);
+    act(() => {
+      reportError('Panel hatası');
+    });
+    expect(screen.getByTestId('pane-manager')).toHaveClass('pane-manager--error');
+    act(() => {
+      vi.advanceTimersByTime(700);
+    });
+    expect(screen.getByTestId('pane-manager')).not.toHaveClass('pane-manager--error');
+    vi.useRealTimers();
   });
 });

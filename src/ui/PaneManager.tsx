@@ -1,4 +1,5 @@
 import type { OpenFile, PaneLayout } from '../core/types';
+import { useErrorFlash } from '../core/errorFlash';
 import { usePanes } from '../core/panes';
 import { EditorCore } from '../editor/EditorCore';
 
@@ -32,8 +33,10 @@ function PaneNode({
 
 export function PaneManager({ file }: { readonly file: OpenFile | null }): React.JSX.Element {
   const { layout, activePaneId } = usePanes();
+  const errorFlash = useErrorFlash();
+  const className = errorFlash ? 'pane-manager pane-manager--error' : 'pane-manager';
   return (
-    <div className="pane-manager">
+    <div className={className} data-testid="pane-manager">
       <PaneNode layout={layout} activePaneId={activePaneId} file={file} />
     </div>
   );
