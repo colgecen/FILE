@@ -6,6 +6,7 @@ import { registerExitCommands } from './exit';
 import { registerFileCommands } from './fileCommands';
 import { registerFocusCommands } from './focus';
 import { registerGoCommands } from './goCommands';
+import { registerHelpCommands } from './helpCommands';
 import { registerHistoryCommands } from './historyCommands';
 import { registerTerminalCommands } from './terminalCommands';
 import { registerViewCommands } from './viewCommands';
@@ -48,6 +49,7 @@ export function createCore(): Core {
   registerHistoryCommands(registry.register.bind(registry));
   registerGoCommands(registry.register.bind(registry));
   registerViewCommands(registry.register.bind(registry));
+  registerHelpCommands(registry.register.bind(registry));
   registerDefaultBindings(keymap);
   coreInstance = { registry, keymap, controller: new KeyboardController(keymap, registry) };
   return coreInstance;

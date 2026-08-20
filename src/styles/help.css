@@ -1,0 +1,74 @@
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 5, 10, 0.85);
+  z-index: 50;
+}
+
+.help-overlay__panel {
+  width: min(560px, 90vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--accent);
+  background: var(--bg-panel);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.help-overlay__title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  margin-bottom: 14px;
+}
+
+.help-overlay__lines {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--fg-dim);
+  white-space: pre-wrap;
+}
+
+.help-overlay__key-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.help-overlay__key-label {
+  color: var(--fg-dim);
+}
+
+.help-overlay__key-chord {
+  color: var(--accent);
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+.help-overlay__footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.help-overlay__close {
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  color: var(--fg);
+  padding: 5px 18px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.help-overlay__close:focus-visible {
+  outline: 1px solid var(--accent);
+}

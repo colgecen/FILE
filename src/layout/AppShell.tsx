@@ -12,6 +12,7 @@ import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 import { ExplorerView } from '../ui/ExplorerView';
+import { HelpOverlay } from '../ui/HelpOverlay';
 import { PaneManager } from '../ui/PaneManager';
 import { StatusBar } from '../ui/StatusBar';
 import { TabBar } from '../ui/TabBar';
@@ -59,6 +60,7 @@ export function AppShell({
         <MenuBar />
         <ErrorIndicator />
         <CommandHUD />
+        <HelpOverlay />
         {exitPending && (
           <ConfirmOverlay
             message="Kaydedilmemiş değişiklikler var. Kapatılsın mı?"

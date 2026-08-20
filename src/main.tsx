@@ -11,6 +11,7 @@ import './styles/app.css';
 import './styles/pane.css';
 import './styles/statusbar.css';
 import './styles/terminal.css';
+import './styles/help.css';
 import 'xterm/css/xterm.css';
 import { AppShell } from './layout/AppShell';
 

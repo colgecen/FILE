@@ -45,6 +45,9 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'cursor.up', keys: ['Control+Alt+ArrowUp'], label: 'İmleci yukarı ekle', zone: 'editor' },
   { commandId: 'cursor.down', keys: ['Control+Alt+ArrowDown'], label: 'İmleci aşağı ekle', zone: 'editor' },
   { commandId: 'cursor.all', keys: ['Control+Shift+l'], label: 'Eşleşmelere imleç ekle', zone: 'editor' },
+
+  // Yardım
+  { commandId: 'help.close', keys: ['Escape'], label: 'Yardım ekranını kapat', zone: 'help' },
 ];
 
 export function registerDefaultBindings(keymap: Keymap): void {
