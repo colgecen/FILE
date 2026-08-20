@@ -40,6 +40,11 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'tab.close', keys: ['Control+w'], label: 'Aktif sekmeyi kapat' },
   { commandId: 'tab.next', keys: ['Control+Tab'], label: 'Sonraki sekme' },
   { commandId: 'tab.prev', keys: ['Control+Shift+Tab'], label: 'Önceki sekme' },
+
+  // Çoklu imleç
+  { commandId: 'cursor.up', keys: ['Control+Alt+ArrowUp'], label: 'İmleci yukarı ekle', zone: 'editor' },
+  { commandId: 'cursor.down', keys: ['Control+Alt+ArrowDown'], label: 'İmleci aşağı ekle', zone: 'editor' },
+  { commandId: 'cursor.all', keys: ['Control+Shift+l'], label: 'Eşleşmelere imleç ekle', zone: 'editor' },
 ];
 
 export function registerDefaultBindings(keymap: Keymap): void {

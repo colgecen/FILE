@@ -350,7 +350,7 @@
 
 ## Faz 11 — Gelişmiş Editör Özellikleri (7 commit)
 
-- [ ] Çoklu imleç: yukarı/aşağı/tümü (Selection menüsü + keymap)
+- [x] Çoklu imleç: yukarı/aşağı/tümü (Selection menüsü + keymap)
     - Commit: `feat: coklu imlec komutlarini ekle`
 - [ ] Sütun modu / dikdörtgen seçim
     - Commit: `feat: sutun ve dikdortgen secimini ekle`
