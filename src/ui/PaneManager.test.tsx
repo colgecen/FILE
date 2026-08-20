@@ -83,4 +83,44 @@ describe('PaneManager', () => {
     expect(screen.getAllByTestId('editor-core')).toHaveLength(2);
     expect(panesModel.getState().layout.direction).toBe('horizontal');
   });
+
+  it('Görünüm menüsünden Panel Kapat seçilince tek pane durumuna döner', async () => {
+    render(<AppShell />);
+    act(() => {
+      panesModel.split('vertical');
+    });
+    expect(screen.getAllByTestId('editor-core')).toHaveLength(2);
+    act(() => {
+      menuModel.openAt(3);
+    });
+    const items = menuModel.itemsAt([]);
+    const realIndex = items.findIndex((item) => item.commandId === 'pane.close');
+    act(() => {
+      menuModel.setActiveItem(selectableIndexOfItems(items, realIndex));
+    });
+    await act(async () => {
+      await createCore().registry.run('menubar.activate');
+    });
+    expect(screen.getAllByTestId('editor-core')).toHaveLength(1);
+  });
+
+  it('Görünüm menüsünden Sonraki Panel seçilince aktif pane değişir', async () => {
+    render(<AppShell />);
+    act(() => {
+      panesModel.split('vertical');
+    });
+    const before = panesModel.getState().activePaneId;
+    act(() => {
+      menuModel.openAt(3);
+    });
+    const items = menuModel.itemsAt([]);
+    const realIndex = items.findIndex((item) => item.commandId === 'pane.next');
+    act(() => {
+      menuModel.setActiveItem(selectableIndexOfItems(items, realIndex));
+    });
+    await act(async () => {
+      await createCore().registry.run('menubar.activate');
+    });
+    expect(panesModel.getState().activePaneId).not.toBe(before);
+  });
 });

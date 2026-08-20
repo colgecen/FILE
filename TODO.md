@@ -298,7 +298,7 @@
     - Commit: `feat: yatay bolme komutunu ekle`
 - [x] Panel ayraçları: 1px vurgu mavisi, keskin köşeler, bölme oranları
     - Commit: `feat: panel ayraclarini ekle`
-- [ ] Paneller arası gezinme + panel kapatma komutları
+- [x] Paneller arası gezinme + panel kapatma komutları
     - Commit: `feat: panel gezinmesini ve kapatmayi ekle`
 
 ---
