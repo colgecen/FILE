@@ -392,7 +392,7 @@
     - Commit: `test: menü modeli klavye testlerini ekle`
 - [x] Gezgin gezinme testleri (F3/Tab/yön tuşları, Enter/Esc)
     - Commit: `test: gezgin gezinme testlerini ekle`
-- [ ] Dosya aç/kaydet testleri (IPC mock'ları ile)
+- [x] Dosya aç/kaydet testleri (IPC mock'ları ile)
     - Commit: `test: dosya akisi testlerini ekle`
 - [ ] `npm run typecheck` + `lint` + `build` tam zincir; hata yok, uyarı paketlenir
     - Commit: `chore: uretim paketini dogrula`
