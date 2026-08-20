@@ -386,7 +386,7 @@
 
 ## Faz 13 — Test ve Parlatma (6 commit)
 
-- [ ] Komut paleti (Ctrl+I) end-to-end testleri; `tree` → gezgin açılış senaryosu
+- [x] Komut paleti (Ctrl+I) end-to-end testleri; `tree` → gezgin açılış senaryosu
     - Commit: `test: komut paleti akislarini test et`
 - [ ] F1 menü modeli testleri (klavye senaryoları: gezinme, kilit, Esc)
     - Commit: `test: menü modeli klavye testlerini ekle`
