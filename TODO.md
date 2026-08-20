@@ -360,7 +360,7 @@
     - Commit: `feat: geri alma agaci komutlarini ekle`
 - [x] Go to: dosyaya/sembole/tanıma/referansa git; geri/ileri gezinme
     - Commit: `feat: go to komutlarini ekle`
-- [ ] Görünüm modları: zen modu, tam ekran, kelime sarmalama
+- [x] Görünüm modları: zen modu, tam ekran, kelime sarmalama
     - Commit: `feat: gorunum modlarini ekle`
 - [ ] Yardım ekranları: karşılama, tuş listesi, hakkında
     - Commit: `feat: yardim ekranlarini ekle`

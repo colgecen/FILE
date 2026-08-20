@@ -22,6 +22,7 @@ const api: Api = {
       ipcRenderer.removeListener('sys:metrics', handler);
     };
   },
+  setFullscreen: (enabled) => ipcRenderer.invoke('window:set-fullscreen', enabled),
   appExit: () => ipcRenderer.invoke('app:exit'),
 };
 

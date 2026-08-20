@@ -49,5 +49,6 @@ export type Api = {
   sysStart(): Promise<void>;
   sysStop(): Promise<void>;
   onMetrics(listener: (snapshot: TelemetrySnapshot) => void): () => void;
+  setFullscreen(enabled: boolean): Promise<boolean>;
   appExit(): Promise<void>;
 };

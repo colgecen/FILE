@@ -6,6 +6,7 @@ import { recentFiles } from '../core/recentFiles';
 import { useSaveFlash } from '../core/saveSignal';
 import { useTabsState } from '../core/tabs';
 import { useTerminalOpen } from '../core/terminalModel';
+import { useViewMode } from '../core/viewMode';
 import { MenuBar } from '../menus/MenuBar';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
@@ -38,12 +39,18 @@ export function AppShell({
   const { tabs, activeId } = useTabsState();
   const savedFlash = useSaveFlash();
   const terminalOpen = useTerminalOpen();
+  const viewMode = useViewMode();
   useIpcLifecycle(window.api);
   useEffect(() => recentFiles.attach(window.localStorage), []);
   useEffect(() => core.controller.attach(window), [core]);
 
   const activeFile = tabs.find((tab) => tab.id === activeId)?.file ?? null;
-  const className = ['app-shell', savedFlash ? 'app-shell--saved' : '', glass ? 'glass' : '']
+  const className = [
+    'app-shell',
+    savedFlash ? 'app-shell--saved' : '',
+    viewMode.zen ? 'app-shell--zen' : '',
+    glass ? 'glass' : '',
+  ]
     .filter(Boolean)
     .join(' ');
   return (

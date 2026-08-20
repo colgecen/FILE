@@ -10,15 +10,18 @@ body,
 }
 
 .app-shell {
-  position: relative;
-  height: 100%;
-  box-sizing: border-box;
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 0;
-  overflow: hidden;
   background: var(--bg-base);
+  color: var(--fg);
+}
+
+.app-shell--zen .app-shell__tabbar,
+.app-shell--zen .explorer-view,
+.app-shell--zen .status-bar {
+  display: none;
 }
 
 .app-shell--saved {

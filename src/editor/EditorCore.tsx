@@ -5,6 +5,7 @@ import { dirtyTracker } from '../core/dirty';
 import { historyModel } from '../core/history';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
+import { viewModeModel } from '../core/viewMode';
 import { setActiveEditor } from './activeEditor';
 import { defineEditorTheme, EDITOR_THEME_NAME } from './editorTheme';
 import { resolveModel, touchModel } from './editorModel';
@@ -89,11 +90,17 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     };
     const bookmarkDisposable = bookmarkModel.subscribe(renderBookmarks);
     const modelDisposable = editor.onDidChangeModel(renderBookmarks);
+    const applyWordWrap = (): void => {
+      editor.updateOptions({ wordWrap: viewModeModel.getState().wordWrap });
+    };
+    applyWordWrap();
+    const viewModeDisposable = viewModeModel.subscribe(applyWordWrap);
     return () => {
       cursorDisposable.dispose();
       contentDisposable.dispose();
       bookmarkDisposable();
       modelDisposable.dispose();
+      viewModeDisposable();
       editor.dispose();
       if (editorRef.current === editor) {
         editorRef.current = null;

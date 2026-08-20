@@ -5,6 +5,7 @@ import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
+import { viewModeModel } from '../core/viewMode';
 import { EditorCore } from './EditorCore';
 
 const api = vi.hoisted(() => ({
@@ -22,6 +23,7 @@ const api = vi.hoisted(() => ({
   editorGetModel: vi.fn(),
   onDidChangeModel: vi.fn(),
   deltaDecorations: vi.fn(),
+  updateOptions: vi.fn(),
   Range: vi.fn((startLine, startCol, endLine, endCol) => ({ startLine, startCol, endLine, endCol })),
 }));
 
@@ -51,6 +53,7 @@ const editorInstance = {
   onDidChangeModelContent: api.onDidChangeModelContent,
   onDidChangeModel: api.onDidChangeModel,
   deltaDecorations: api.deltaDecorations,
+  updateOptions: api.updateOptions,
 };
 
 const file: OpenFile = {
@@ -81,6 +84,9 @@ beforeEach(() => {
   api.deltaDecorations.mockReset();
   api.deltaDecorations.mockReturnValue([]);
   api.Range.mockReset();
+  api.updateOptions.mockReset();
+  api.updateOptions.mockImplementation(() => undefined);
+  viewModeModel.reset();
   bookmarkModel.reset();
   dirtyTracker.clearDirty(file.path);
   cursorModel.reset();
