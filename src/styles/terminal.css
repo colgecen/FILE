@@ -1,0 +1,12 @@
+.terminal-view__host {
+  flex: none;
+  height: 200px;
+  box-sizing: border-box;
+  border-top: 1px solid var(--border);
+  background: var(--bg-editor);
+  padding: 4px 8px;
+}
+
+.terminal-view__host .xterm {
+  height: 100%;
+}

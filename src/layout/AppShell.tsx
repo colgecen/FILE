@@ -5,6 +5,7 @@ import { useIpcLifecycle } from '../core/ipc';
 import { recentFiles } from '../core/recentFiles';
 import { useSaveFlash } from '../core/saveSignal';
 import { useTabsState } from '../core/tabs';
+import { useTerminalOpen } from '../core/terminalModel';
 import { MenuBar } from '../menus/MenuBar';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
@@ -13,6 +14,7 @@ import { ExplorerView } from '../ui/ExplorerView';
 import { PaneManager } from '../ui/PaneManager';
 import { StatusBar } from '../ui/StatusBar';
 import { TabBar } from '../ui/TabBar';
+import { TerminalView } from '../terminal/TerminalView';
 
 const CoreContext = createContext<Core | null>(null);
 
@@ -35,6 +37,7 @@ export function AppShell({
   const exitPending = useExitPending();
   const { tabs, activeId } = useTabsState();
   const savedFlash = useSaveFlash();
+  const terminalOpen = useTerminalOpen();
   useIpcLifecycle(window.api);
   useEffect(() => recentFiles.attach(window.localStorage), []);
   useEffect(() => core.controller.attach(window), [core]);
@@ -63,6 +66,7 @@ export function AppShell({
         <div className="app-shell__workspace">
           <ExplorerView />
           <PaneManager file={activeFile} />
+          {terminalOpen && <TerminalView />}
           {children}
         </div>
         <StatusBar />

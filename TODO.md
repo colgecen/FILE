@@ -335,8 +335,8 @@
 
 ## Faz 10 — Terminal (5 commit)
 
-- [ ] `xterm.js` panel bileşeni: menüden yeni terminal açılabilir (ilk aşamada taklit kabuk)
-    - Commit: `feat: xterm terminal panelini ekle`
+- [x] `xterm.js` panel bileşeni: menüden yeni terminal açılabilir (ilk aşamada taklit kabuk)
+    - Commit: `feat: xterm terminal panelini ekle` *(10.2–10.5 ertelendi: node-pty native derleme    gerektirir — kullanıcı kararı 2026-08-20)*
 - [ ] `node-pty` kurulumu + `@electron/rebuild` native derleme iş hattı (ADR D-012)
     - Commit: `chore: node-pty ve aabi derlemesini kur`
 - [ ] pty kanalları: spawn/kill/resize/data (Main Process, güvenlik kurallarına uygun)
