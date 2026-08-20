@@ -76,4 +76,13 @@ describe('TabsModel', () => {
     model.close('/a.ts');
     expect(model.getState().activeId).toBe('/b.ts');
   });
+
+  it('updateContent sekmenin dosya içeriğini günceller', () => {
+    const model = new TabsModel();
+    model.open(file('/a.ts', 'a.ts'));
+    model.open(file('/b.ts', 'b.ts'));
+    model.updateContent('/a.ts', 'yeni içerik');
+    expect(model.getState().tabs[1]!.file.content).toBe('içerik');
+    expect(model.getState().tabs[0]!.file.content).toBe('yeni içerik');
+  });
 });

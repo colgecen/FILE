@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { dirtyTracker } from '../core/dirty';
+import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
 import { EditorCore } from './EditorCore';
 
@@ -14,6 +16,8 @@ const api = vi.hoisted(() => ({
   setTheme: vi.fn(),
   onDidChangeCursorPosition: vi.fn(),
   getScrolledVisiblePosition: vi.fn(),
+  onDidChangeModelContent: vi.fn(),
+  editorGetModel: vi.fn(),
 }));
 
 vi.mock('./monacoSetup', () => ({
@@ -37,6 +41,8 @@ const editorInstance = {
   setModel: api.setModel,
   onDidChangeCursorPosition: api.onDidChangeCursorPosition,
   getScrolledVisiblePosition: api.getScrolledVisiblePosition,
+  getModel: api.editorGetModel,
+  onDidChangeModelContent: api.onDidChangeModelContent,
 };
 
 const file: OpenFile = {
@@ -59,6 +65,10 @@ beforeEach(() => {
   api.onDidChangeCursorPosition.mockReset();
   api.onDidChangeCursorPosition.mockImplementation(() => ({ dispose: () => undefined }));
   api.getScrolledVisiblePosition.mockReset();
+  api.onDidChangeModelContent.mockReset();
+  api.onDidChangeModelContent.mockImplementation(() => ({ dispose: () => undefined }));
+  api.editorGetModel.mockReset();
+  dirtyTracker.clearDirty(file.path);
 });
 
 describe('EditorCore', () => {
@@ -150,5 +160,22 @@ describe('EditorCore', () => {
     const { container } = render(<EditorCore file={file} />);
     cursor.current?.({ position: {} });
     expect(container.querySelectorAll('.editor-trail__mark')).toHaveLength(0);
+  });
+
+  it('içerik değişince dosyayı kirli işaretler ve içeriği günceller', () => {
+    const content = {
+      current: null as (() => void) | null,
+    };
+    api.onDidChangeModelContent.mockImplementation((fn: () => void) => {
+      content.current = fn;
+      return { dispose: () => undefined };
+    });
+    api.editorGetModel.mockReturnValue({ uri: { path: file.path }, getValue: () => 'yeni içerik' });
+    tabsModel.open(file);
+    render(<EditorCore file={file} />);
+    content.current?.();
+    expect(dirtyTracker.isDirty(file.path)).toBe(true);
+    expect(tabsModel.getState().tabs[0]!.file.content).toBe('yeni içerik');
+    tabsModel.reset();
   });
 });

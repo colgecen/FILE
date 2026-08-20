@@ -45,6 +45,14 @@ export class TabsModel {
     this.emit();
   }
 
+  updateContent(path: string, content: string): void {
+    const tabs = this.state.tabs.map((tab) =>
+      tab.file.path === path ? { ...tab, file: { ...tab.file, content } } : tab,
+    );
+    this.state = { ...this.state, tabs };
+    this.emit();
+  }
+
   close(id: string): void {
     const index = this.state.tabs.findIndex((tab) => tab.id === id);
     if (index === -1) return;

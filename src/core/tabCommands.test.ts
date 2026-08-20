@@ -24,13 +24,13 @@ beforeEach(() => {
 });
 
 describe('tab komutları', () => {
-  it('tab.close aktif sekmeyi kapatır ve kirli işaretini temizler', () => {
+  it('tab.close aktif sekmeyi kapatır ve kirli işaretini temizler', async () => {
     const registry = createRegistry();
     tabsModel.open(file('/a.ts'));
     tabsModel.open(file('/kirli.ts'));
     dirtyTracker.markDirty('/kirli.ts');
-    const result = registry.run('tab.close');
-    expect(result).resolves.toEqual({ ok: true });
+    const result = await registry.run('tab.close');
+    expect(result).toEqual({ ok: true });
     expect(tabsModel.getState().tabs.map((tab) => tab.id)).toEqual(['/a.ts']);
     expect(dirtyTracker.isDirty('/kirli.ts')).toBe(false);
   });

@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
+import { dirtyTracker } from '../core/dirty';
+import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
 import { defineEditorTheme, EDITOR_THEME_NAME } from './editorTheme';
-import { resolveModel } from './editorModel';
+import { resolveModel, touchModel } from './editorModel';
 import { installMonacoEnvironment, monaco } from './monacoSetup';
 
 type TrailBox = { readonly left: number; readonly top: number; readonly height: number };
@@ -54,8 +56,19 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
               spawnTrail(trailHost, box);
             }
           });
+    const contentDisposable = editor.onDidChangeModelContent(() => {
+      const model = editor.getModel();
+      if (model === null) return;
+      const path = model.uri.path;
+      touchModel(path);
+      tabsModel.updateContent(path, model.getValue());
+      if (!dirtyTracker.isDirty(path)) {
+        dirtyTracker.markDirty(path);
+      }
+    });
     return () => {
       cursorDisposable?.dispose();
+      contentDisposable.dispose();
       editor.dispose();
       editorRef.current = null;
     };

@@ -273,7 +273,7 @@
 ### 6.4 Sekme ve model yönetimi
 - [x] Sekme listesi, kirli işareti, kapama akışı; yeniden açma modeli
     - Commit: `feat: sekme durumlarini ekle`
-- [ ] LRU üst sınır: açık model sayısı sınırlanır, en az kullanılan geri yazılır (ARCHITECTURE 6.3)
+- [x] LRU üst sınır: açık model sayısı sınırlanır, en az kullanılan geri yazılır (ARCHITECTURE 6.3)
     - Commit: `feat: model bellek sinirini ekle`
 - [ ] İmleç satır/sütun olayları → StatusBar'a akış
     - Commit: `feat: imlec konum olaylarini ekle`
