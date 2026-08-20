@@ -2,6 +2,10 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppShell } from '../layout/AppShell';
+
+vi.mock('../editor/EditorCore', () => ({
+  EditorCore: () => <div data-testid="editor-core-mock" />,
+}));
 import { explorerModel } from '../core/explorer';
 import { createCore } from '../core/instances';
 import { paletteModel } from '../core/palette';

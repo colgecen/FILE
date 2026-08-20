@@ -1,6 +1,10 @@
 import { act, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppShell } from '../layout/AppShell';
+
+vi.mock('../editor/EditorCore', () => ({
+  EditorCore: () => <div data-testid="editor-core-mock" />,
+}));
 import { menuModel } from './menuModel';
 import { paletteModel } from '../core/palette';
 

@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'r
 import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
+import { useTabsState } from '../core/tabs';
+import { EditorCore } from '../editor/EditorCore';
 import { MenuBar } from '../menus/MenuBar';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
@@ -27,9 +29,11 @@ export function AppShell({
 }): React.JSX.Element {
   const core = useMemo(() => createCore(), []);
   const exitPending = useExitPending();
+  const { tabs, activeId } = useTabsState();
   useIpcLifecycle(window.api);
   useEffect(() => core.controller.attach(window), [core]);
 
+  const activeFile = tabs.find((tab) => tab.id === activeId)?.file ?? null;
   const className = glass ? 'app-shell glass' : 'app-shell';
   return (
     <CoreContext.Provider value={core}>
@@ -47,6 +51,7 @@ export function AppShell({
         )}
         <div className="app-shell__workspace">
           <ExplorerView />
+          <EditorCore file={activeFile} />
           {children}
         </div>
       </div>

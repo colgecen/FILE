@@ -17,8 +17,6 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    <AppShell glass={window.api.glass}>
-      <p>iskelet · api v{window.api.version}</p>
-    </AppShell>
+    <AppShell glass={window.api.glass} />
   </StrictMode>,
 );

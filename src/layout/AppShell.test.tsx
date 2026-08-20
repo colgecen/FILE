@@ -5,6 +5,10 @@ import { onFocusZoneChange } from '../core/focus';
 import { errorStore } from '../core/errorStore';
 import { AppShell } from './AppShell';
 
+vi.mock('../editor/EditorCore', () => ({
+  EditorCore: () => <div data-testid="editor-core-mock" />,
+}));
+
 describe('AppShell', () => {
   it('F1 ile menü bölgesine geçiş yapar', () => {
     const zones: string[] = [];

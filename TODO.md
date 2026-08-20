@@ -253,7 +253,7 @@
 ### 6.1 Monaco kurulumu
 - [x] `monaco-editor` + worker kurulumu (electron-vite worker kuralları, TS dil hizmeti worker'ı)
     - Commit: `chore: monaco ve worker kurulumunu ekle`
-- [ ] İlk mount: EditorCore bileşeni model ile monte edilir
+- [x] İlk mount: EditorCore bileşeni model ile monte edilir
     - Commit: `feat: ilk monaco mountunu ekle`
 - [ ] JetBrains Mono + `fontLigatures: true`, doğru tema altında okunabilirlik
     - Commit: `feat: editor font ve ligatur ayarlarini ekle`
