@@ -1,6 +1,9 @@
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createCore } from '../core/instances';
 import { panesModel } from '../core/panes';
+import { menuModel, selectableIndexOfItems } from '../menus/menuModel';
+import { AppShell } from '../layout/AppShell';
 import { PaneManager } from './PaneManager';
 
 vi.mock('../editor/EditorCore', () => ({
@@ -12,6 +15,7 @@ vi.mock('../editor/EditorCore', () => ({
 describe('PaneManager', () => {
   beforeEach(() => {
     panesModel.reset();
+    menuModel.close();
   });
 
   it('tek pane için bir düzenleyici çizer', () => {
@@ -44,5 +48,22 @@ describe('PaneManager', () => {
       panesModel.close(panesModel.getState().activePaneId);
     });
     expect(screen.getAllByTestId('editor-core')).toHaveLength(1);
+  });
+
+  it('Görünüm menüsünden Dikey Böl seçilince iki panel çizer', async () => {
+    render(<AppShell />);
+    act(() => {
+      menuModel.openAt(3);
+    });
+    const items = menuModel.itemsAt([]);
+    const realIndex = items.findIndex((item) => item.commandId === 'view.split.vertical');
+    act(() => {
+      menuModel.setActiveItem(selectableIndexOfItems(items, realIndex));
+    });
+    await act(async () => {
+      await createCore().registry.run('menubar.activate');
+    });
+    expect(screen.getAllByTestId('editor-core')).toHaveLength(2);
+    expect(panesModel.getState().layout.direction).toBe('vertical');
   });
 });

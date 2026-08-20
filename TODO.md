@@ -292,7 +292,7 @@
 
 - [x] PaneManager iskelet: ızgara düzeni, aktif panel takibi, EditorCore render
     - Commit: `feat: panel yoneticisi iskeletini kur`
-- [ ] Dikey bölme komutu (View menüsü, split vertical) çalışır durumda
+- [x] Dikey bölme komutu (View menüsü, split vertical) çalışır durumda
     - Commit: `feat: dikey bolme komutunu ekle`
 - [ ] Yatay bölme komutu (split horizontal) çalışır durumda
     - Commit: `feat: yatay bolme komutunu ekle`
