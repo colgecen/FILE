@@ -294,7 +294,7 @@
     - Commit: `feat: panel yoneticisi iskeletini kur`
 - [x] Dikey bölme komutu (View menüsü, split vertical) çalışır durumda
     - Commit: `feat: dikey bolme komutunu ekle`
-- [ ] Yatay bölme komutu (split horizontal) çalışır durumda
+- [x] Yatay bölme komutu (split horizontal) çalışır durumda
     - Commit: `feat: yatay bolme komutunu ekle`
 - [ ] Panel ayraçları: 1px vurgu mavisi, keskin köşeler, bölme oranları
     - Commit: `feat: panel ayraclarini ekle`

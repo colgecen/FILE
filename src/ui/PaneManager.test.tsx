@@ -66,4 +66,21 @@ describe('PaneManager', () => {
     expect(screen.getAllByTestId('editor-core')).toHaveLength(2);
     expect(panesModel.getState().layout.direction).toBe('vertical');
   });
+
+  it('Görünüm menüsünden Yatay Böl seçilince iki panel çizer', async () => {
+    render(<AppShell />);
+    act(() => {
+      menuModel.openAt(3);
+    });
+    const items = menuModel.itemsAt([]);
+    const realIndex = items.findIndex((item) => item.commandId === 'view.split.horizontal');
+    act(() => {
+      menuModel.setActiveItem(selectableIndexOfItems(items, realIndex));
+    });
+    await act(async () => {
+      await createCore().registry.run('menubar.activate');
+    });
+    expect(screen.getAllByTestId('editor-core')).toHaveLength(2);
+    expect(panesModel.getState().layout.direction).toBe('horizontal');
+  });
 });
