@@ -8,6 +8,7 @@ import { Keymap } from './keymap';
 import { registerMenuCommands } from './menuCommands';
 import { registerNavCommands } from './navCommands';
 import { registerTabCommands } from './tabCommands';
+import { registerEditCommands } from '../editor/editorCommands';
 
 export type Core = {
   readonly registry: CommandRegistry;
@@ -32,6 +33,7 @@ export function createCore(): Core {
   registerFocusCommands(registry);
   registerExitCommands(registry);
   registerTabCommands(registry);
+  registerEditCommands(registry.register.bind(registry));
   registerDefaultBindings(keymap);
   coreInstance = { registry, keymap, controller: new KeyboardController(keymap, registry) };
   return coreInstance;

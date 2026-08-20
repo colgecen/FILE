@@ -3,6 +3,7 @@ import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
+import { setActiveEditor } from './activeEditor';
 import { defineEditorTheme, EDITOR_THEME_NAME } from './editorTheme';
 import { resolveModel, touchModel } from './editorModel';
 import { installMonacoEnvironment, monaco } from './monacoSetup';
@@ -47,6 +48,7 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     monaco.editor.setTheme(EDITOR_THEME_NAME);
     const editor = monaco.editor.create(host, BASE_OPTIONS);
     editorRef.current = editor;
+    setActiveEditor(editor);
     const trailHost = trailHostRef.current;
     const cursorDisposable = editor.onDidChangeCursorPosition((event) => {
       const model = editor.getModel();
@@ -73,7 +75,10 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       cursorDisposable.dispose();
       contentDisposable.dispose();
       editor.dispose();
-      editorRef.current = null;
+      if (editorRef.current === editor) {
+        editorRef.current = null;
+      }
+      setActiveEditor(null);
     };
   }, []);
 

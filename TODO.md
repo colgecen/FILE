@@ -279,7 +279,7 @@
     - Commit: `feat: imlec konum olaylarini ekle`
 
 ### 6.5 Editör komutları (Keymap → editor)
-- [ ] Düzenleme komutları: geri al/yinele, kes/kopyala/yapıştır, yorum aç/kapat (Edit menüsüyle birebir)
+- [x] Düzenleme komutları: geri al/yinele, kes/kopyala/yapıştır, yorum aç/kapat (Edit menüsüyle birebir)
     - Commit: `feat: duzenleme komutlarini bagla`
 - [ ] Bul/değiştir (regexp destekli); uygulama içi arama yüzeyi
     - Commit: `feat: bul ve degistir komutlarini ekle`
