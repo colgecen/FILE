@@ -388,7 +388,7 @@
 
 - [x] Komut paleti (Ctrl+I) end-to-end testleri; `tree` → gezgin açılış senaryosu
     - Commit: `test: komut paleti akislarini test et`
-- [ ] F1 menü modeli testleri (klavye senaryoları: gezinme, kilit, Esc)
+- [x] F1 menü modeli testleri (klavye senaryoları: gezinme, kilit, Esc)
     - Commit: `test: menü modeli klavye testlerini ekle`
 - [ ] Gezgin gezinme testleri (F3/Tab/yön tuşları, Enter/Esc)
     - Commit: `test: gezgin gezinme testlerini ekle`
