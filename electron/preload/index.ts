@@ -6,6 +6,7 @@ const api: Api = {
   glass: process.env['TRANSPARENT'] === '1',
   openFile: () => ipcRenderer.invoke('dialog:open-file'),
   openFolder: () => ipcRenderer.invoke('dialog:open-folder'),
+  saveFileAs: (defaultPath) => ipcRenderer.invoke('dialog:save-as', defaultPath),
   readFile: (path) => ipcRenderer.invoke('fs:read-file', path),
   writeFile: (path, content) => ipcRenderer.invoke('fs:write-file', path, content),
   readDir: (path) => ipcRenderer.invoke('fs:read-dir', path),

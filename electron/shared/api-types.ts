@@ -41,6 +41,7 @@ export type Api = {
   readonly glass: boolean;
   openFile(): Promise<OpenFileResult | null>;
   openFolder(): Promise<FolderResult | null>;
+  saveFileAs(defaultPath: string): Promise<string | null>;
   readFile(path: string): Promise<OpenFileResult | null>;
   writeFile(path: string, content: string): Promise<WriteFileResult>;
   readDir(path: string): Promise<DirEntry[]>;

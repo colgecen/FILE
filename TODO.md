@@ -324,7 +324,7 @@
     - Commit: `feat: dosya acma akisini ekle`
 - [x] Son Kullanılanlar listesi: kalıcı depo, menüden erişim
     - Commit: `feat: son kullanilanlar listesini ekle`
-- [ ] Kaydet / Kaydet As / Tümünü Kaydet + `:w` palet komutu; kirli işareti temizlenir
+- [x] Kaydet / Kaydet As / Tümünü Kaydet + `:w` palet komutu; kirli işareti temizlenir
     - Commit: `feat: kaydetme komutlarini ekle`
 - [ ] Kaydetme geri bildirimi: pencere çerçevesinde kısa mavi glow animasyonu
     - Commit: `feat: kaydetme isigi efektini ekle`

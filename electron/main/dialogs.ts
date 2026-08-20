@@ -39,4 +39,14 @@ export function registerDialogHandlers(getWindow: () => BrowserWindow | null): v
     const path = result.filePaths[0]!;
     return { path, name: path.split(/[\\/]/).pop() ?? path };
   });
+
+  ipcMain.handle('dialog:save-as', async (_event, defaultPath: string): Promise<string | null> => {
+    if (typeof defaultPath !== 'string') return null;
+    const window = getWindow();
+    const result = window
+      ? await dialog.showSaveDialog(window, { defaultPath })
+      : await dialog.showSaveDialog({ defaultPath });
+    if (result.canceled || !result.filePath) return null;
+    return result.filePath;
+  });
 }
