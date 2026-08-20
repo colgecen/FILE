@@ -358,7 +358,7 @@
     - Commit: `feat: yer imi komutlarini ekle`
 - [x] Geri alma ağacı (Undo Tree) görünümü ve komutları
     - Commit: `feat: geri alma agaci komutlarini ekle`
-- [ ] Go to: dosyaya/sembole/tanıma/referansa git; geri/ileri gezinme
+- [x] Go to: dosyaya/sembole/tanıma/referansa git; geri/ileri gezinme
     - Commit: `feat: go to komutlarini ekle`
 - [ ] Görünüm modları: zen modu, tam ekran, kelime sarmalama
     - Commit: `feat: gorunum modlarini ekle`

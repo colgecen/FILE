@@ -1,7 +1,13 @@
 import { getActiveEditor } from '../editor/activeEditor';
 import type { Bookmark } from './bookmarks';
 
-export function gotoBookmark(target: Bookmark): boolean {
+export type TargetPosition = {
+  readonly path: string;
+  readonly line: number;
+  readonly column: number;
+};
+
+export function gotoPosition(target: TargetPosition): boolean {
   const editor = getActiveEditor();
   if (editor === null) return false;
   const model = editor.getModel();
@@ -11,4 +17,8 @@ export function gotoBookmark(target: Bookmark): boolean {
   editor.revealPosition(position);
   editor.focus();
   return true;
+}
+
+export function gotoBookmark(target: Bookmark): boolean {
+  return gotoPosition(target);
 }

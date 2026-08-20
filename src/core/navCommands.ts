@@ -145,6 +145,10 @@ export function registerNavCommands(registry: CommandRegistry): void {
         const ok = restoreHistory(item.history);
         return ok ? { ok: true } : { ok: false, error: 'Geçmiş dosyası açık değil' };
       }
+      if (item.category === 'file' && item.filePath !== undefined) {
+        tabsModel.activate(item.filePath);
+        return { ok: true };
+      }
       await registry.run(item.commandId);
       return { ok: true };
     },

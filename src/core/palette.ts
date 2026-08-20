@@ -51,6 +51,20 @@ export class PaletteModel {
     this.emit();
   }
 
+  showFiles(files: readonly OpenFileRef[]): void {
+    this.state = {
+      query: '',
+      items: files.map((file) => ({
+        commandId: 'file.open',
+        title: file.name,
+        category: 'file',
+        filePath: file.path,
+      })),
+      activeIndex: 0,
+    };
+    this.emit();
+  }
+
   activeBookmark(): Bookmark | undefined {
     return this.state.items[this.state.activeIndex]?.bookmark;
   }
