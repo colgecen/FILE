@@ -281,7 +281,7 @@
 ### 6.5 Editör komutları (Keymap → editor)
 - [x] Düzenleme komutları: geri al/yinele, kes/kopyala/yapıştır, yorum aç/kapat (Edit menüsüyle birebir)
     - Commit: `feat: duzenleme komutlarini bagla`
-- [ ] Bul/değiştir (regexp destekli); uygulama içi arama yüzeyi
+- [x] Bul/değiştir (regexp destekli); uygulama içi arama yüzeyi
     - Commit: `feat: bul ve degistir komutlarini ekle`
 - [ ] Çoklu imleç/sütun-dikdörtgen seçim/yer imleri temel bağlamaları (tam akış Faz 11)
     - Commit: `feat: coklu secim ve yer imi temellerini ekle`

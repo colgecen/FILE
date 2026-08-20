@@ -37,8 +37,10 @@ describe('editorCommands', () => {
     runEditorAction('edit.paste');
     runEditorAction('edit.comment.toggle');
     runEditorAction('edit.comment.toggle.block');
+    runEditorAction('edit.find');
+    runEditorAction('edit.replace');
 
-    expect(fake.focuses()).toBe(7);
+    expect(fake.focuses()).toBe(9);
     expect(fake.triggers).toEqual([
       { source: 'keyboard', action: 'undo', payload: null },
       { source: 'keyboard', action: 'redo', payload: null },
@@ -47,6 +49,21 @@ describe('editorCommands', () => {
       { source: 'keyboard', action: 'editor.action.clipboardPasteAction', payload: null },
       { source: 'keyboard', action: 'editor.action.commentLine', payload: null },
       { source: 'keyboard', action: 'editor.action.blockComment', payload: null },
+      { source: 'keyboard', action: 'actions.find', payload: null },
+      { source: 'keyboard', action: 'editor.action.startFindReplaceAction', payload: null },
+    ]);
+  });
+
+  it('regexp değiştirme önce değiştirme yüzeyini açar sonra regexp seçeneğini etkinleştirir', () => {
+    const fake = fakeEditor();
+    setActiveEditor(fake.editor);
+
+    runEditorAction('edit.replace.regexp');
+
+    expect(fake.focuses()).toBe(1);
+    expect(fake.triggers).toEqual([
+      { source: 'keyboard', action: 'editor.action.startFindReplaceAction', payload: null },
+      { source: 'keyboard', action: 'toggleFindRegex', payload: null },
     ]);
   });
 
@@ -54,7 +71,7 @@ describe('editorCommands', () => {
     expect(runEditorAction('edit.undo')).toEqual({ ok: false, error: 'Düzenleyici etkin değil' });
   });
 
-  it('kayıt sırasında yedi düzenleme komutu tanımlar', () => {
+  it('kayıt sırasında on düzenleme komutu tanımlar', () => {
     const ids: string[] = [];
     registerEditCommands((command) => ids.push(command.id));
     expect(ids).toEqual([
@@ -65,6 +82,9 @@ describe('editorCommands', () => {
       'edit.paste',
       'edit.comment.toggle',
       'edit.comment.toggle.block',
+      'edit.find',
+      'edit.replace',
+      'edit.replace.regexp',
     ]);
   });
 });
