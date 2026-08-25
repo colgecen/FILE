@@ -5,6 +5,7 @@
   "type": "module",
   "main": "out/main/index.js",
   "description": "Keyboard-first desktop editor — Electron, Monaco & local AI",
+  "author": "colgecen <alperencolgecen@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -14,9 +15,55 @@
     "url": "https://github.com/colgecen/FILE/issues"
   },
   "homepage": "https://github.com/colgecen/FILE#readme",
+  "build": {
+    "appId": "com.colgecen.file",
+    "productName": "FILE",
+    "copyright": "Copyright © 2026 colgecen",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] },
+        { "target": "deb", "arch": ["x64"] },
+        { "target": "rpm", "arch": ["x64"] },
+        { "target": "tar.gz", "arch": ["x64"] }
+      ],
+        "category": "Development"
+    },
+    "npmRebuild": false,
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] },
+        { "target": "zip", "arch": ["x64"] }
+      ]
+    },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] },
+        { "target": "zip", "arch": ["x64", "arm64"] }
+      ],
+      "category": "public.app-category.developer-tools"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
+    "dist": "electron-builder",
+    "dist:linux": "electron-builder --linux",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:all": "electron-builder --linux --win --mac",
     "start": "electron-vite preview",
     "preview": "electron-vite preview",
     "lint": "eslint electron src --report-unused-disable-directives",
@@ -38,6 +85,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/coverage-v8": "^2.1.9",
     "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
     "electron-vite": "^2.3.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
