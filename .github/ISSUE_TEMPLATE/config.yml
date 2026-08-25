@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Güvenlik bildirimi
+    url: https://github.com/colgecen/FILE/blob/master/SECURITY.md
+    about: Güvenlik açığı için herkese açık issue açmayın
+  - name: Destek
+    url: https://github.com/colgecen/FILE/blob/master/SUPPORT.md
+    about: Doküman ve destek bilgileri
