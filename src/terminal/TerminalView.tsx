@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Terminal } from 'xterm';
+import { setActivePtyId, getActivePtyId } from '../core/terminalRegistry';
 
 const THEME = {
   background: '#03050a',
@@ -64,6 +65,7 @@ export function TerminalView(): React.JSX.Element {
     api.ptySpawn({ cols, rows }).then((result: { id: string } | null) => {
       if (result && result.id) {
         ptyIdRef.current = result.id;
+        setActivePtyId(result.id);
       }
     });
 
@@ -105,6 +107,9 @@ export function TerminalView(): React.JSX.Element {
       const currentPtyId = ptyIdRef.current;
       if (currentPtyId) {
         api.ptyKill(currentPtyId);
+      }
+      if (currentPtyId === getActivePtyId()) {
+        setActivePtyId(null);
       }
       if (disposeDataRef.current) {
         disposeDataRef.current();

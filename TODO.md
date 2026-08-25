@@ -343,7 +343,7 @@
     - Commit: `feat: pty kanallarini ekle`
 - [ ] Terminal komutları: yeni terminal, terminali böl, terminali kapat (Terminal menüsü)
     - Commit: `feat: terminal komutlarini ekle`
-- [ ] Görev akışı: görev çalıştır / son görevi tekrarla
+- [x] Görev akışı: görev çalıştır / son görevi tekrarla
     - Commit: `feat: gorev calistirma komutlarini ekle`
 
 ---
