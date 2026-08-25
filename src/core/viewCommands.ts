@@ -1,3 +1,4 @@
+import { clockModel } from './clock';
 import { viewModeModel } from './viewMode';
 import type { CommandDef } from './types';
 
@@ -30,6 +31,16 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
     title: 'Kelime Sarmalama',
     run: () => {
       viewModeModel.toggleWordWrap();
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'view.clock.toggle',
+    category: 'view',
+    title: 'Saat Göster/Gizle',
+    run: () => {
+      clockModel.toggle();
       return { ok: true };
     },
   });

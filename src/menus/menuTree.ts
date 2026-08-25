@@ -111,6 +111,7 @@ export const menuTree: readonly MenuTopLevel[] = [
       command('view.fullscreen', 'Tam Ekran'),
       command('view.zen', 'Zen Modu'),
       command('view.wordwrap', 'Kelime Sarmalama'),
+      command('view.clock.toggle', 'Saat Göster/Gizle'),
     ],
   },
   {

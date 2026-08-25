@@ -64,6 +64,7 @@ const SEEDS: readonly CommandSeed[] = [
   { id: 'view.fullscreen', title: 'Tam Ekran', category: 'view' },
   { id: 'view.zen', title: 'Zen Modu', category: 'view' },
   { id: 'view.wordwrap', title: 'Kelime Sarmalama', category: 'view' },
+  { id: 'view.clock.toggle', title: 'Saat Göster/Gizle', category: 'view', aliases: ['saat', 'clock'] },
   { id: 'view.layout.single', title: 'Tek Pencere', category: 'view' },
   { id: 'view.split.vertical', title: 'Dikey Böl', category: 'view' },
   { id: 'view.split.horizontal', title: 'Yatay Böl', category: 'view' },

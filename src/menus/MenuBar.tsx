@@ -2,6 +2,7 @@ import { useCore } from '../layout/AppShell';
 import { useFocusZone } from '../core/focus';
 import { MenuPanel } from './MenuPanel';
 import { menuModel, useMenuModelState } from './menuModel';
+import { Clock } from '../ui/Clock';
 
 export function MenuBar(): React.JSX.Element {
   const state = useMenuModelState();
@@ -40,6 +41,7 @@ export function MenuBar(): React.JSX.Element {
   return (
     <nav className="menubar" role="menubar" aria-label="Menü çubuğu">
       {items}
+      <Clock />
     </nav>
   );
 }

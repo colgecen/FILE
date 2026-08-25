@@ -438,6 +438,19 @@ body,
   color: var(--accent);
 }
 
+.menubar__clock {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-left: 1px solid var(--border);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
 .menu-panel {
   position: absolute;
   top: 100%;
