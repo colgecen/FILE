@@ -144,7 +144,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/styles/app.css:40-46`, `src/editor/EditorCore.tsx:119-123`, `src/layout/AppShell.tsx:74-76`
   - İş: Hiç sekme yokken `TabBar` 32px yüksekliği korur (çökmez); `EditorCore` placeholder'ı barın altındaki workspace'de ortalanır. `min-height: 32px` zaten var — boş durumda `aria-hidden` değil, erişilebilir kalır.
 
-- [ ] **A7 — Dosya açıldığında odak editöre geçer + sekme aktifleşir (gezgin/diyalog sonrası)**
+- [x] **A7 — Dosya açıldığında odak editöre geçer + sekme aktifleşir (gezgin/diyalog sonrası)**
   - Commit: `fix: dosya acildiginda odagi editore ve aktif sekmeye tasi`
   - Dosyalar: `src/core/fileCommands.ts:90-102`, `src/core/tabs.ts:29-38`, `src/core/focus.ts:7-43`, `src/ui/ExplorerView.tsx`
   - İş: `adoptFile()` sonrası `focusManager.set('editor')` çağrılır. `tabsModel.open()` zaten `activeId`'yi ayarlar; ek olarak `ExplorerView` Enter akışında da odak transferi doğrulanır (`src/core/explorer.ts` ve `src/ui/ExplorerView.test.tsx` ile uyumlu).

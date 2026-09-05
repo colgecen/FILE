@@ -1,6 +1,7 @@
 import type { Api, OpenFileResult } from '../../electron/shared/api-types';
 import { reportError } from './appErrors';
 import { dirtyTracker } from './dirty';
+import { focusManager } from './focus';
 import { openFilesModel } from './openFiles';
 import { recentFiles } from './recentFiles';
 import { saveSignal } from './saveSignal';
@@ -99,6 +100,7 @@ export function adoptFile(file: OpenFileResult): void {
   }
   recentFiles.add(file.path);
   tabsModel.open(file);
+  focusManager.set('editor');
 }
 
 export function registerFileCommands(register: (command: CommandDef) => void): void {
