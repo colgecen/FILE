@@ -320,7 +320,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
 
 ### Faz C — Final Temizlik ve Parlatma
 
-- [ ] **C1 — "Yakında" rozeti tamamen kalktı mı? — kapsamlı tarama ve temizlik**
+- [x] **C1 — "Yakında" rozeti tamamen kalktı mı? — kapsamlı tarama ve temizlik**
   - Commit: `refactor: yakinda rozetini tamamen kaldir`
   - Dosyalar: `src/menus/MenuPanel.tsx:56-58`, `src/styles/app.css:502-511`, `src/core/menuCommands.ts:4-7`
   - İş: `MenuPanel`'de `.menu-panel__soon` stili korunabilir ama hiçbir komut `placeholder:true` kalmayana kadar rozet görünmez. Tarama: `rg -n "placeholder.*true" src/` 0 sonuç beklenir (veya yalnızca testlerde). `PLACEHOLDER` helper'ı (`src/core/menuCommands.ts:4-7`) artık kullanılmıyorsa kaldırılır veya yalnızca bilinmeyen id fallback'i olarak tutulur.
