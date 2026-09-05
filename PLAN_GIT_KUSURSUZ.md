@@ -144,7 +144,7 @@
   - Dosyalar: `src/ui/DiffView.tsx` (yeni) `Monaco` read-only diff (token renkler `src/editor/editorTheme.ts:10-15`), seçili satır `+` → `git add -p` iskelet (gerçek patch apply ileride); şimdilik tüm dosya stage.
   - Kabul: Dosyaya tık → diff görünür, `Enter` stage, `Esc` geri.
 
-- [ ] **G3.6 — G3 testleri (stage/commit/push/pull/branch)**
+- [x] **G3.6 — G3 testleri (stage/commit/push/pull/branch)**
   - Commit: `test: git akis testlerini ekle`
   - Dosyalar: `src/core/gitCommands.test.ts`, `src/ui/GitPanel.test.tsx` (yeni, `fireEvent` `Tab`/`Enter`, `Ctrl+Enter` commit), `electron/main/gitHandlers.test.ts` (git mock).
   - Kabul: `npm test` 370+ yeşil, `git commit` boş mesajda `ok:false`.
