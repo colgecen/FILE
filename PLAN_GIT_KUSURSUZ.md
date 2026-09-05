@@ -70,7 +70,7 @@
   - Dosyalar: `src/core/gitModel.ts` `loadStatus(cwd, api.gitStatus)`; `electron/main/gitHandlers.ts` `git:status` handler (`git status --porcelain -uall`), parser `M `, `??` vb. → `GitFile`; `src/menus/menuTree.ts:99-102` `Kaynak Kontrolü` artık gerçek listeyi tetikler.
   - Kabul: `src/core/gitModel.test.ts` porcelain parse yeşil; `paletteFlow` benzeri testte status listesi görünür.
 
-- [ ] **G1.3 — Diff önizleme (`git diff --unified`) — iskelet diff view**
+- [x] **G1.3 — Diff önizleme (`git diff --unified`) — iskelet diff view**
   - Commit: `feat: git diff onizlemesini ekle`
   - Dosyalar: `src/core/gitCommands.ts` `git.diff` komutu `window.api.gitDiff(path)` → `paletteModel.showFiles` veya yeni `DiffPanel` iskeleti (`src/ui/DiffView.tsx` yeni, `tokens.css` tokenlar, `border-radius:0`); `electron/main/gitHandlers.ts` `git:diff` handler.
   - Kabul: Dosya seç → Enter → diff paletinde `+`/`-` satırları `var(--accent-soft)`/`var(--accent-dim)` (kırmızı yok).
