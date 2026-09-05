@@ -63,6 +63,7 @@ export type Api = {
   onMetrics(listener: (snapshot: TelemetrySnapshot) => void): () => void;
   setFullscreen(enabled: boolean): Promise<boolean>;
   appExit(): Promise<void>;
+  newWindow(): Promise<void>;
   ptySpawn(options: PtySpawnOptions): Promise<{ id: string } | null>;
   ptyWrite(id: string, data: string): Promise<boolean>;
   ptyResize(id: string, cols: number, rows: number): Promise<boolean>;

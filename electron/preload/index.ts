@@ -24,6 +24,7 @@ const api: Api = {
   },
   setFullscreen: (enabled) => ipcRenderer.invoke('window:set-fullscreen', enabled),
   appExit: () => ipcRenderer.invoke('app:exit'),
+  newWindow: () => ipcRenderer.invoke('app:new-window'),
   ptySpawn: (options) => ipcRenderer.invoke('pty:spawn', options),
   ptyWrite: (id, data) => ipcRenderer.invoke('pty:write', id, data),
   ptyResize: (id, cols, rows) => ipcRenderer.invoke('pty:resize', id, cols, rows),

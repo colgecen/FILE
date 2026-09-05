@@ -187,7 +187,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: `untitled-${Date.now()}.ts` adında `content: ''`, `language: 'plaintext'` dosya oluştur; `tabsModel.open()` ile sekme aç; `dirtyTracker.markDirty(path)` ile kirli işaretle. `CommandRegistry` üzerine yaz: `file.new.file` gerçek `run`. Rozet kalkar.
   - Doğrulama: Dosya → Yeni Dosya → sekme görünür, adı `untitled-...`, kirli nokta var.
 
-- [ ] **B1.2 — Yeni Pencere (file.new.window): Electron yeni pencere**
+- [x] **B1.2 — Yeni Pencere (file.new.window): Electron yeni pencere**
   - Commit: `feat: yeni pencere komutunu ekle`
   - Dosyalar: `electron/main/window.ts` (BrowserWindow oluşturma), `electron/preload/index.ts` (`window.api.newWindow`), `src/api.d.ts`, `src/core/fileCommands.ts`
   - İş: Main'de `newWindow` IPC kanalı (`app:new-window`) eklenir; `BrowserWindow` aynı ayarlarla (`contextIsolation`, `sandbox`, 1px vurgu mavi kenarlık, `ARCHITECTURE.md §2.1`) açılır. Renderer'dan `window.api.newWindow()` çağrılır. Hata yoksa `ok:true`.

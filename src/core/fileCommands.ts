@@ -114,12 +114,23 @@ export function adoptFile(file: OpenFileResult): void {
   focusManager.set('editor');
 }
 
+export async function runNewWindow(api: Pick<Api, 'newWindow'>): Promise<CommandResult> {
+  await api.newWindow();
+  return { ok: true };
+}
+
 export function registerFileCommands(register: (command: CommandDef) => void): void {
   register({
     id: 'file.new.file',
     category: 'file',
     title: 'Yeni Dosya',
     run: () => createNewFile(),
+  });
+  register({
+    id: 'file.new.window',
+    category: 'file',
+    title: 'Yeni Pencere',
+    run: () => runNewWindow(window.api),
   });
   register({
     id: 'file.open.file',
