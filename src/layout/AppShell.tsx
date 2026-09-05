@@ -4,6 +4,7 @@ import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
 import { recentFiles } from '../core/recentFiles';
 import { useSaveFlash } from '../core/saveSignal';
+import { perfModel } from '../core/perfModel';
 import { useGitPanelState } from '../core/gitModel';
 import { useTabsState } from '../core/tabs';
 import { useTerminalOpen } from '../core/terminalModel';
@@ -48,6 +49,7 @@ export function AppShell({
   const viewMode = useViewMode();
   const gitState = useGitPanelState();
   useIpcLifecycle(window.api);
+  useEffect(() => perfModel.init(), []);
   useEffect(() => recentFiles.attach(window.localStorage), []);
   useEffect(() => core.controller.attach(window), [core]);
 

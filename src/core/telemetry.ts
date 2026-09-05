@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Api, TelemetrySnapshot } from '../../electron/shared/api-types';
+import { perfModel } from './perfModel';
 
 const THROTTLE_MS = 500;
+const THROTTLE_SLOW = 1000;
 
 type TelemetryListener = (snapshot: TelemetrySnapshot) => void;
 
@@ -13,10 +15,12 @@ export class TelemetryStore {
 
   start(windowApi: Pick<Api, 'onMetrics' | 'sysStart'>): void {
     if (this.unsubscribe !== null) return;
+    if (!perfModel.getState().telemetry) return;
+    const throttle = perfModel.getState().reducedMotion ? THROTTLE_SLOW : THROTTLE_MS;
     this.unsubscribe = windowApi.onMetrics((snapshot: TelemetrySnapshot) => {
       this.latest = snapshot;
       const now = Date.now();
-      if (now - this.lastEmittedAt < THROTTLE_MS) return;
+      if (now - this.lastEmittedAt < throttle) return;
       this.lastEmittedAt = now;
       this.listeners.forEach((listener) => listener(snapshot));
     });

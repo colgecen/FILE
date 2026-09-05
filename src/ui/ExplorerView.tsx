@@ -1,9 +1,13 @@
+import { perfModel } from '../core/perfModel';
 import { useExplorerState, explorerModel } from '../core/explorer';
 
 export function ExplorerView(): React.JSX.Element | null {
   const state = useExplorerState();
 
   if (!state.isOpen) return null;
+
+  const allRows = explorerModel.rows();
+  const rows = perfModel.getState().explorerVirtual ? allRows.slice(0, 80) : allRows;
 
   return (
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
@@ -14,7 +18,7 @@ export function ExplorerView(): React.JSX.Element | null {
             YÜKLENİYOR…
           </div>
         )}
-        {explorerModel.rows().map((row) => {
+        {rows.map((row) => {
           const active = row.path === state.selectedPath;
           const className = ['explorer-row', `explorer-row--depth-${row.depth}`]
             .concat(active ? ['explorer-row--active'] : [])

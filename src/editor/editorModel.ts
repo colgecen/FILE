@@ -1,8 +1,13 @@
+import { perfModel } from '../core/perfModel';
 import type { OpenFile } from '../core/types';
 import { tabsModel } from '../core/tabs';
 import { monaco } from './monacoSetup';
 
 export const MAX_MODELS = 10;
+
+function getLimit(): number {
+  return perfModel.getState().modelLimit;
+}
 
 const touchOrder = new Map<string, number>();
 let clock = 0;
@@ -22,12 +27,13 @@ function modelUri(path: string): monaco.Uri {
 }
 
 export function pruneModels(): void {
-  if (touchOrder.size <= MAX_MODELS) return;
+  const limit = getLimit();
+  if (touchOrder.size <= limit) return;
   const openPaths = new Set(tabsModel.getState().tabs.map((tab) => tab.file.path));
   const candidates = [...touchOrder.entries()]
     .filter(([path]) => !openPaths.has(path))
     .sort((a, b) => a[1] - b[1]);
-  let excess = touchOrder.size - MAX_MODELS;
+  let excess = touchOrder.size - limit;
   for (const [path] of candidates) {
     if (excess <= 0) break;
     const model = monaco.editor.getModel(modelUri(path));
@@ -45,8 +51,9 @@ export function resolveModel(file: OpenFile): monaco.editor.ITextModel {
   if (existing !== null) {
     return existing;
   }
+  const content = file.content.length > 10_000_000 ? file.content.slice(0, 10_000_000) : file.content;
   const model = monaco.editor.createModel(
-    file.content,
+    content,
     file.language === '' ? 'plaintext' : file.language,
     modelUri(file.path),
   );

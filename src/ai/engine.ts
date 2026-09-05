@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { perfModel } from '../core/perfModel';
 import type {
   AIProgress,
   AIStatus,
@@ -62,6 +63,9 @@ export class AIEngine {
   }
 
   async ensureModel(modelId: ModelId): Promise<void> {
+    if (perfModel.getState().aiLazy && this.worker === null && this.state.status === 'idle') {
+      // lazy: only init when actually needed via ensureModel — already here
+    }
     if (this.state.modelId === modelId && this.state.status !== 'loading') return;
     this.init(modelId);
     return new Promise<void>((resolve, reject) => {

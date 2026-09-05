@@ -23,7 +23,7 @@
   - Commit: `feat: performans ayar panelini ekle`
   - Dosyalar: `src/ui/SettingsPanel.tsx` (yeni) + `src/styles/perf.css` + `src/layout/AppShell.tsx` entegrasyon, `src/menus/menuTree.ts` `Ayarlar` öğesi.
 
-- [ ] **P1.1 — Monaco LRU sınırı ayarlı + model dispose**
+- [x] **P1.1 — Monaco LRU sınırı ayarlı + model dispose**
   - Commit: `feat: monaco lru sinirini ayarli yap`
   - Dosyalar: `src/editor/editorModel.ts` `MAX_MODELS = perfModel.getState().modelLimit` (10/20/50), en eski model `dispose()`.
 

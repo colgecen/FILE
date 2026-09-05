@@ -705,3 +705,12 @@ textarea {
   text-shadow: 0 0 8px var(--accent);
   box-shadow: 0 0 10px rgba(0, 210, 255, 0.25) !important;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

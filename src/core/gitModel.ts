@@ -92,7 +92,22 @@ export class GitModel {
     this.emit();
   }
 
+  private lastLoad = 0;
+  private cache: { cwd: string; at: number; branch: GitState['branch']; files: GitState['files']; log: GitState['log'] } | null =
+    null;
+
   async loadStatus(api: Pick<Api, 'gitBranch' | 'gitStatus' | 'gitLog'>, cwd: string): Promise<void> {
+    const now = Date.now();
+    if (this.cache !== null && this.cache.cwd === cwd && now - this.cache.at < 5000) {
+      this.setBranch(this.cache.branch, this.state.dirty);
+      this.setFiles(this.cache.files);
+      this.setLog(this.cache.log);
+      return;
+    }
+    if (now - this.lastLoad < 500) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    this.lastLoad = Date.now();
     this.setLoading(true);
     this.setRoot(cwd);
     try {
@@ -104,6 +119,7 @@ export class GitModel {
       else this.setFiles([]);
       const log = await api.gitLog(cwd, 20);
       if (log !== null) this.setLog(log);
+      this.cache = { cwd, at: Date.now(), branch: this.state.branch, files: this.state.files, log: this.state.log };
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       this.setError(msg);
