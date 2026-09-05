@@ -107,7 +107,7 @@
   - Dosyalar: `src/core/defaultBindings.ts` `zone:'git'` için `git.next` (`Tab`), `git.prev` (`Shift+Tab`), `git.up`/`down` (`ArrowUp/Down`), `git.stage` (`Enter`/`Space`), `git.commit` (`Ctrl+Enter`), `git.push` (`Ctrl+Shift+P` benzeri ama çakışmasız — `Keymap` çakışma tespiti `src/core/keymap.ts` yeşil); `src/core/focus.ts:7-43` `FocusZone` `'git'` ekle (`src/core/types.ts:84`).
   - Kabul: `F1` → `Görünüm → Kaynak Kontrolü` → odak `git`, `Tab` dosyalar, `Ctrl+Enter` commit, `Esc` editöre döner, fare olmadan tümü.
 
-- [ ] **G2.5 — Boş / yükleme / hata durumları (siyah, mavi, kırmızı hata yalnızca)**
+- [x] **G2.5 — Boş / yükleme / hata durumları (siyah, mavi, kırmızı hata yalnızca)**
   - Commit: `fix: git panel bos yukleme hata durumlarini duzelt`
   - Dosyalar: `src/ui/GitPanel.tsx` `loading` → `...` `var(--accent-soft)` `Orbitron`; `error` → `1px solid var(--error)` panel (`src/styles/app.css:247-254` benzeri), `StatusBar` kırmızı rozet (`src/ui/StatusBar.tsx:1-*`) yalnızca gerçek hata; `src/styles/app.css` `min-height` korunur (`src/styles/app.css:40-45` gibi).
   - Kabul: Depo değilse “Git deposu değil” `var(--accent-dim)`, yüklenirken spinner yok, metin tabanlı.
