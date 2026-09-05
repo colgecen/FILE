@@ -233,7 +233,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/explorer.ts`, `src/core/focus.ts:63-89`, `src/menus/menuTree.ts:99`, `src/core/menuCommands.ts:60`
   - İş: `explorer.toggle` zaten `src/core/menuCommands.ts:123` tohumunda var ama placeholder; `view.sidebar.explorer` id'si üzerine gerçek `run` yazılır: açıksa kapat (`explorerModel.close()`), kapalıysa aç (`setRoot` + `focusManager.set('explorer')`). Rozet kalkar. `view.command.palette` ile çakışma yok.
 
-- [ ] **B3.2 — Arama Paneli (view.sidebar.search) — iskelet panel**
+- [x] **B3.2 — Arama Paneli (view.sidebar.search) — iskelet panel**
   - Commit: `feat: arama paneli iskeletini ekle`
   - Dosyalar: `src/ui/SearchPanel.tsx` (yeni), `src/layout/AppShell.tsx:78`, `src/menus/menuTree.ts:100`, `src/styles/app.css`
   - İş: Basit iskelet: input + "Yakında: tam metin arama" yerine gerçek iskelet metni "Arama (Find) — çok yakında tam" değil, **gerçek** filtre: açık dosyalar içinde `fuzzy` arama (`src/core/fuzzy.ts` reuse). Sonuçlar palet gibi listelenir; Enter ile dosyada o satıra atlar. Tokenlar, keskin köşe, 1px mavi çerçeve korunur. Rozet kalkar.
