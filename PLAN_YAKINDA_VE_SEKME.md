@@ -296,7 +296,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/helpModel.ts`, `src/ui/HelpOverlay.tsx`, `src/styles/help.css`, `src/menus/menuTree.ts:168-169`, `src/core/menuCommands.ts:103-104`
   - İş: `helpModel`'e `getting-started` ve `documentation` screen'leri eklenir; `HelpOverlay`'da markdown benzeri statik içerik (kurulum, klavye akışları, `ARCHITECTURE.md §5` özet). `focusManager.set('help')` ile açılır, Esc ile kapanır (`src/core/defaultBindings.ts:50`). Rozet kalkar.
 
-- [ ] **B5.2 — Fonksiyonu Tanımla (help.describe) — editör sembol açıklaması**
+- [x] **B5.2 — Fonksiyonu Tanımla (help.describe) — editör sembol açıklaması**
   - Commit: `feat: fonksiyon tanimla komutunu ekle`
   - Dosyalar: `src/core/helpCommands.ts:12-43`, `src/editor/editorCommands.ts`, `src/menus/menuTree.ts:171`
   - İş: `help.describe` → `editor.action.quickOutline` veya `editor.action.showHover` tetikler (`src/core/goCommands.ts:31-41` benzeri `withSnapshot`). Editör yoksa `ok:false`. Rozet kalkar.
