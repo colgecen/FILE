@@ -214,7 +214,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: Basit ring buffer (son 20 kopyala). `edit.copy/cut` sonrası `navigator.clipboard.readText()` ile doldurulur (Electron clipboard API Main'den de yapılabilir; önce renderer denemesi, izin yoksa Main IPC `clipboard:read`). Palet üzerinden `paletteModel.showClipboardHistory()` ile listelenir; Enter ile editöre yapıştırılır. `placeholder:false`.
   - Kural: kırmızı yok, tokenlar korunur.
 
-- [ ] **B2.2 — Geri Alma Ağacı başlığı: submenu rozetini kaldır**
+- [x] **B2.2 — Geri Alma Ağacı başlığı: submenu rozetini kaldır**
   - Commit: `fix: geri alma agaci submenu rozetini kaldir`
   - Dosyalar: `src/core/menuCommands.ts:34`, `src/menus/menuTree.ts:57-60`, `src/menus/MenuPanel.tsx:56-58`
   - İş: `edit.undo.tree` bir **submenu**'dür, komut değil; `SEEDS` içindeki `edit.undo.tree` tohumu `placeholder:false` yapılır veya tamamen kaldırılır (alt öğeleri `view/clean` zaten gerçek). Menüde rozet görünmez. Doğrulama: Düzenle → Geri Alma Ağacı → rozet yok, alt menüde "Ağacı Görüntüle" / "Dalları Temizle" çalışır.
