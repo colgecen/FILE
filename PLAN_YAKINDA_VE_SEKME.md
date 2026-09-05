@@ -301,7 +301,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/helpCommands.ts:12-43`, `src/editor/editorCommands.ts`, `src/menus/menuTree.ts:171`
   - İş: `help.describe` → `editor.action.quickOutline` veya `editor.action.showHover` tetikler (`src/core/goCommands.ts:31-41` benzeri `withSnapshot`). Editör yoksa `ok:false`. Rozet kalkar.
 
-- [ ] **B5.3 — Sürüm / Paketleri Güncelle / Sistem Bilgisi (help.version, help.update, help.system.info)**
+- [x] **B5.3 — Sürüm / Paketleri Güncelle / Sistem Bilgisi (help.version, help.update, help.system.info)**
   - Commit: `feat: surum ve sistem bilgisi komutlarini ekle`
   - Dosyalar: `src/core/helpCommands.ts`, `src/core/telemetry.ts`, `electron/main/sys.ts`, `src/menus/menuTree.ts:173-176`
   - İş: `help.version` → `package.json:version` IPC (`app:version`) ile gösterilir; `help.system.info` → `telemetry` snapshot + `os.platform()` bilgisi `HelpOverlay`'da; `help.update` → `npm run build` / `git pull` bilgilendirmesi (gerçek güncelleme yok, bilgi feedback'i). Rozetler kalkar.
