@@ -7,6 +7,31 @@ body,
   background: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-mono);
+  cursor: none;
+}
+
+a,
+button,
+input,
+textarea {
+  cursor: none;
+}
+
+::selection {
+  background: var(--selection);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-dim);
 }
 
 .app-shell {
@@ -558,4 +583,121 @@ body,
   font-family: var(--font-display);
   font-size: 10px;
   letter-spacing: 1px;
+}
+
+.reticle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  z-index: 999;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.12s ease,
+    height 0.12s ease;
+}
+
+.reticle__line {
+  position: absolute;
+  background: var(--accent);
+}
+
+.reticle__line--h {
+  width: 9px;
+  height: 1px;
+  top: 50%;
+}
+
+.reticle__line--v {
+  width: 1px;
+  height: 9px;
+  left: 50%;
+}
+
+.reticle__line--l {
+  left: 0;
+}
+
+.reticle__line--r {
+  right: 0;
+}
+
+.reticle__line--t {
+  top: 0;
+}
+
+.reticle__line--b {
+  bottom: 0;
+}
+
+.reticle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(0, 210, 255, 0.5);
+  clip-path: polygon(
+    0 0,
+    7px 0,
+    7px 1px,
+    1px 1px,
+    1px 7px,
+    0 7px,
+    calc(100% - 7px) 0,
+    100% 0,
+    100% 7px,
+    calc(100% - 1px) 7px,
+    calc(100% - 1px) 1px,
+    calc(100% - 7px) 1px,
+    calc(100% - 7px) 100%,
+    100% 100%,
+    100% calc(100% - 7px),
+    calc(100% - 1px) calc(100% - 7px),
+    calc(100% - 1px) calc(100% - 1px),
+    calc(100% - 7px) calc(100% - 1px),
+    7px 100%,
+    0 100%,
+    0 calc(100% - 7px),
+    1px calc(100% - 7px),
+    1px calc(100% - 1px),
+    7px calc(100% - 1px)
+  );
+  background: var(--accent);
+}
+
+.reticle--lock {
+  width: var(--lw, 26px);
+  height: var(--lh, 26px);
+}
+
+.reticle--lock::before {
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+.reticle-tag {
+  position: fixed;
+  z-index: 999;
+  pointer-events: none;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--accent-soft);
+  white-space: nowrap;
+  transform: translate(14px, -22px);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.reticle-tag--show {
+  opacity: 1;
+  color: #ffffff;
+}
+
+.reticle-lock--active {
+  outline: 1px solid #ffffff !important;
+  outline-offset: 2px;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.06) !important;
 }
