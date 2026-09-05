@@ -31,7 +31,7 @@
   - Commit: `fix: tab lru ile bellek sizintisini duzelt`
   - Dosyalar: `src/core/tabs.ts` `close` en eski otomatik, `src/core/dirty.ts` ile senkron.
 
-- [ ] **P2.1 — Gezgin sanal liste (windowing)**
+- [x] **P2.1 — Gezgin sanal liste (windowing)**
   - Commit: `feat: gezgin sanal listeyi ekle`
   - Dosyalar: `src/ui/ExplorerView.tsx` `max-height + overflow-y` ve `slice` ile sadece görünür 60 satır render, `src/core/explorer.ts` `rows()` cache.
 
