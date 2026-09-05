@@ -325,7 +325,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/menus/MenuPanel.tsx:56-58`, `src/styles/app.css:502-511`, `src/core/menuCommands.ts:4-7`
   - İş: `MenuPanel`'de `.menu-panel__soon` stili korunabilir ama hiçbir komut `placeholder:true` kalmayana kadar rozet görünmez. Tarama: `rg -n "placeholder.*true" src/` 0 sonuç beklenir (veya yalnızca testlerde). `PLACEHOLDER` helper'ı (`src/core/menuCommands.ts:4-7`) artık kullanılmıyorsa kaldırılır veya yalnızca bilinmeyen id fallback'i olarak tutulur.
 
-- [ ] **C2 — Renk / köşe / IPC denetimi (ARCHITECTURE §7, §9)**
+- [x] **C2 — Renk / köşe / IPC denetimi (ARCHITECTURE §7, §9)**
   - Commit: `chore: renk kose ve ipc kurallarini denetle`
   - İş: `rg -n "border-radius" src/` → yalnızca `0` olmalı; `rg -n "#[0-9a-fA-F]{3,6}" src/styles` → yalnızca tokenlar; `rg -n "window\.api" src/` → tüm IPC `window.api` üzerinden. İhlal varsa düzeltilir. `npm run lint` temiz.
 
