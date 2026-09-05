@@ -199,7 +199,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: `window.api.openFolder()` → yol alınır; `explorerModel.setRoot(path)` + `fs:read-dir` ile ağaç yenilenir. Gezgin açıksa odak gezgine geçer (`focusManager.set('explorer')`), kapalıysa `tree` komutu gibi açılır (genişlik 1/7, `ARCHITECTURE.md §5.4`). İptalde sessiz `ok:true`.
   - Doğrulama: Dosya → Klasör Aç → dialog → gezgin kökü değişir.
 
-- [ ] **B1.4 — Son Kullanılanlar boş durumu: "Kayıt Yok" tıklanamaz ve rozetsiz**
+- [x] **B1.4 — Son Kullanılanlar boş durumu: "Kayıt Yok" tıklanamaz ve rozetsiz**
   - Commit: `fix: son kullanilanlar bos durumunu duzelt`
   - Dosyalar: `src/menus/MenuPanel.tsx:11-22`, `src/menus/menuTree.ts:40-42`, `src/core/menuCommands.ts:25`
   - İş: `file.open.recent.none` placeholder kalabilir ama rozet göstermez (separator gibi işlem). `recentFiles.list().length === 0` ise menüde tek satır "Kayıt Yok" gri ve tıklanamaz; `placeholder:false` yapılır. Rozet kalkar.

@@ -185,4 +185,10 @@ export function registerFileCommands(register: (command: CommandDef) => void): v
       run: () => runOpenRecent(window.api, index),
     });
   }
+  register({
+    id: 'file.open.recent.none',
+    category: 'file',
+    title: 'Kayıt Yok',
+    run: () => ({ ok: true }),
+  });
 }
