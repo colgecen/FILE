@@ -75,7 +75,7 @@
   - Dosyalar: `src/core/gitCommands.ts` `git.diff` komutu `window.api.gitDiff(path)` → `paletteModel.showFiles` veya yeni `DiffPanel` iskeleti (`src/ui/DiffView.tsx` yeni, `tokens.css` tokenlar, `border-radius:0`); `electron/main/gitHandlers.ts` `git:diff` handler.
   - Kabul: Dosya seç → Enter → diff paletinde `+`/`-` satırları `var(--accent-soft)`/`var(--accent-dim)` (kırmızı yok).
 
-- [ ] **G1.4 — Log listesi (`git log --oneline -20`) — son commitler**
+- [x] **G1.4 — Log listesi (`git log --oneline -20`) — son commitler**
   - Commit: `feat: git log listesini ekle`
   - Dosyalar: `src/core/gitCommands.ts` `git.log` → `window.api.gitLog`; `electron/main/gitHandlers.ts` `git:log`; `src/ui/GitPanel.tsx` (yeni) log sekmesi iskeleti.
   - Kabul: `Ctrl+I` → `git log` → liste, Enter commit detay.
