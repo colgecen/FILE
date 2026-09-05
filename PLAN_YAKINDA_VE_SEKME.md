@@ -243,7 +243,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/ui/SourcePanel.tsx` (yeni), `electron/main/git.ts`, `src/core/gitModel.ts`, `src/menus/menuTree.ts:101`
   - İş: `git:branch` (`ARCHITECTURE.md §3`) verisini gösterir; değişiklik dosyaları `git status --porcelain` (Main'de `child_process`) ile listelenir. Yoksa "Git deposu değil" bilgisi — kırmızı değil, `var(--accent-dim)` ile. Rozet kalkar.
 
-- [ ] **B3.4 — Çalıştır Paneli (view.sidebar.run) — görev listesi iskeleti**
+- [x] **B3.4 — Çalıştır Paneli (view.sidebar.run) — görev listesi iskeleti**
   - Commit: `feat: calistir paneli iskeletini ekle`
   - Dosyalar: `src/ui/RunPanel.tsx` (yeni), `src/core/taskModel.ts`, `src/menus/menuTree.ts:102`
   - İş: `COMMON_TASKS` (`src/core/terminalCommands.ts:6-12`) listesi buton olarak gösterilir; tıklayınca `writeToActiveTerminal` ile çalışır. Rozet kalkar.
