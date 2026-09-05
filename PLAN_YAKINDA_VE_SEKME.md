@@ -272,7 +272,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/debugModel.ts`, `src/menus/menuTree.ts:142-145`, `src/core/menuCommands.ts:87-90`
   - İş: `debugModel.step()` çağrıları; henüz motor yoksa `ok:false, error: 'Hata ayıklama motoru bağlı değil'` döner ve `ErrorIndicator` kırmızı yanıp söner (`ARCHITECTURE.md §7.4`) — kırmızı yalnızca burada kullanılır. Rozet kalkar.
 
-- [ ] **B4.3 — Hata Ayıklamadan Çalıştır / Son Çalıştırmayı Tekrarla (run.without.debug, run.last)**
+- [x] **B4.3 — Hata Ayıklamadan Çalıştır / Son Çalıştırmayı Tekrarla (run.without.debug, run.last)**
   - Commit: `feat: calistirma komutlari iskeletini ekle`
   - Dosyalar: `src/core/taskModel.ts`, `src/menus/menuTree.ts:147-148`, `src/core/menuCommands.ts:91-92`
   - İş: `run.without.debug` → `terminalModel.open()` + `taskModel.runLastOrDefault('npm run dev')`; `run.last` → `terminalCommands`'taki `run.last` ile birleştirilir (duplicate id çözülür). Rozet kalkar.
