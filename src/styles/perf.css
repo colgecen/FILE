@@ -1,0 +1,52 @@
+.perf-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+}
+
+.perf-panel__header {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--accent-dim);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+
+.perf-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.perf-panel__row select {
+  margin-left: auto;
+  background: var(--bg-editor);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.perf-panel__close {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.perf-panel__close:hover {
+  background: var(--selection);
+}

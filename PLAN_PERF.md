@@ -19,7 +19,7 @@
   - Commit: `feat: perf model cekirdegini kur`
   - Dosyalar: `src/core/perfModel.ts` (yeni) `PerfState {telemetry:boolean, explorerVirtual:boolean, modelLimit:number, aiLazy:boolean, reducedMotion:boolean}` + `subscribe/emit`.
 
-- [ ] **P0.2 — Ayar paneli UI (SettingsPanel, 1px var(--border), JetBrains Mono)**
+- [x] **P0.2 — Ayar paneli UI (SettingsPanel, 1px var(--border), JetBrains Mono)**
   - Commit: `feat: performans ayar panelini ekle`
   - Dosyalar: `src/ui/SettingsPanel.tsx` (yeni) + `src/styles/perf.css` + `src/layout/AppShell.tsx` entegrasyon, `src/menus/menuTree.ts` `Ayarlar` öğesi.
 
