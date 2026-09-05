@@ -87,7 +87,7 @@
 
 ### Faz G2 — Git Sekmesi UI (VS Code benzeri, 1/7 değil 1/5 genişlikte sol panel)
 
-- [ ] **G2.1 — GitPanel iskeleti (sol panel, 1/5 genişlik, 1px mavi sınır, keskin köşe)**
+- [x] **G2.1 — GitPanel iskeleti (sol panel, 1/5 genişlik, 1px mavi sınır, keskin köşe)**
   - Commit: `feat: git panel iskeletini ciz`
   - Dosyalar: `src/ui/GitPanel.tsx` (yeni, `ExplorerView` `src/ui/ExplorerView.tsx:1-*` desenini takip: `useGitPanelState`, `gitModel.subscribe`), `src/styles/app.css:115-130` `.git-panel` (genişlik `20%`, `border-right:1px solid var(--border)`, `background:var(--bg-base)`), `src/layout/AppShell.tsx:74-82` `ExplorerView` yanına `GitPanel` (koşullu `gitPanelOpen`).
   - Kabul: `Görünüm → Kaynak Kontrolü` (`view.sidebar.source` `src/core/viewCommands.ts:82-96`) GitPanel açar, `F1` menüden de erişilir, `Esc` editöre döner.
