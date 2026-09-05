@@ -115,7 +115,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: `.tab-bar__item--active` için `border-top: 1px solid var(--border)` + `background: var(--bg-editor)` + `border-radius: 0` zaten var; üst vurgu kalınlığı ve aktif metin `var(--accent)` korunur. Hover/focus görünümü token dışı renk kullanmadan düzenlenir. Test: iki dosya aç → aktif sekme üstte mavi çizgi, köşe keskin.
   - Doğrulama: `npm run typecheck && npm run lint && npm test && npm run build`
 
-- [ ] **A2 — Sekme tooltip'i: tam yol + kirli durumu**
+- [x] **A2 — Sekme tooltip'i: tam yol + kirli durumu**
   - Commit: `feat: sekme tooltipine tam yol ve kirli durumunu ekle`
   - Dosyalar: `src/ui/TabBar.tsx:12-26`, `src/core/tabs.ts:4-7`
   - İş: `title={dirty ? `${path} • Kaydedilmedi` : path}` eklenir. `aria-label` korunur. Uzun yol ellipsis ile kesilir, tooltip'te tam yol görünür.
