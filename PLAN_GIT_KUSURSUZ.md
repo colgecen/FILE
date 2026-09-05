@@ -65,7 +65,7 @@
   - Dosyalar: `src/ui/StatusBar.tsx:14-*` `useGitBranch` zaten `window.api.gitBranch`; `electron/main/gitHandlers.ts` `git:branch` gerçek `execFile('git', ['branch','--show-current'])` + `dirty` için `git status --porcelain` bayrağı; `src/core/gitModel.ts` `branch` state'i.
   - Kabul: repo içinde branch adı, dirty ise `• değişik` rozeti `var(--accent)`; repo değilse gizli (kırmızı yok).
 
-- [ ] **G1.2 — Dosya durumu listesi (`git status --porcelain`) — M/A/D/?**
+- [x] **G1.2 — Dosya durumu listesi (`git status --porcelain`) — M/A/D/?**
   - Commit: `feat: git status dosya listesini ekle`
   - Dosyalar: `src/core/gitModel.ts` `loadStatus(cwd, api.gitStatus)`; `electron/main/gitHandlers.ts` `git:status` handler (`git status --porcelain -uall`), parser `M `, `??` vb. → `GitFile`; `src/menus/menuTree.ts:99-102` `Kaynak Kontrolü` artık gerçek listeyi tetikler.
   - Kabul: `src/core/gitModel.test.ts` porcelain parse yeşil; `paletteFlow` benzeri testte status listesi görünür.
