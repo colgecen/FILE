@@ -119,6 +119,21 @@ export async function runNewWindow(api: Pick<Api, 'newWindow'>): Promise<Command
   return { ok: true };
 }
 
+export async function runOpenFolder(
+  api: Pick<Api, 'openFolder' | 'readDir'>,
+): Promise<CommandResult> {
+  const { explorerModel } = await import('./explorer');
+  const ok = await explorerModel.pickAndLoad(
+    () => api.openFolder(),
+    (path) => api.readDir(path),
+  );
+  if (!ok) return { ok: true };
+  const { explorerModel: model } = await import('./explorer');
+  model.open();
+  focusManager.set('explorer');
+  return { ok: true };
+}
+
 export function registerFileCommands(register: (command: CommandDef) => void): void {
   register({
     id: 'file.new.file',
@@ -131,6 +146,12 @@ export function registerFileCommands(register: (command: CommandDef) => void): v
     category: 'file',
     title: 'Yeni Pencere',
     run: () => runNewWindow(window.api),
+  });
+  register({
+    id: 'file.open.folder',
+    category: 'file',
+    title: 'Klasör Aç',
+    run: () => runOpenFolder(window.api),
   });
   register({
     id: 'file.open.file',

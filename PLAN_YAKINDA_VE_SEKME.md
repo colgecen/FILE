@@ -193,7 +193,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: Main'de `newWindow` IPC kanalı (`app:new-window`) eklenir; `BrowserWindow` aynı ayarlarla (`contextIsolation`, `sandbox`, 1px vurgu mavi kenarlık, `ARCHITECTURE.md §2.1`) açılır. Renderer'dan `window.api.newWindow()` çağrılır. Hata yoksa `ok:true`.
   - Not: IPC kanal adı `ARCHITECTURE.md §3` tablosuna eklenir (doküman güncellemesi bu commit içinde).
 
-- [ ] **B1.3 — Klasör Aç (file.open.folder): dialog + gezgin kökünü değiştir**
+- [x] **B1.3 — Klasör Aç (file.open.folder): dialog + gezgin kökünü değiştir**
   - Commit: `feat: klasor ac komutunu ekle`
   - Dosyalar: `electron/main/ipc.ts` (dialog:open-folder zaten varsa bağla), `src/core/fileCommands.ts`, `src/core/explorer.ts`, `src/ui/ExplorerView.tsx`
   - İş: `window.api.openFolder()` → yol alınır; `explorerModel.setRoot(path)` + `fs:read-dir` ile ağaç yenilenir. Gezgin açıksa odak gezgine geçer (`focusManager.set('explorer')`), kapalıysa `tree` komutu gibi açılır (genişlik 1/7, `ARCHITECTURE.md §5.4`). İptalde sessiz `ok:true`.
