@@ -81,4 +81,4 @@ export type KeyBinding = {
   readonly label: string;
 };
 
-export type FocusZone = 'editor' | 'menubar' | 'palette' | 'explorer' | 'help' | 'ai';
+export type FocusZone = 'editor' | 'menubar' | 'palette' | 'explorer' | 'help' | 'ai' | 'git';

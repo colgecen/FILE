@@ -11,6 +11,7 @@ import { registerHistoryCommands } from './historyCommands';
 import { registerAICommands } from '../ai/aiCommands';
 import { registerClipboardCommands } from './clipboardCommands';
 import { registerDebugCommands } from './debugCommands';
+import { registerGitCommands } from './gitCommands';
 import { registerTerminalCommands } from './terminalCommands';
 import { registerViewCommands } from './viewCommands';
 import { KeyboardController } from './input';
@@ -56,6 +57,7 @@ export function createCore(): Core {
   registerAICommands(registry.register.bind(registry));
   registerClipboardCommands(registry.register.bind(registry));
   registerDebugCommands(registry.register.bind(registry));
+  registerGitCommands(registry.register.bind(registry));
   registerDefaultBindings(keymap);
   coreInstance = { registry, keymap, controller: new KeyboardController(keymap, registry) };
   return coreInstance;

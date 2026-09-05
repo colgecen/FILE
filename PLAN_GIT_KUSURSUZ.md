@@ -53,7 +53,7 @@
   - Dosyalar: `electron/main/gitHandlers.ts` (her handler `try/catch`, `reportError` değil `return {ok:false,error}`), `electron/main/fileUtils.ts` (yol `path.resolve` + `app` kökü dışına çıkma engeli), `ARCHITECTURE.md §9` uyumu, loglarda token yok (`AGENTS.md §4.10`).
   - Kabul: `git:branch` yoksa `null`, `git:status` depo değilse `{ok:false}` → StatusBar kırmızı değil `var(--accent-dim)` (`src/styles/app.css`).
 
-- [ ] **G0.4 — Keymap & CommandRegistry iskeleti (Git palet & kısayollar)**
+- [x] **G0.4 — Keymap & CommandRegistry iskeleti (Git palet & kısayollar)**
   - Commit: `feat: git komut kaydi ve tus eslemelerini ekle`
   - Dosyalar: `src/core/defaultBindings.ts:1-71` (yeni `git.stage`, `git.unstage`, `git.commit`, `git.push`, `git.pull` zone `git`), `src/core/gitCommands.ts` (yeni) iskelet `CommandRegistry` kayıtları (placeholder değil, `ok:true` iskelet döner), `src/core/instances.ts:30-56` `registerGitCommands`.
   - Kabul: `rg "git\." src/core/defaultBindings.ts` 5 eşleme, `typecheck` yeşil.

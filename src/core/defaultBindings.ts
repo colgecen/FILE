@@ -52,6 +52,17 @@ const SEEDS: readonly BindingSeed[] = [
   // Yapay zekâ sohbeti
   { commandId: 'ai.chat.close', keys: ['Escape'], label: 'Sohbeti kapat', zone: 'ai' },
   { commandId: 'ai.chat.send', keys: ['Enter'], label: 'Mesajı gönder', zone: 'ai' },
+
+  // Git paneli
+  { commandId: 'git.stage', keys: ['Enter'], label: 'Git stage', zone: 'git' },
+  { commandId: 'git.unstage', keys: ['Enter'], label: 'Git unstage', zone: 'git' },
+  { commandId: 'git.commit', keys: ['Control+Enter'], label: 'Git commit', zone: 'git' },
+  { commandId: 'git.push', keys: ['Control+Shift+KeyP'], label: 'Git push', zone: 'git' },
+  { commandId: 'git.pull', keys: ['Control+Shift+KeyL'], label: 'Git pull', zone: 'git' },
+  { commandId: 'git.next', keys: ['Tab'], label: 'Git sonraki', zone: 'git' },
+  { commandId: 'git.prev', keys: ['Shift+Tab'], label: 'Git önceki', zone: 'git' },
+  { commandId: 'git.up', keys: ['ArrowUp'], label: 'Git yukarı', zone: 'git' },
+  { commandId: 'git.down', keys: ['ArrowDown'], label: 'Git aşağı', zone: 'git' },
 ];
 
 export function registerDefaultBindings(keymap: Keymap): void {
