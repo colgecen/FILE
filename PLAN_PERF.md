@@ -39,7 +39,7 @@
   - Commit: `feat: buyuk dosya lazy yuklemeyi ekle`
   - Dosyalar: `src/editor/EditorCore.tsx` `file.content.length > 10_000_000` ise `model.setValue` chunk, `src/editor/monacoSetup.ts` `renderLineHighlight: off`.
 
-- [ ] **P3.1 — Git status/log debounce + cache (500ms, 5sn)**
+- [x] **P3.1 — Git status/log debounce + cache (500ms, 5sn)**
   - Commit: `feat: git debounce ve cache ekle`
   - Dosyalar: `src/core/gitModel.ts` `loadStatus` debounce 500ms + 5sn cache, `src/core/gitCommands.ts` `git.status` aynı.
 
