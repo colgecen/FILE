@@ -57,6 +57,9 @@ export function TabBar(): React.JSX.Element {
               }
             }}
             onDoubleClick={() => closeOpenedTab(tab.id)}
+            onContextMenu={(event) => {
+              event.preventDefault();
+            }}
           >
             <span className={`tab-bar__icon ${icon.variant}`.trim()} aria-hidden="true">
               {icon.label}

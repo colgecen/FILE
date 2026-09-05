@@ -162,7 +162,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: `tab.next` / `tab.prev` sonrası `requestAnimationFrame` içinde aktif sekme `scrollIntoView` ile görünür kılınır. Binding'ler zaten tanımlı — hardcode eklenmez.
   - Test: `src/core/tabCommands.test.ts` genişletilir.
 
-- [ ] **A10 — Sekme sağ tık menüsü yer tutucu (gelecek) — şimdilik bilgi feedback'i**
+- [x] **A10 — Sekme sağ tık menüsü yer tutucu (gelecek) — şimdilik bilgi feedback'i**
   - Commit: `feat: sekme sag tik menusu icin bilgi geri bildirimini ekle`
   - Dosyalar: `src/ui/TabBar.tsx`, `src/menus/menuModel.ts`
   - İş: Sağ tık → `menuModel.setFeedback('Yakında: sekme menüsü')` yerine gerçek bir context menü iskeleti hazırlanır veya en azından hata göstermeden sessiz kalır. Kırmızı yok. İleride ADR ile genişletilebilir.
