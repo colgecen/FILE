@@ -119,7 +119,7 @@
 
 ### Faz G3 — Code-benzeri akış (stage / unstage / commit / push / pull, çakışmasız)
 
-- [ ] **G3.1 — Stage / Unstage (git add / restore --staged)**
+- [x] **G3.1 — Stage / Unstage (git add / restore --staged)**
   - Commit: `feat: git stage unstage komutlarini ekle`
   - Dosyalar: `src/core/gitCommands.ts` `git.stage`/`git.unstage` → `window.api.gitAdd`/`gitRestore`; `electron/main/gitHandlers.ts` `git:add`, `git:restore`; `src/ui/GitPanel.tsx` `+`/`−` butonları + `Enter` toggle; `src/core/gitModel.ts` `staged` seti.
   - Kabul: `git status` sonrası staged/unstaged ayrımı doğru, `Tab` ile seç → `Enter` → liste yer değiştirir, `dirtyTracker` ile çakışmaz.
