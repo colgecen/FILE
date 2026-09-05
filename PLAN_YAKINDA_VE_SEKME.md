@@ -92,13 +92,13 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
 
 | Faz | Başlık | Görev sayısı | Durum |
 |-----|--------|--------------|-------|
-| **A — Sekme Görünümü** | Dosya açıldığında sekme (Tab) | 12 | `[ ]` |
-| **B1 — Dosya menüsü** | Yeni Dosya / Yeni Pencere / Klasör Aç | 4 | `[ ]` |
-| **B2 — Düzenle** | Yapıştırma geçmişi + geri alma ağacı temizliği | 3 | `[ ]` |
-| **B3 — Görünüm** | Kenar çubukları + Tek Pencere | 6 | `[ ]` |
-| **B4 — Çalıştır/Debug** | Debug + Run menüsü | 5 | `[ ]` |
-| **B5 — Yardım & Sistem** | Yardım ekranları + sistem bilgisi | 5 | `[ ]` |
-| **C — Final** | Yakında rozeti tamamen kaldır + test/parlatma | 4 | `[ ]` |
+| **A — Sekme Görünümü** | Dosya açıldığında sekme (Tab) | 12 | `[x]` |
+| **B1 — Dosya menüsü** | Yeni Dosya / Yeni Pencere / Klasör Aç | 4 | `[x]` |
+| **B2 — Düzenle** | Yapıştırma geçmişi + geri alma ağacı temizliği | 3 | `[x]` |
+| **B3 — Görünüm** | Kenar çubukları + Tek Pencere | 6 | `[x]` |
+| **B4 — Çalıştır/Debug** | Debug + Run menüsü | 5 | `[x]` |
+| **B5 — Yardım & Sistem** | Yardım ekranları + sistem bilgisi | 5 | `[x]` |
+| **C — Final** | Yakında rozeti tamamen kaldır + test/parlatma | 4 | `[x]` |
 | **Toplam** |  | **39** |  |
 
 ---
@@ -359,12 +359,12 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
 
 ## 5. Kabul Kriterleri (Definition of Done)
 
-- [ ] Hiçbir menü öğesinde `Yakında` rozeti görünmüyor; `src/menus/MenuPanel.tsx:57` satırı tetiklenmiyor.
-- [ ] Dosya açıldığında (`Dosya Aç`, `Klasör Aç → dosya seç`, `Gezgin Enter`, `Son Kullanılanlar`) sekme barında yeni sekme beliriyor, aktif vurgu mavi, tooltip tam yol, kirli nokta çalışıyor.
-- [ ] Sekme barı taşınca yatay kaydırma var; Ctrl+Tab / Ctrl+Shift+Tab ile sekme değişimi görünür kılıyor; Ctrl+W / orta tık / çift tık kapatıyor.
-- [ ] Tüm yeni komutlar `CommandRegistry`'de, tuşlar `Keymap`'te, IPC `window.api` üzerinden.
-- [ ] `npm run typecheck`, `lint`, `test`, `build` hatasız.
-- [ ] `TODO.md` ve bu plandaki kutucuklar işaretli, her görev ayrı commit ile geçmişte.
+- [x] Hiçbir menü öğesinde `Yakında` rozeti görünmüyor; `src/menus/MenuPanel.tsx:57` satırı tetiklenmiyor.
+- [x] Dosya açıldığında (`Dosya Aç`, `Klasör Aç → dosya seç`, `Gezgin Enter`, `Son Kullanılanlar`) sekme barında yeni sekme beliriyor, aktif vurgu mavi, tooltip tam yol, kirli nokta çalışıyor.
+- [x] Sekme barı taşınca yatay kaydırma var; Ctrl+Tab / Ctrl+Shift+Tab ile sekme değişimi görünür kılıyor; Ctrl+W / orta tık / çift tık kapatıyor.
+- [x] Tüm yeni komutlar `CommandRegistry`'de, tuşlar `Keymap`'te, IPC `window.api` üzerinden.
+- [x] `npm run typecheck`, `lint`, `test`, `build` hatasız.
+- [x] `TODO.md` ve bu plandaki kutucuklar işaretli, her görev ayrı commit ile geçmişte.
 
 ---
 
