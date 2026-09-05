@@ -27,7 +27,7 @@
   - Commit: `feat: monaco lru sinirini ayarli yap`
   - Dosyalar: `src/editor/editorModel.ts` `MAX_MODELS = perfModel.getState().modelLimit` (10/20/50), en eski model `dispose()`.
 
-- [ ] **P1.2 — Tab LRU & kirli takibi ile bellek düşürme**
+- [x] **P1.2 — Tab LRU & kirli takibi ile bellek düşürme**
   - Commit: `fix: tab lru ile bellek sizintisini duzelt`
   - Dosyalar: `src/core/tabs.ts` `close` en eski otomatik, `src/core/dirty.ts` ile senkron.
 
