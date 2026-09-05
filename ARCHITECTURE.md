@@ -67,6 +67,7 @@ Renderer → Main `ipcRenderer.invoke`; Main → Renderer `webContents.send` (it
 | `sys:start` / `sys:stop`     | R → M    | Telemetri itkisini başlat/durdur |
 | `sys:metrics`                | M → R    | Periyodik CPU/RAM örnekleri |
 | `app:exit`                   | R → M    | Uygulamayı kapat |
+| `app:new-window`             | R → M    | Yeni pencere aç (BrowserWindow, aynı güvenlik ayarları) |
 | (ileride) `pty:spawn`        | R → M    | Terminal oturumu |
 | (ileride) `ai:status`        | M → R    | Yerel yapay zekâ durumu |
 

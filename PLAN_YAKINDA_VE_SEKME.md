@@ -334,7 +334,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/ui/paletteFlow.test.tsx`, `src/ui/ExplorerView.test.tsx`, `src/menus/MenuBar.test.tsx`, `src/ui/TabBar.test.tsx`, `src/core/focus.test.ts`
   - İş: Senaryolar: `F1 → sol/sağ → Tab → Enter → feedback`, `Ctrl+I → tree → gezgin 1/7 + odak`, `F3/Tab ile gezinme`, `Ctrl+Tab sekme geçişi`, `Esc ile geri dönüş`. Kırmızı yalnızca hata durumunda.
 
-- [ ] **C4 — Üretim paketi doğrulaması ve doküman güncellemesi**
+- [x] **C4 — Üretim paketi doğrulaması ve doküman güncellemesi**
   - Commit: `chore: uretim paketini ve dokumani guncelle`
   - Dosyalar: `TODO.md`, `ARCHITECTURE.md §3` (IPC tablosu), `DECISIONS.md` (yeni ADR'ler), `README.md`
   - İş: `npm run typecheck && npm run lint && npm test && npm run build` yeşil. `TODO.md`'de ilgili Faz kutucukları `[x]` yapılır. `ARCHITECTURE.md` IPC tablosuna `app:new-window`, `app:version`, `clipboard:read` gibi yeni kanallar eklenir (eklendiyse).
