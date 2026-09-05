@@ -2,6 +2,19 @@ import { useDirtyPaths } from '../core/dirty';
 import { closeOpenedTab } from '../core/tabCommands';
 import { tabsModel, useTabsState } from '../core/tabs';
 
+function iconForFile(name: string): { label: string; variant: string } {
+  const dot = name.lastIndexOf('.');
+  const ext = dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
+  if (ext === 'ts' || ext === 'tsx') return { label: 'TS', variant: 'tab-bar__icon--accent' };
+  if (ext === 'js' || ext === 'jsx' || ext === 'mjs' || ext === 'cjs') return { label: 'JS', variant: 'tab-bar__icon--soft' };
+  if (ext === 'json') return { label: 'JSON', variant: 'tab-bar__icon--soft' };
+  if (ext === 'css') return { label: 'CSS', variant: 'tab-bar__icon--soft' };
+  if (ext === 'html') return { label: 'HTML', variant: 'tab-bar__icon--soft' };
+  if (ext === 'md' || ext === 'markdown') return { label: 'MD', variant: '' };
+  if (ext.length <= 4 && ext.length > 0) return { label: ext.toUpperCase(), variant: '' };
+  return { label: 'TXT', variant: '' };
+}
+
 export function TabBar(): React.JSX.Element {
   const { tabs, activeId } = useTabsState();
   const dirty = useDirtyPaths();
@@ -11,6 +24,7 @@ export function TabBar(): React.JSX.Element {
       {tabs.map((tab) => {
         const isDirty = dirty.has(tab.file.path);
         const tooltip = isDirty ? `${tab.file.path} • Kaydedilmedi` : tab.file.path;
+        const icon = iconForFile(tab.file.name);
         return (
           <div
             key={tab.id}
@@ -21,6 +35,9 @@ export function TabBar(): React.JSX.Element {
             title={tooltip}
             aria-label={tooltip}
           >
+            <span className={`tab-bar__icon ${icon.variant}`.trim()} aria-hidden="true">
+              {icon.label}
+            </span>
             <button
               className="tab-bar__select"
               type="button"

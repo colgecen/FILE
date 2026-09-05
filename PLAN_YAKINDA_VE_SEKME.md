@@ -121,7 +121,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: `title={dirty ? `${path} • Kaydedilmedi` : path}` eklenir. `aria-label` korunur. Uzun yol ellipsis ile kesilir, tooltip'te tam yol görünür.
   - Doğrulama: fareyle sekme üzerine gel → tooltip'te `/home/.../dosya.ts` görünür.
 
-- [ ] **A3 — Dosya uzantısına göre ikon/renk ayrımı (token içinde)**
+- [x] **A3 — Dosya uzantısına göre ikon/renk ayrımı (token içinde)**
   - Commit: `feat: sekme ikonlarini uzantiya gore renklendir`
   - Dosyalar: `src/ui/TabBar.tsx:1-20`, `src/styles/app.css:54-113`, `src/theme/tokens.css`
   - İş: Metin tabanlı ikon: `TS`/`JS`/`JSON`/`MD` gibi küçük etiket; renkler yalnızca `--accent-soft` (string), `--accent-dim` (yorum), `--accent` (vurgu) arası; yeni renk eklenmez. `getFileIcon(name)` yardımcı fonksiyonu yazılır. ADR gerekmez.

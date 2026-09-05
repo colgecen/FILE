@@ -88,6 +88,31 @@ body,
   color: var(--accent);
 }
 
+.tab-bar__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  padding: 1px 4px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--accent-dim);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.tab-bar__icon--accent {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.tab-bar__icon--soft {
+  color: var(--accent-soft);
+  border-color: var(--accent-dim);
+}
+
 .tab-bar__dirty {
   color: var(--accent);
   font-size: 9px;
