@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { bookmarkModel } from '../core/bookmarks';
+import { clipboardHistory } from '../core/clipboardHistory';
 import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { historyModel } from '../core/history';
@@ -95,12 +96,24 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     };
     applyWordWrap();
     const viewModeDisposable = viewModeModel.subscribe(applyWordWrap);
+    const copyListener = (event: ClipboardEvent): void => {
+      const selection = editor.getSelection();
+      const model = editor.getModel();
+      if (selection === null || model === null || selection.isEmpty()) return;
+      const text = model.getValueInRange(selection);
+      if (text.length > 0) clipboardHistory.push(text);
+      void event;
+    };
+    host.addEventListener('copy', copyListener);
+    host.addEventListener('cut', copyListener);
     return () => {
       cursorDisposable.dispose();
       contentDisposable.dispose();
       bookmarkDisposable();
       modelDisposable.dispose();
       viewModeDisposable();
+      host.removeEventListener('copy', copyListener);
+      host.removeEventListener('cut', copyListener);
       editor.dispose();
       if (editorRef.current === editor) {
         editorRef.current = null;

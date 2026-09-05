@@ -208,7 +208,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
 
 ### Faz B2 — Düzenle Menüsü "Yakında" Temizliği
 
-- [ ] **B2.1 — Yapıştırma Geçmişi paneli (edit.paste.history / edit.paste.history.open)**
+- [x] **B2.1 — Yapıştırma Geçmişi paneli (edit.paste.history / edit.paste.history.open)**
   - Commit: `feat: yapistirma gecmisi panelini ekle`
   - Dosyalar: `src/core/clipboardHistory.ts` (yeni), `src/core/fileCommands.ts` benzeri, `src/editor/EditorCore.tsx`, `src/menus/menuTree.ts:65-66`
   - İş: Basit ring buffer (son 20 kopyala). `edit.copy/cut` sonrası `navigator.clipboard.readText()` ile doldurulur (Electron clipboard API Main'den de yapılabilir; önce renderer denemesi, izin yoksa Main IPC `clipboard:read`). Palet üzerinden `paletteModel.showClipboardHistory()` ile listelenir; Enter ile editöre yapıştırılır. `placeholder:false`.

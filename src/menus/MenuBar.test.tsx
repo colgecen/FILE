@@ -67,6 +67,12 @@ describe('MenuBar', () => {
     act(() => {
       menuModel.openAt(0);
     });
+    // Dosya menüsü artık gerçek komutlarla dolu — Yakında içermemeli (B1 tamamlandı)
+    expect(screen.queryAllByText('Yakında').length).toBe(0);
+    act(() => {
+      menuModel.openAt(5);
+    });
+    // Çalıştır menüsü hâlâ Yakında içerir (B4 öncesi)
     expect(screen.getAllByText('Yakında').length).toBeGreaterThan(0);
   });
 

@@ -5,6 +5,8 @@ import type { HistoryEntry } from './history';
 import { openFilesModel, type OpenFileRef } from './openFiles';
 import type { CommandDef } from './types';
 
+import type { ClipboardEntry } from './clipboardHistory';
+
 export type PaletteItem = {
   readonly commandId: string;
   readonly title: string;
@@ -14,6 +16,7 @@ export type PaletteItem = {
   readonly bookmark?: Bookmark;
   readonly history?: HistoryEntry;
   readonly modelId?: string;
+  readonly clipboard?: ClipboardEntry;
 };
 
 export type PaletteState = {
@@ -49,6 +52,11 @@ export class PaletteModel {
 
   showHistory(historyItems: readonly PaletteItem[]): void {
     this.state = { query: '', items: historyItems, activeIndex: 0 };
+    this.emit();
+  }
+
+  showClipboardHistory(items: readonly PaletteItem[]): void {
+    this.state = { query: '', items, activeIndex: 0 };
     this.emit();
   }
 
