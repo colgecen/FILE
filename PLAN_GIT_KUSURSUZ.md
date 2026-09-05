@@ -48,7 +48,7 @@
   - Dosyalar: `src/core/gitModel.ts` (yeni) — `GitBranchInfo` (`src/api.d.ts:16-19`), `GitFile {path,status: 'M'|'A'|'D'|'?'|'!'}`, `GitDiff`, `GitLogEntry`; `ExplorerModel` benzeri `GitModel` (state: `branch`, `files`, `staged:Set`, `loading`, `error`, `lastCommit`), `subscribe/emit` (`src/core/explorer.ts:47-59` deseni).
   - Kabul: `src/core/gitModel.test.ts` (yeni) durum geçişleri yeşil.
 
-- [ ] **G0.3 — Git IPC hata yönetimi & güvenlik (yol normalize, boyut limiti, gizli bilgi sızdırmama)**
+- [x] **G0.3 — Git IPC hata yönetimi & güvenlik (yol normalize, boyut limiti, gizli bilgi sızdırmama)**
   - Commit: `fix: git ipc guvenlik ve hata yonetimini ekle`
   - Dosyalar: `electron/main/gitHandlers.ts` (her handler `try/catch`, `reportError` değil `return {ok:false,error}`), `electron/main/fileUtils.ts` (yol `path.resolve` + `app` kökü dışına çıkma engeli), `ARCHITECTURE.md §9` uyumu, loglarda token yok (`AGENTS.md §4.10`).
   - Kabul: `git:branch` yoksa `null`, `git:status` depo değilse `{ok:false}` → StatusBar kırmızı değil `var(--accent-dim)` (`src/styles/app.css`).
