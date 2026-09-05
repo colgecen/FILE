@@ -161,7 +161,7 @@
   - Dosyalar: `src/ui/paletteFlow.test.tsx` `git` → GitPanel, `src/menus/MenuBar.test.tsx:65-82` GitPanel `Yakında` 0 doğrulaması, `src/ui/GitPanel.test.tsx` full akış: `Tab` → `Enter` stage → `Ctrl+Enter` commit → `Push`.
   - Kabul: Tüm akış fare olmadan, `focusManager` `git` zone doğru.
 
-- [ ] **G4.3 — Renk/köşe/IPC son denetim + `ExplorerView` ile çakışma yok**
+- [x] **G4.3 — Renk/köşe/IPC son denetim + `ExplorerView` ile çakışma yok**
   - Commit: `chore: git panel renk kose ipc ve cakisma denetimi`
   - Dosyalar: `rg "border-radius" src` 0 dışı yok, `rg "#.{3,6}" src` token dışı yok, `rg "window.api" src` tek yüzey, `src/styles/git.css` tokenlar; `src/layout/AppShell.tsx` `ExplorerView` (1/7) + `GitPanel` (1/5) yan yana çakışmaz, `PaneManager` etkilenmez.
   - Kabul: `npm run typecheck && lint` yeşil, `src/styles/app.css:115-130` + `src/styles/git.css` keskin köşe.
