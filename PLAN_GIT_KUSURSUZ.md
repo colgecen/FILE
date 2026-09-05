@@ -139,7 +139,7 @@
   - Dosyalar: `src/core/gitCommands.ts` `git.checkout` → `window.api.gitCheckout(branch)`; `src/ui/GitPanel.tsx` branch başlığına tıklama → palet `git branch --list` → Enter checkout; `src/core/gitModel.ts` branch yenileme.
   - Kabul: `Ctrl+I` → `git checkout` → liste → Enter → `StatusBar` branch güncellenir.
 
-- [ ] **G3.5 — Diff detay & stage seçili satırlar (iskele)**
+- [x] **G3.5 — Diff detay & stage seçili satırlar (iskele)**
   - Commit: `feat: git diff secili satir stage iskeletini ekle`
   - Dosyalar: `src/ui/DiffView.tsx` (yeni) `Monaco` read-only diff (token renkler `src/editor/editorTheme.ts:10-15`), seçili satır `+` → `git add -p` iskelet (gerçek patch apply ileride); şimdilik tüm dosya stage.
   - Kabul: Dosyaya tık → diff görünür, `Enter` stage, `Esc` geri.
