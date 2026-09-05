@@ -181,7 +181,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
 
 ### Faz B1 — Dosya Menüsü "Yakında" Temizliği
 
-- [ ] **B1.1 — Yeni Dosya (file.new.file): boş untitled sekme aç**
+- [x] **B1.1 — Yeni Dosya (file.new.file): boş untitled sekme aç**
   - Commit: `feat: yeni dosya komutunu ekle`
   - Dosyalar: `src/core/fileCommands.ts:104-137`, `src/core/menuCommands.ts:19`, `src/menus/menuTree.ts:34`, `src/core/tabs.ts:29-38`
   - İş: `untitled-${Date.now()}.ts` adında `content: ''`, `language: 'plaintext'` dosya oluştur; `tabsModel.open()` ile sekme aç; `dirtyTracker.markDirty(path)` ile kirli işaretle. `CommandRegistry` üzerine yaz: `file.new.file` gerçek `run`. Rozet kalkar.

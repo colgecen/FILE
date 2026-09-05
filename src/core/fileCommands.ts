@@ -88,6 +88,17 @@ export async function runOpenRecent(
   return { ok: true };
 }
 
+export function createNewFile(): CommandResult {
+  const stamp = Date.now();
+  const path = `untitled-${stamp}.ts`;
+  const name = path;
+  const file: OpenFileResult = { path, name, content: '', language: 'plaintext' };
+  tabsModel.open(file);
+  dirtyTracker.markDirty(path);
+  focusManager.set('editor');
+  return { ok: true };
+}
+
 export function adoptFile(file: OpenFileResult): void {
   const exists = openFilesModel
     .list()
@@ -104,6 +115,12 @@ export function adoptFile(file: OpenFileResult): void {
 }
 
 export function registerFileCommands(register: (command: CommandDef) => void): void {
+  register({
+    id: 'file.new.file',
+    category: 'file',
+    title: 'Yeni Dosya',
+    run: () => createNewFile(),
+  });
   register({
     id: 'file.open.file',
     category: 'file',
