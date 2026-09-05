@@ -291,7 +291,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
 
 ### Faz B5 — Yardım & Sistem "Yakında" Temizliği
 
-- [ ] **B5.1 — Başlangıç / Dokümantasyon (help.getting.started, help.documentation)**
+- [x] **B5.1 — Başlangıç / Dokümantasyon (help.getting.started, help.documentation)**
   - Commit: `feat: baslangic ve dokumantasyon yardim ekranlarini ekle`
   - Dosyalar: `src/core/helpModel.ts`, `src/ui/HelpOverlay.tsx`, `src/styles/help.css`, `src/menus/menuTree.ts:168-169`, `src/core/menuCommands.ts:103-104`
   - İş: `helpModel`'e `getting-started` ve `documentation` screen'leri eklenir; `HelpOverlay`'da markdown benzeri statik içerik (kurulum, klavye akışları, `ARCHITECTURE.md §5` özet). `focusManager.set('help')` ile açılır, Esc ile kapanır (`src/core/defaultBindings.ts:50`). Rozet kalkar.

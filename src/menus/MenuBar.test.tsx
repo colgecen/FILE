@@ -64,21 +64,12 @@ describe('MenuBar', () => {
 
   it('yer tutucu komutlar Yakında rozeti taşır', () => {
     renderShell();
-    act(() => {
-      menuModel.openAt(0);
-    });
-    // Dosya menüsü artık gerçek komutlarla dolu — Yakında içermemeli (B1 tamamlandı)
-    expect(screen.queryAllByText('Yakında').length).toBe(0);
-    act(() => {
-      menuModel.openAt(5);
-    });
-    // Çalıştır menüsü artık gerçek komutlarla dolu — Yakında içermemeli (B4 tamamlandı)
-    expect(screen.queryAllByText('Yakında').length).toBe(0);
-    act(() => {
-      menuModel.openAt(7);
-    });
-    // Yardım menüsü hâlâ Yakında içerir (B5 öncesi)
-    expect(screen.getAllByText('Yakında').length).toBeGreaterThan(0);
+    for (let index = 0; index < 9; index += 1) {
+      act(() => {
+        menuModel.openAt(index);
+      });
+      expect(screen.queryAllByText('Yakında').length).toBe(0);
+    }
   });
 
   it('son kullanılanlar varsa dinamik olarak alt menüde listelenir', () => {

@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 
-export type HelpScreen = 'welcome' | 'shortcuts' | 'about';
+export type HelpScreen =
+  | 'welcome'
+  | 'shortcuts'
+  | 'about'
+  | 'getting-started'
+  | 'documentation'
+  | 'version'
+  | 'system'
+  | 'update';
 
 export class HelpModel {
   private screen: HelpScreen | null = null;
