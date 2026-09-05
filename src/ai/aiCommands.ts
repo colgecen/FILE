@@ -181,4 +181,16 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
       return { ok: true };
     },
   });
+
+  register({
+    id: 'ai.prefs',
+    category: 'ai',
+    title: 'Yapay Zekâ Tercihleri',
+    run: () => {
+      paletteModel.showModels(MODEL_LIST);
+      aiChatModel.open();
+      focusManager.set('palette');
+      return { ok: true };
+    },
+  });
 }

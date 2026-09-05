@@ -306,7 +306,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/helpCommands.ts`, `src/core/telemetry.ts`, `electron/main/sys.ts`, `src/menus/menuTree.ts:173-176`
   - İş: `help.version` → `package.json:version` IPC (`app:version`) ile gösterilir; `help.system.info` → `telemetry` snapshot + `os.platform()` bilgisi `HelpOverlay`'da; `help.update` → `npm run build` / `git pull` bilgilendirmesi (gerçek güncelleme yok, bilgi feedback'i). Rozetler kalkar.
 
-- [ ] **B5.4 — Yapay Zekâ Tercihleri (ai.prefs)**
+- [x] **B5.4 — Yapay Zekâ Tercihleri (ai.prefs)**
   - Commit: `feat: yapay zeka tercihleri komutunu ekle`
   - Dosyalar: `src/ai/aiCommands.ts:63-184`, `src/core/menuCommands.ts:118`, `src/menus/menuTree.ts:190`
   - İş: `ai.prefs` → `AIChatPanel` içinde ayarlar sekmesi (model seçimi, sıcaklık) veya `HelpOverlay` benzeri basit panel. En azından `paletteModel.showModels` + bilgi mesajı. Rozet kalkar.
