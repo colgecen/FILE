@@ -102,7 +102,7 @@
   - Dosyalar: `src/ui/GitPanel.tsx` satır: `M` `var(--accent)`, `A` `var(--accent-soft)`, `D` `var(--error)` yalnızca silinende (kırmızı yalnızca hata — silme hata değil ama `ARCHITECTURE.md §7.1` istisnası: silme rozeti `var(--accent-dim)` kullanılır, kırmızı yok), `?` `var(--accent-dim)`; satır tıklama → diff, `+` butonu → `git add` (`window.api.gitAdd`).
   - Kabul: `Tab / yön` ile dosyalar arası gezinme (`ExplorerView` gibi `F3/Tab` değil, `Tab/yön` — `AGENTS.md §3` klavye kuralı), `Enter` stage/unstage.
 
-- [ ] **G2.4 — Klavye gezinmesi (git zone) + odak yönetimi**
+- [x] **G2.4 — Klavye gezinmesi (git zone) + odak yönetimi**
   - Commit: `feat: git panel klavye gezinmesini ekle`
   - Dosyalar: `src/core/defaultBindings.ts` `zone:'git'` için `git.next` (`Tab`), `git.prev` (`Shift+Tab`), `git.up`/`down` (`ArrowUp/Down`), `git.stage` (`Enter`/`Space`), `git.commit` (`Ctrl+Enter`), `git.push` (`Ctrl+Shift+P` benzeri ama çakışmasız — `Keymap` çakışma tespiti `src/core/keymap.ts` yeşil); `src/core/focus.ts:7-43` `FocusZone` `'git'` ekle (`src/core/types.ts:84`).
   - Kabul: `F1` → `Görünüm → Kaynak Kontrolü` → odak `git`, `Tab` dosyalar, `Ctrl+Enter` commit, `Esc` editöre döner, fare olmadan tümü.
