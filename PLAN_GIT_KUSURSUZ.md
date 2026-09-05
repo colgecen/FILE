@@ -80,7 +80,7 @@
   - Dosyalar: `src/core/gitCommands.ts` `git.log` → `window.api.gitLog`; `electron/main/gitHandlers.ts` `git:log`; `src/ui/GitPanel.tsx` (yeni) log sekmesi iskeleti.
   - Kabul: `Ctrl+I` → `git log` → liste, Enter commit detay.
 
-- [ ] **G1.5 — G1 testleri (branch/status/diff/log)**
+- [x] **G1.5 — G1 testleri (branch/status/diff/log)**
   - Commit: `test: git durum testlerini ekle`
   - Dosyalar: `src/core/gitModel.test.ts`, `src/core/gitCommands.test.ts` (yeni), `electron/main/gitHandlers.test.ts` (yeni, `execFile` mock).
   - Kabul: `npm test` yeşil, `rg "git:"` IPC mock'ları ile.
