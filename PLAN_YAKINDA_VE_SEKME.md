@@ -127,7 +127,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: Metin tabanlı ikon: `TS`/`JS`/`JSON`/`MD` gibi küçük etiket; renkler yalnızca `--accent-soft` (string), `--accent-dim` (yorum), `--accent` (vurgu) arası; yeni renk eklenmez. `getFileIcon(name)` yardımcı fonksiyonu yazılır. ADR gerekmez.
   - Kural: kırmızı yok.
 
-- [ ] **A4 — Sekme barı taşma: yatay kaydırma ve klavye ile görünür kılma**
+- [x] **A4 — Sekme barı taşma: yatay kaydırma ve klavye ile görünür kılma**
   - Commit: `feat: sekme bari tasmasinda yatay kaydirmayi ekle`
   - Dosyalar: `src/styles/app.css:47-52`, `src/ui/TabBar.tsx`
   - İş: `.tab-bar { overflow-x: auto; scrollbar-width: thin; }` + `scrollbar-color: var(--border) transparent` (token). Aktif sekmeye geçişte `element.scrollIntoView({ block: 'nearest', inline: 'nearest' })` çağrılır (`tabsModel.subscribe` ile). Fare tekerleği yatay değilse dikey → yatay çevrilmez; yalnızca native scroll.

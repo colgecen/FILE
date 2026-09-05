@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useDirtyPaths } from '../core/dirty';
 import { closeOpenedTab } from '../core/tabCommands';
 import { tabsModel, useTabsState } from '../core/tabs';
@@ -6,7 +7,8 @@ function iconForFile(name: string): { label: string; variant: string } {
   const dot = name.lastIndexOf('.');
   const ext = dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
   if (ext === 'ts' || ext === 'tsx') return { label: 'TS', variant: 'tab-bar__icon--accent' };
-  if (ext === 'js' || ext === 'jsx' || ext === 'mjs' || ext === 'cjs') return { label: 'JS', variant: 'tab-bar__icon--soft' };
+  if (ext === 'js' || ext === 'jsx' || ext === 'mjs' || ext === 'cjs')
+    return { label: 'JS', variant: 'tab-bar__icon--soft' };
   if (ext === 'json') return { label: 'JSON', variant: 'tab-bar__icon--soft' };
   if (ext === 'css') return { label: 'CSS', variant: 'tab-bar__icon--soft' };
   if (ext === 'html') return { label: 'HTML', variant: 'tab-bar__icon--soft' };
@@ -18,9 +20,23 @@ function iconForFile(name: string): { label: string; variant: string } {
 export function TabBar(): React.JSX.Element {
   const { tabs, activeId } = useTabsState();
   const dirty = useDirtyPaths();
+  const barRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const bar = barRef.current;
+    if (bar === null || activeId === null) return;
+    const active = bar.querySelector('.tab-bar__item--active') as HTMLElement | null;
+    if (active !== null && typeof active.scrollIntoView === 'function') {
+      try {
+        active.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+      } catch {
+        // jsdom'da scrollIntoView desteklenmeyebilir — sessiz geç
+      }
+    }
+  }, [activeId, tabs.length]);
 
   return (
-    <div className="tab-bar" role="tablist" aria-label="Açık sekmeler">
+    <div ref={barRef} className="tab-bar" role="tablist" aria-label="Açık sekmeler">
       {tabs.map((tab) => {
         const isDirty = dirty.has(tab.file.path);
         const tooltip = isDirty ? `${tab.file.path} • Kaydedilmedi` : tab.file.path;
