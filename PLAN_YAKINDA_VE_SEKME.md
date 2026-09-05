@@ -219,7 +219,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/menuCommands.ts:34`, `src/menus/menuTree.ts:57-60`, `src/menus/MenuPanel.tsx:56-58`
   - İş: `edit.undo.tree` bir **submenu**'dür, komut değil; `SEEDS` içindeki `edit.undo.tree` tohumu `placeholder:false` yapılır veya tamamen kaldırılır (alt öğeleri `view/clean` zaten gerçek). Menüde rozet görünmez. Doğrulama: Düzenle → Geri Alma Ağacı → rozet yok, alt menüde "Ağacı Görüntüle" / "Dalları Temizle" çalışır.
 
-- [ ] **B2.3 — Düzenle menüsü test güncellemesi**
+- [x] **B2.3 — Düzenle menüsü test güncellemesi**
   - Commit: `test: duzenle menusu yakinda temizligini test et`
   - Dosyalar: `src/menus/MenuBar.test.tsx:65-71`, `src/menus/menuTree.test.ts`, `src/core/navCommands.test.ts:138-142`
   - İş: `Yakında` rozeti sayım testi güncellenir: `edit.paste.history*` artık rozet taşımaz. `file.new.file` gibi yeni gerçek komutlar da rozetsiz sayılır.
