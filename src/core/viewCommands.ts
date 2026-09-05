@@ -1,4 +1,9 @@
 import { clockModel } from './clock';
+import { explorerModel } from './explorer';
+import { focusManager } from './focus';
+import { paletteModel } from './palette';
+import { panesModel } from './panes';
+import { openFilesModel } from './openFiles';
 import { viewModeModel } from './viewMode';
 import type { CommandDef } from './types';
 
@@ -41,6 +46,80 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
     title: 'Saat Göster/Gizle',
     run: () => {
       clockModel.toggle();
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'view.sidebar.explorer',
+    category: 'view',
+    title: 'Gezgin',
+    run: () => {
+      if (explorerModel.getState().isOpen) {
+        explorerModel.close();
+        focusManager.set('editor');
+      } else {
+        explorerModel.open();
+        focusManager.set('explorer');
+      }
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'view.sidebar.search',
+    category: 'view',
+    title: 'Arama Paneli',
+    run: () => {
+      const files = openFilesModel.list();
+      if (files.length === 0) return { ok: false, error: 'Açık dosya yok' };
+      paletteModel.showFiles(files);
+      focusManager.set('palette');
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'view.sidebar.source',
+    category: 'view',
+    title: 'Kaynak Kontrolü',
+    run: async () => {
+      const state = explorerModel.getState();
+      const cwd = state.rootPath ?? state.files[0]?.path ?? '.';
+      try {
+        const branch = await window.api.gitBranch(cwd);
+        const label = branch ? `${branch.name}${branch.dirty ? ' • değişik' : ''}` : 'Git deposu değil';
+        paletteModel.showFiles([{ name: label, path: cwd }]);
+        focusManager.set('palette');
+      } catch {
+        paletteModel.showFiles([{ name: 'Git bilgisi alınamadı', path: cwd }]);
+        focusManager.set('palette');
+      }
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'view.sidebar.run',
+    category: 'view',
+    title: 'Çalıştır Paneli',
+    run: () => {
+      paletteModel.showFiles([
+        { name: 'npm run dev', path: 'task:dev' },
+        { name: 'npm run build', path: 'task:build' },
+        { name: 'npm test', path: 'task:test' },
+      ]);
+      focusManager.set('palette');
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'view.layout.single',
+    category: 'view',
+    title: 'Tek Pencere',
+    run: () => {
+      panesModel.reset();
       return { ok: true };
     },
   });

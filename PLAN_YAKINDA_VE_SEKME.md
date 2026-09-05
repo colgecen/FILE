@@ -228,7 +228,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
 
 ### Faz B3 — Görünüm Menüsü "Yakında" Temizliği
 
-- [ ] **B3.1 — Gezgin kenar çubuğu toggle (view.sidebar.explorer)**
+- [x] **B3.1 — Gezgin kenar çubuğu toggle (view.sidebar.explorer)**
   - Commit: `feat: gezgin kenar cubugu toggle komutunu ekle`
   - Dosyalar: `src/core/explorer.ts`, `src/core/focus.ts:63-89`, `src/menus/menuTree.ts:99`, `src/core/menuCommands.ts:60`
   - İş: `explorer.toggle` zaten `src/core/menuCommands.ts:123` tohumunda var ama placeholder; `view.sidebar.explorer` id'si üzerine gerçek `run` yazılır: açıksa kapat (`explorerModel.close()`), kapalıysa aç (`setRoot` + `focusManager.set('explorer')`). Rozet kalkar. `view.command.palette` ile çakışma yok.
