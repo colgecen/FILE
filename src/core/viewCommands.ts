@@ -123,4 +123,43 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
       return { ok: true };
     },
   });
+
+  register({
+    id: 'view.command.palette',
+    category: 'view',
+    title: 'Komut Paleti',
+    run: () => {
+      focusManager.set('palette');
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'explorer.toggle',
+    category: 'view',
+    title: 'Gezgini Aç/Kapat',
+    run: () => {
+      if (explorerModel.getState().isOpen) {
+        explorerModel.close();
+        focusManager.set('editor');
+      } else {
+        explorerModel.open();
+        focusManager.set('explorer');
+      }
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'explorer.refresh',
+    category: 'view',
+    title: 'Gezgini Yenile',
+    run: async () => {
+      const state = explorerModel.getState();
+      const root = state.rootPath;
+      if (root === null) return { ok: false, error: 'Kök klasör yok' };
+      const ok = await explorerModel.loadRoot(root, (path) => window.api.readDir(path));
+      return ok ? { ok: true } : { ok: false, error: 'Yenileme başarısız' };
+    },
+  });
 }

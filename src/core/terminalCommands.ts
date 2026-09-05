@@ -33,6 +33,15 @@ function createTaskCommand(task: Task, register: (command: CommandDef) => void):
 
 export function registerTerminalCommands(register: (command: CommandDef) => void): void {
   register({
+    id: 'terminal.new',
+    category: 'terminal',
+    title: 'Yeni Terminal',
+    run: (): CommandResult => {
+      terminalModel.open();
+      return { ok: true };
+    },
+  });
+  register({
     id: 'file.new.terminal',
     category: 'terminal',
     title: 'Yeni Terminal',

@@ -311,7 +311,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/ai/aiCommands.ts:63-184`, `src/core/menuCommands.ts:118`, `src/menus/menuTree.ts:190`
   - İş: `ai.prefs` → `AIChatPanel` içinde ayarlar sekmesi (model seçimi, sıcaklık) veya `HelpOverlay` benzeri basit panel. En azından `paletteModel.showModels` + bilgi mesajı. Rozet kalkar.
 
-- [ ] **B5.5 — Explorer yardımcı komutlar (explorer.toggle/refresh, view.command.palette)**
+- [x] **B5.5 — Explorer yardımcı komutlar (explorer.toggle/refresh, view.command.palette)**
   - Commit: `fix: gezgin yardimci komutlarinin rozetlerini kaldir`
   - Dosyalar: `src/core/menuCommands.ts:122-125`, `src/core/focus.ts`, `src/core/explorer.ts`
   - İş: `explorer.toggle` → `view.sidebar.explorer` ile aynı toggle'a bağlanır; `explorer.refresh` → `fs:read-dir` yeniden çağırır; `view.command.palette` → `paletteModel.toggle()` gerçek. Üçü de `placeholder:false` yapılır.
