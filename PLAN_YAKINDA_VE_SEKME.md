@@ -139,7 +139,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: `onMouseDown` → `button === 1` (orta) ise `closeOpenedTab(tab.id)`; `onDoubleClick` → kapat. `onClick` ile çakışma önlenir. Klavye erişimi korunur (Enter ile seç, Ctrl+W ile kapat zaten var).
   - Test: `src/ui/TabBar.test.tsx`'e orta tık testi eklenir.
 
-- [ ] **A6 — Sekme barı boş durum yüksekliği ve "Dosya seçin" uyumu**
+- [x] **A6 — Sekme barı boş durum yüksekliği ve "Dosya seçin" uyumu**
   - Commit: `fix: bos sekme barinda yukseklik ve placeholder uyumunu duzelt`
   - Dosyalar: `src/styles/app.css:40-46`, `src/editor/EditorCore.tsx:119-123`, `src/layout/AppShell.tsx:74-76`
   - İş: Hiç sekme yokken `TabBar` 32px yüksekliği korur (çökmez); `EditorCore` placeholder'ı barın altındaki workspace'de ortalanır. `min-height: 32px` zaten var — boş durumda `aria-hidden` değil, erişilebilir kalır.

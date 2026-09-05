@@ -40,6 +40,7 @@ body,
 .app-shell__tabbar {
   display: flex;
   flex-direction: column;
+  min-height: 32px;
   border-bottom: 1px solid var(--border);
   background: var(--bg-base);
 }
