@@ -92,7 +92,7 @@
   - Dosyalar: `src/ui/GitPanel.tsx` (yeni, `ExplorerView` `src/ui/ExplorerView.tsx:1-*` desenini takip: `useGitPanelState`, `gitModel.subscribe`), `src/styles/app.css:115-130` `.git-panel` (genişlik `20%`, `border-right:1px solid var(--border)`, `background:var(--bg-base)`), `src/layout/AppShell.tsx:74-82` `ExplorerView` yanına `GitPanel` (koşullu `gitPanelOpen`).
   - Kabul: `Görünüm → Kaynak Kontrolü` (`view.sidebar.source` `src/core/viewCommands.ts:82-96`) GitPanel açar, `F1` menüden de erişilir, `Esc` editöre döner.
 
-- [ ] **G2.2 — GitPanel bölümlemesi (Değişiklikler / Staged / Branch / Log)**
+- [x] **G2.2 — GitPanel bölümlemesi (Değişiklikler / Staged / Branch / Log)**
   - Commit: `feat: git panel bolumlerini ekle`
   - Dosyalar: `src/ui/GitPanel.tsx` bölümler: `Değişiklikler` (unstaged), `Hazırlanan` (staged), `Branch: <ad>` başlık, `Log` alt liste; her bölüm `1px var(--border)` ayraç, `JetBrains Mono` + `Orbitron` başlık; `src/styles/git.css` (yeni, tokenlar).
   - Kabul: Boş repo “Değişiklik yok” `var(--accent-dim)` ile, 4 bölüm görünür.
