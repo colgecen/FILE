@@ -1,7 +1,7 @@
 {
   "name": "file",
   "private": false,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "main": "out/main/index.js",
   "description": "Keyboard-first desktop editor — Electron, Monaco & local AI",

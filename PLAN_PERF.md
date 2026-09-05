@@ -51,7 +51,7 @@
   - Commit: `feat: ai lazy load ve worker terminate ekle`
   - Dosyalar: `src/ai/engine.ts` `perfModel.aiLazy` true ise `ensureModel` sadece ihtiyaçta, `cancel()` + `worker.terminate`, `src/ai/ai.worker.ts` `self.close()`.
 
-- [ ] **P4.2 — Reduced-motion + RAM test & build & tag v0.3.1**
+- [x] **P4.2 — Reduced-motion + RAM test & build & tag v0.3.1**
   - Commit: `chore: ram test ve build al`
   - Dosyalar: `src/styles/app.css` `@media (prefers-reduced-motion: reduce)` animasyon kapat, `src/core/perfModel.test.ts` + `npm test` + `npm run build` + `dist:linux` + `git tag v0.3.1`.
 

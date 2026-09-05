@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { perfModel } from '../core/perfModel';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
 import { MAX_MODELS, pruneModels, resetModelCache, resolveModel, touchModel } from './editorModel';
@@ -41,6 +42,7 @@ let created: Map<string, { uri: { path: string }; dispose: typeof api.dispose; g
 beforeEach(() => {
   resetModelCache();
   tabsModel.reset();
+  perfModel.set({ modelLimit: 10 });
   api.getModel.mockReset();
   api.createModel.mockReset();
   api.dispose.mockReset();
@@ -58,6 +60,7 @@ beforeEach(() => {
 afterEach(() => {
   resetModelCache();
   tabsModel.reset();
+  perfModel.set({ modelLimit: 20 });
 });
 
 describe('editorModel', () => {
