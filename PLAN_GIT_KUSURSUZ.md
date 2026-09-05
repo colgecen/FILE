@@ -134,7 +134,7 @@
   - Dosyalar: `src/core/gitCommands.ts` `git.push` → `window.api.gitPush` (`git push`), `git.pull` → `window.api.gitPull` (`git pull --rebase`); `electron/main/gitHandlers.ts` her ikisi `execFile` + `stdout/stderr` limit; `src/ui/GitPanel.tsx` üst çubuk `Push`/`Pull` butonları (`var(--accent)` kenarlık).
   - Kabul: Push öncesi otomatik `git fetch` → gerideyse `pull --rebase` önerisi palet bilgisi, `ok:false` → `ErrorIndicator` kırmızı (`ARCHITECTURE.md §7.4`) yalnızca gerçek hata.
 
-- [ ] **G3.4 — Branch değiştirme / oluşturma (checkout / switch)**
+- [x] **G3.4 — Branch değiştirme / oluşturma (checkout / switch)**
   - Commit: `feat: git branch degistirme akisini ekle`
   - Dosyalar: `src/core/gitCommands.ts` `git.checkout` → `window.api.gitCheckout(branch)`; `src/ui/GitPanel.tsx` branch başlığına tıklama → palet `git branch --list` → Enter checkout; `src/core/gitModel.ts` branch yenileme.
   - Kabul: `Ctrl+I` → `git checkout` → liste → Enter → `StatusBar` branch güncellenir.
