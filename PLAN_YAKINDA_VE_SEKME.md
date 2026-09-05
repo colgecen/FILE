@@ -329,7 +329,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Commit: `chore: renk kose ve ipc kurallarini denetle`
   - İş: `rg -n "border-radius" src/` → yalnızca `0` olmalı; `rg -n "#[0-9a-fA-F]{3,6}" src/styles` → yalnızca tokenlar; `rg -n "window\.api" src/` → tüm IPC `window.api` üzerinden. İhlal varsa düzeltilir. `npm run lint` temiz.
 
-- [ ] **C3 — Klavye akışları uçtan uca test: F1 / Ctrl+I / tree / F3/Tab / sekme / Esc**
+- [x] **C3 — Klavye akışları uçtan uca test: F1 / Ctrl+I / tree / F3/Tab / sekme / Esc**
   - Commit: `test: klavye akislarini ucten uca test et`
   - Dosyalar: `src/ui/paletteFlow.test.tsx`, `src/ui/ExplorerView.test.tsx`, `src/menus/MenuBar.test.tsx`, `src/ui/TabBar.test.tsx`, `src/core/focus.test.ts`
   - İş: Senaryolar: `F1 → sol/sağ → Tab → Enter → feedback`, `Ctrl+I → tree → gezgin 1/7 + odak`, `F3/Tab ile gezinme`, `Ctrl+Tab sekme geçişi`, `Esc ile geri dönüş`. Kırmızı yalnızca hata durumunda.
