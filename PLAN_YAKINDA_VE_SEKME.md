@@ -253,7 +253,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/panes.ts`, `src/core/paneCommands.ts:19-44`, `src/menus/menuTree.ts:104`
   - İş: `panesModel.reset()` veya `panesModel.closeAllExceptActive()` ile tüm bölmeler tek pane'e indirilir. `view.split.*` ile simetrik. Rozet kalkar.
 
-- [ ] **B3.6 — Görünüm menüsü bağlama testi**
+- [x] **B3.6 — Görünüm menüsü bağlama testi**
   - Commit: `test: gorunum menusu komutlarini test et`
   - Dosyalar: `src/menus/MenuBar.test.tsx`, `src/core/viewCommands.test.ts`
   - İş: 5 yeni komutun `placeholder === false` olduğu ve `registry.run`'ın `ok:true` döndürdüğü doğrulanır.
