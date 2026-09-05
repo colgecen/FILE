@@ -672,8 +672,9 @@ textarea {
 }
 
 .reticle--lock::before {
-  background: #ffffff;
-  border-color: #ffffff;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
 }
 
 .reticle-tag {
@@ -692,12 +693,15 @@ textarea {
 
 .reticle-tag--show {
   opacity: 1;
-  color: #ffffff;
+  color: var(--accent);
+  text-shadow: 0 0 6px var(--accent);
 }
 
 .reticle-lock--active {
-  outline: 1px solid #ffffff !important;
+  outline: 1px solid var(--accent) !important;
   outline-offset: 2px;
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--accent) !important;
+  background: var(--selection) !important;
+  text-shadow: 0 0 8px var(--accent);
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.25) !important;
 }
