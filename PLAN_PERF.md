@@ -43,7 +43,7 @@
   - Commit: `feat: git debounce ve cache ekle`
   - Dosyalar: `src/core/gitModel.ts` `loadStatus` debounce 500ms + 5sn cache, `src/core/gitCommands.ts` `git.status` aynı.
 
-- [ ] **P3.2 — Telemetri throttle + kapatma ayarı**
+- [x] **P3.2 — Telemetri throttle + kapatma ayarı**
   - Commit: `feat: telemetri throttle ve kapatma ayari ekle`
   - Dosyalar: `electron/main/telemetry.ts` `perfModel.telemetry` false ise 0Hz, `src/core/telemetry.ts` 500ms → 1000ms, `src/ui/StatusBar.tsx` gizle.
 
