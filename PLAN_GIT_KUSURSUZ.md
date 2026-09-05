@@ -129,7 +129,7 @@
   - Dosyalar: `src/ui/GitPanel.tsx` alt `Commit` kutusu (`textarea`, `JetBrains Mono`, `1px var(--border)`, `border-radius:0`, placeholder “Commit mesajı” Türkçe); `src/core/gitCommands.ts` `git.commit` → `window.api.gitCommit({message})` (`git commit -m`); boş mesajda `var(--accent-dim)` uyarı, kırmızı yok; başarılıda `gitModel` yenilenir, `StatusBar` `IDLE`.
   - Kabul: `Ctrl+Enter` veya `Commit` butonu → `git log` yenilenir, hata çakışma değilse yeşil değil mavi glow (`src/styles/app.css:27-38` benzeri).
 
-- [ ] **G3.3 — Push / Pull (code'daki gibi, önce fetch, sonra rebase kontrol)**
+- [x] **G3.3 — Push / Pull (code'daki gibi, önce fetch, sonra rebase kontrol)**
   - Commit: `feat: git push ve pull akislarini ekle`
   - Dosyalar: `src/core/gitCommands.ts` `git.push` → `window.api.gitPush` (`git push`), `git.pull` → `window.api.gitPull` (`git pull --rebase`); `electron/main/gitHandlers.ts` her ikisi `execFile` + `stdout/stderr` limit; `src/ui/GitPanel.tsx` üst çubuk `Push`/`Pull` butonları (`var(--accent)` kenarlık).
   - Kabul: Push öncesi otomatik `git fetch` → gerideyse `pull --rebase` önerisi palet bilgisi, `ok:false` → `ErrorIndicator` kırmızı (`ARCHITECTURE.md §7.4`) yalnızca gerçek hata.
