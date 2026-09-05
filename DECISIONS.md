@@ -114,6 +114,14 @@ Format: **Durum** — Bağlam — Karar — Sonuçlar.
 - **Karar:** Motor `@huggingface/transformers` (transformers.js) — saf WebAssembly (onnxruntime-web), native/AABB derleme gerektirmez; ONNX modelleri (Qwen2.5-Instruct, q4, ~400 MB–1 GB) Web Worker içinde çalışır; model indirme Hugging Face Hub'dan `progress_callback` ile izlenir, iptal worker terminate ile sağlanır.
 - **Sonuçlar:** `contextIsolation`/`sandbox` korunur (worker renderer içindedir); ilk model indirme internet gerektirir; UI ve StatusBar (D-013 kontratları) motordan bağımsız kalır; WebGPU'suz WASM backend garantili çalışır.
 
+## D-017 Pane başına sekme çubuğu — araştırma notu
+
+- **Durum:** Taslak / Ertelendi
+- **Bağlam:** Mevcut `TabBar` (`src/layout/AppShell.tsx:74-76` ve `src/ui/TabBar.tsx:1-*`) global tek bar olarak çalışır; `PaneManager` (`src/ui/PaneManager.tsx:34-43`, `src/core/panes.ts`) dikey/yatay bölme ile çoklu pane üretir fakat sekmeler tüm panellerde ortak `tabsModel` (`src/core/tabs.ts:4-85`) üzerinden paylaşılır. Kullanıcı pane başına ayrı sekme seti isteyebilir (VS Code modeli).
+- **Seçenekler:** (A) Global tek bar korunur — basit, `tabsModel` değişmez; (B) Pane başına bar — `tabsModel` paneId → tab listesi haritasına dönüşür, `PaneManager` her pane'e `TabBar file={activeFileForPane}` render eder, `focusManager` ve `paneCommands` genişler.
+- **Karar:** Faz A (12 görev) boyunca **(A) korunur**; pane başına bar ihtiyacı gerçek kullanım ölçülmeden karmaşıklık eklememek için ertelenir. Gelecekte ihtiyaç doğrulanırsa ADR güncellenir ve `src/core/tabs.ts` pane-aware hale getirilir (kanal adları korunur, `window.api` etkilenmez).
+- **Sonuçlar:** Şimdilik ek bağımlılık / IPC değişimi yok; `AppShell` tek `TabBar` ile çalışmaya devam eder.
+
 ## D-015 Doküman ve iletişim dili
 
 - **Durum:** Kabul edildi

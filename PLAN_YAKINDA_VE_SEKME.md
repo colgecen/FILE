@@ -172,7 +172,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/ui/TabBar.test.tsx:1-57`
   - İş: Yeni testler: tooltip tam yol içerir, kirli nokta varlığı, orta tık kapatma, aktif sekme sınıfı. `vitest run` yeşil.
 
-- [ ] **A12 — Pane başına sekme barı araştırması ve ADR taslağı (opsiyonel, kod yok)**
+- [x] **A12 — Pane başına sekme barı araştırması ve ADR taslağı (opsiyonel, kod yok)**
   - Commit: `docs: pane basina sekme bari icin arastirma notu ekle`
   - Dosyalar: `DECISIONS.md` (yeni D-017 taslağı), bu plan
   - İş: Mevcut global `TabBar` (`AppShell`'de tek) vs pane başına bar seçenekleri karşılaştırılır. Karar verilmezse kod değişmez; yalnızca not eklenir. Bu görev commit gerektirir ama kod zorunlu değil.
