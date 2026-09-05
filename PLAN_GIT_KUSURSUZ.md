@@ -43,7 +43,7 @@
   - Dosyalar: `electron/shared/api-types.ts:1-72` (`Api` tipine `gitStatus`, `gitDiff`, `gitLog`, `gitCommit`, `gitPush`, `gitPull`, `gitCheckout` ekle), `electron/preload/index.ts:12-49` (`window.api.gitStatus` vb.), `electron/main/gitHandlers.ts:1-*` (her kanal `ipcMain.handle`, yol doğrulama `fileUtils.ts`, `child_process.execFile` ile `git` çağrıları, 10MB limit), `ARCHITECTURE.md §3:64-70` tabloya 7 satır ekle.
   - Kabul: `rg "git:" electron` 8 kanal listeler, `typecheck` yeşil, `window.api` dışında `fs` yok.
 
-- [ ] **G0.2 — Git model çekirdeği (branch + status + diff + log tipleri)**
+- [x] **G0.2 — Git model çekirdeği (branch + status + diff + log tipleri)**
   - Commit: `feat: git model cekirdegini kur`
   - Dosyalar: `src/core/gitModel.ts` (yeni) — `GitBranchInfo` (`src/api.d.ts:16-19`), `GitFile {path,status: 'M'|'A'|'D'|'?'|'!'}`, `GitDiff`, `GitLogEntry`; `ExplorerModel` benzeri `GitModel` (state: `branch`, `files`, `staged:Set`, `loading`, `error`, `lastCommit`), `subscribe/emit` (`src/core/explorer.ts:47-59` deseni).
   - Kabul: `src/core/gitModel.test.ts` (yeni) durum geçişleri yeşil.
