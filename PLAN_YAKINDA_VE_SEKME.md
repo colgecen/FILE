@@ -248,7 +248,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/ui/RunPanel.tsx` (yeni), `src/core/taskModel.ts`, `src/menus/menuTree.ts:102`
   - İş: `COMMON_TASKS` (`src/core/terminalCommands.ts:6-12`) listesi buton olarak gösterilir; tıklayınca `writeToActiveTerminal` ile çalışır. Rozet kalkar.
 
-- [ ] **B3.5 — Tek Pencere (view.layout.single): bölmeleri kapat**
+- [x] **B3.5 — Tek Pencere (view.layout.single): bölmeleri kapat**
   - Commit: `feat: tek pencere duzenine don komutunu ekle`
   - Dosyalar: `src/core/panes.ts`, `src/core/paneCommands.ts:19-44`, `src/menus/menuTree.ts:104`
   - İş: `panesModel.reset()` veya `panesModel.closeAllExceptActive()` ile tüm bölmeler tek pane'e indirilir. `view.split.*` ile simetrik. Rozet kalkar.
