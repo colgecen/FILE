@@ -151,7 +151,7 @@
 
 ### Faz G4 — Çakışmasızlık, test, build, doküman & tag
 
-- [ ] **G4.1 — Çakışma tespiti & çözümü (merge conflict iskelet, kusursuz uyarı)**
+- [x] **G4.1 — Çakışma tespiti & çözümü (merge conflict iskelet, kusursuz uyarı)**
   - Commit: `fix: git cakisma tespit ve cozum iskeletini ekle`
   - Dosyalar: `electron/main/gitHandlers.ts` `git:status` içinde `UU` (unmerged) parse → `GitFile {status:'!'}`; `src/ui/GitPanel.tsx` çakışan dosya `!` `var(--error)` yalnızca burada (hata anlamı), tıklama → `DiffView` çakışma blokları; `src/core/gitCommands.ts` `git.resolve` iskelet (`git add` sonrası).
   - Kabul: `git merge` çakışmasında panel kırmızı yanıp sönmez, sadece dosya satırı `!` kırmızı + `StatusBar` `HATA` (`src/ui/StatusBar.tsx:1-*`).
