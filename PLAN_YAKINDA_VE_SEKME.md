@@ -277,7 +277,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/taskModel.ts`, `src/menus/menuTree.ts:147-148`, `src/core/menuCommands.ts:91-92`
   - İş: `run.without.debug` → `terminalModel.open()` + `taskModel.runLastOrDefault('npm run dev')`; `run.last` → `terminalCommands`'taki `run.last` ile birleştirilir (duplicate id çözülür). Rozet kalkar.
 
-- [ ] **B4.4 — Terminal yeni/böl/kapat zaten gerçek — menü rozeti doğrulaması**
+- [x] **B4.4 — Terminal yeni/böl/kapat zaten gerçek — menü rozeti doğrulaması**
   - Commit: `fix: terminal menu rozetlerini dogrula`
   - Dosyalar: `src/menus/menuTree.ts:155-157`, `src/core/terminalCommands.ts:34-61`, `src/core/menuCommands.ts:95-97`
   - İş: `terminal.new/split/kill` zaten gerçek; eğer `menuCommands` tohumu hâlâ placeholder ise üzerine yazıldığı doğrulanır ve testte rozet sayısından düşülür. Kod değişmeyebilir, test düzeltmesi yeter.
