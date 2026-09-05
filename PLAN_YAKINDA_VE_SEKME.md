@@ -282,7 +282,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/menus/menuTree.ts:155-157`, `src/core/terminalCommands.ts:34-61`, `src/core/menuCommands.ts:95-97`
   - İş: `terminal.new/split/kill` zaten gerçek; eğer `menuCommands` tohumu hâlâ placeholder ise üzerine yazıldığı doğrulanır ve testte rozet sayısından düşülür. Kod değişmeyebilir, test düzeltmesi yeter.
 
-- [ ] **B4.5 — Çalıştır menüsü testleri**
+- [x] **B4.5 — Çalıştır menüsü testleri**
   - Commit: `test: calistir debug komutlari testlerini ekle`
   - Dosyalar: `src/menus/menuBar.test.tsx`, yeni `src/core/debugModel.test.ts`
   - İş: 8 komutun rozetsiz olduğu ve `run`'ın beklenen `ok` döndürdüğü test edilir.
