@@ -35,6 +35,21 @@ export function TabBar(): React.JSX.Element {
     }
   }, [activeId, tabs.length]);
 
+  if (tabs.length === 0) {
+    return (
+      <div ref={barRef} className="tab-bar" role="tablist" aria-label="Açık sekmeler">
+        <div className="tab-bar__item tab-bar__item--active" role="tab" aria-label="Karşılama">
+          <span className="tab-bar__icon tab-bar__icon--accent" aria-hidden="true">
+            MD
+          </span>
+          <span className="tab-bar__select" title="Karşılama — dosya açın veya görünüme geçin">
+            Karşılama
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={barRef} className="tab-bar" role="tablist" aria-label="Açık sekmeler">
       {tabs.map((tab) => {

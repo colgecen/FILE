@@ -1,12 +1,22 @@
 import { clockModel } from './clock';
+import { dirtyTracker } from './dirty';
 import { explorerModel } from './explorer';
 import { focusManager } from './focus';
 import { gitModel } from './gitModel';
 import { paletteModel } from './palette';
 import { panesModel } from './panes';
 import { openFilesModel } from './openFiles';
+import { tabsModel } from './tabs';
 import { viewModeModel } from './viewMode';
 import type { CommandDef } from './types';
+
+function ensureTabForView(): void {
+  if (tabsModel.getState().tabs.length === 0) {
+    const path = `untitled-${Date.now()}.ts`;
+    tabsModel.open({ path, name: path, content: '', language: 'plaintext' });
+    dirtyTracker.markDirty(path);
+  }
+}
 
 export function registerViewCommands(register: (command: CommandDef) => void): void {
   register({
@@ -56,6 +66,7 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
     category: 'view',
     title: 'Gezgin',
     run: () => {
+      ensureTabForView();
       if (explorerModel.getState().isOpen) {
         explorerModel.close();
         focusManager.set('editor');
@@ -72,8 +83,13 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
     category: 'view',
     title: 'Arama Paneli',
     run: () => {
+      ensureTabForView();
       const files = openFilesModel.list();
-      if (files.length === 0) return { ok: false, error: 'Açık dosya yok' };
+      if (files.length === 0) {
+        paletteModel.showFiles([{ name: 'Arama — açık dosya yok', path: 'search:empty' }]);
+        focusManager.set('palette');
+        return { ok: true };
+      }
       paletteModel.showFiles(files);
       focusManager.set('palette');
       return { ok: true };
@@ -85,6 +101,7 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
     category: 'view',
     title: 'Kaynak Kontrolü',
     run: async () => {
+      ensureTabForView();
       const explorerState = explorerModel.getState();
       const cwd = explorerState.rootPath ?? explorerState.files[0]?.path ?? '.';
       const isOpen = gitModel.getState().isOpen;
@@ -105,6 +122,7 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
     category: 'view',
     title: 'Çalıştır Paneli',
     run: () => {
+      ensureTabForView();
       paletteModel.showFiles([
         { name: 'npm run dev', path: 'task:dev' },
         { name: 'npm run build', path: 'task:build' },
@@ -140,6 +158,7 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
     category: 'view',
     title: 'Gezgini Aç/Kapat',
     run: () => {
+      ensureTabForView();
       if (explorerModel.getState().isOpen) {
         explorerModel.close();
         focusManager.set('editor');

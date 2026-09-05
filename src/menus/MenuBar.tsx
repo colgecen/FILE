@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { useCore } from '../layout/AppShell';
-import { useFocusZone } from '../core/focus';
+import { focusManager, useFocusZone } from '../core/focus';
 import { MenuPanel } from './MenuPanel';
 import { menuModel, useMenuModelState } from './menuModel';
 import { Clock } from '../ui/Clock';
@@ -9,6 +10,19 @@ export function MenuBar(): React.JSX.Element {
   const zone = useFocusZone();
   const { registry } = useCore();
   const menubarActive = zone === 'menubar';
+
+  useEffect(() => {
+    if (!menubarActive) return;
+    const handler = (event: MouseEvent): void => {
+      const target = event.target as HTMLElement | null;
+      if (target === null) return;
+      if (target.closest('.menubar') !== null || target.closest('.menu-panel') !== null) return;
+      menuModel.close();
+      focusManager.returnToPrevious();
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [menubarActive]);
 
   const items = [];
   for (let i = 0; i < menuModel.topCount(); i++) {
