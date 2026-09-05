@@ -47,7 +47,7 @@
   - Commit: `feat: telemetri throttle ve kapatma ayari ekle`
   - Dosyalar: `electron/main/telemetry.ts` `perfModel.telemetry` false ise 0Hz, `src/core/telemetry.ts` 500ms → 1000ms, `src/ui/StatusBar.tsx` gizle.
 
-- [ ] **P4.1 — AI lazy load + worker terminate**
+- [x] **P4.1 — AI lazy load + worker terminate**
   - Commit: `feat: ai lazy load ve worker terminate ekle`
   - Dosyalar: `src/ai/engine.ts` `perfModel.aiLazy` true ise `ensureModel` sadece ihtiyaçta, `cancel()` + `worker.terminate`, `src/ai/ai.worker.ts` `self.close()`.
 
