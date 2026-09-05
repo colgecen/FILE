@@ -156,7 +156,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: Mevcut `close()` zaten `tabs[index] ?? tabs[index-1]` mantığında; bu davranış korunur ve testle belgelenir. `dirtyTracker.clearDirty` çağrısı `TabBar` ve `tabCommands`'ta çiftlenmez.
   - Test: ortadaki sekme kapat → sağdaki aktif olur.
 
-- [ ] **A9 — Klavye ile sekme geçişi görünür kılma (Ctrl+Tab / Ctrl+Shift+Tab)**
+- [x] **A9 — Klavye ile sekme geçişi görünür kılma (Ctrl+Tab / Ctrl+Shift+Tab)**
   - Commit: `feat: klavye ile sekme gecisinde otomatik kaydirmayi ekle`
   - Dosyalar: `src/core/tabCommands.ts:26-54`, `src/core/defaultBindings.ts:40-42`, `src/ui/TabBar.tsx`
   - İş: `tab.next` / `tab.prev` sonrası `requestAnimationFrame` içinde aktif sekme `scrollIntoView` ile görünür kılınır. Binding'ler zaten tanımlı — hardcode eklenmez.
