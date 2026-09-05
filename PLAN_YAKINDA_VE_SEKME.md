@@ -267,7 +267,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/core/debugModel.ts` (yeni), `src/menus/menuTree.ts:139-140`, `src/core/menuCommands.ts:85-86`
   - İş: Gerçek debugger yok; iskelet: `debug.start` → `StatusBar`'da `IDLE → COMPUTING` kısa animasyon + `ErrorIndicator` değil, `paletteModel` üzerinden "Hata ayıklama çok yakında — yapılandırma bekleniyor" bilgisi. `breakpoint.toggle` → `bookmarkModel` benzeri `breakpointModel` ile satırda glyph ekler (`editor.glyphMargin`). Rozetler kalkar ama işlev iskelettir — ADR D-011 gibi dokümante edilir.
 
-- [ ] **B4.2 — Adım komutları (debug.continue, step.over/into/out)**
+- [x] **B4.2 — Adım komutları (debug.continue, step.over/into/out)**
   - Commit: `feat: adim komutlari iskeletini ekle`
   - Dosyalar: `src/core/debugModel.ts`, `src/menus/menuTree.ts:142-145`, `src/core/menuCommands.ts:87-90`
   - İş: `debugModel.step()` çağrıları; henüz motor yoksa `ok:false, error: 'Hata ayıklama motoru bağlı değil'` döner ve `ErrorIndicator` kırmızı yanıp söner (`ARCHITECTURE.md §7.4`) — kırmızı yalnızca burada kullanılır. Rozet kalkar.
