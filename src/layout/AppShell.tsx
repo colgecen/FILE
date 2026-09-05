@@ -4,6 +4,7 @@ import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
 import { recentFiles } from '../core/recentFiles';
 import { useSaveFlash } from '../core/saveSignal';
+import { useGitPanelState } from '../core/gitModel';
 import { useTabsState } from '../core/tabs';
 import { useTerminalOpen } from '../core/terminalModel';
 import { useViewMode } from '../core/viewMode';
@@ -13,11 +14,13 @@ import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 import { ExplorerView } from '../ui/ExplorerView';
+import { GitPanel } from '../ui/GitPanel';
 import { HelpOverlay } from '../ui/HelpOverlay';
 import { PaneManager } from '../ui/PaneManager';
 import { StatusBar } from '../ui/StatusBar';
 import { TabBar } from '../ui/TabBar';
 import { TerminalView } from '../terminal/TerminalView';
+import '../styles/git.css';
 
 const CoreContext = createContext<Core | null>(null);
 
@@ -42,6 +45,7 @@ export function AppShell({
   const savedFlash = useSaveFlash();
   const terminalOpen = useTerminalOpen();
   const viewMode = useViewMode();
+  const gitState = useGitPanelState();
   useIpcLifecycle(window.api);
   useEffect(() => recentFiles.attach(window.localStorage), []);
   useEffect(() => core.controller.attach(window), [core]);
@@ -76,6 +80,7 @@ export function AppShell({
         </div>
         <div className="app-shell__workspace">
           <ExplorerView />
+          {gitState.isOpen && <GitPanel />}
           <PaneManager file={activeFile} />
           {terminalOpen && <TerminalView />}
           {children}

@@ -104,4 +104,41 @@ export function registerGitCommands(register: (command: CommandDef) => void): vo
       return log !== null ? { ok: true } : { ok: false, error: 'Log alınamadı' };
     },
   });
+
+  register({
+    id: 'git.next',
+    category: 'terminal',
+    title: 'Git Sonraki',
+    run: () => {
+      gitModel.moveSelection(1);
+      return { ok: true };
+    },
+  });
+  register({
+    id: 'git.prev',
+    category: 'terminal',
+    title: 'Git Önceki',
+    run: () => {
+      gitModel.moveSelection(-1);
+      return { ok: true };
+    },
+  });
+  register({
+    id: 'git.up',
+    category: 'terminal',
+    title: 'Git Yukarı',
+    run: () => {
+      gitModel.moveSelection(-1);
+      return { ok: true };
+    },
+  });
+  register({
+    id: 'git.down',
+    category: 'terminal',
+    title: 'Git Aşağı',
+    run: () => {
+      gitModel.moveSelection(1);
+      return { ok: true };
+    },
+  });
 }

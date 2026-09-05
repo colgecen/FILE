@@ -60,7 +60,7 @@
 
 ### Faz G1 — Git Durum (branch / status / diff) — okunur, çakışmasız
 
-- [ ] **G1.1 — Branch göstergesi + StatusBar entegrasyonu (gerçek `git branch --show-current`)**
+- [x] **G1.1 — Branch göstergesi + StatusBar entegrasyonu (gerçek `git branch --show-current`)**
   - Commit: `feat: git branch gostergesini gercek veriye bagla`
   - Dosyalar: `src/ui/StatusBar.tsx:14-*` `useGitBranch` zaten `window.api.gitBranch`; `electron/main/gitHandlers.ts` `git:branch` gerçek `execFile('git', ['branch','--show-current'])` + `dirty` için `git status --porcelain` bayrağı; `src/core/gitModel.ts` `branch` state'i.
   - Kabul: repo içinde branch adı, dirty ise `• değişik` rozeti `var(--accent)`; repo değilse gizli (kırmızı yok).

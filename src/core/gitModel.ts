@@ -22,6 +22,8 @@ export type GitState = {
   readonly loading: boolean;
   readonly error: string | null;
   readonly rootPath: string | null;
+  readonly isOpen: boolean;
+  readonly selected: number;
 };
 
 const DEFAULT: GitState = {
@@ -33,6 +35,8 @@ const DEFAULT: GitState = {
   loading: false,
   error: null,
   rootPath: null,
+  isOpen: false,
+  selected: 0,
 };
 
 export class GitModel {
@@ -106,6 +110,36 @@ export class GitModel {
     } finally {
       this.setLoading(false);
     }
+  }
+
+  open(): void {
+    if (this.state.isOpen) return;
+    this.state = { ...this.state, isOpen: true };
+    this.emit();
+  }
+
+  close(): void {
+    if (!this.state.isOpen) return;
+    this.state = { ...this.state, isOpen: false };
+    this.emit();
+  }
+
+  toggle(): void {
+    this.state = { ...this.state, isOpen: !this.state.isOpen };
+    this.emit();
+  }
+
+  moveSelection(delta: number): void {
+    const count = this.state.files.length;
+    if (count === 0) return;
+    const next = ((this.state.selected + delta) % count + count) % count;
+    this.state = { ...this.state, selected: next };
+    this.emit();
+  }
+
+  setSelected(index: number): void {
+    this.state = { ...this.state, selected: index };
+    this.emit();
   }
 
   reset(): void {

@@ -1,6 +1,7 @@
 import { clockModel } from './clock';
 import { explorerModel } from './explorer';
 import { focusManager } from './focus';
+import { gitModel } from './gitModel';
 import { paletteModel } from './palette';
 import { panesModel } from './panes';
 import { openFilesModel } from './openFiles';
@@ -84,17 +85,17 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
     category: 'view',
     title: 'Kaynak Kontrolü',
     run: async () => {
-      const state = explorerModel.getState();
-      const cwd = state.rootPath ?? state.files[0]?.path ?? '.';
-      try {
-        const branch = await window.api.gitBranch(cwd);
-        const label = branch ? `${branch.name}${branch.dirty ? ' • değişik' : ''}` : 'Git deposu değil';
-        paletteModel.showFiles([{ name: label, path: cwd }]);
-        focusManager.set('palette');
-      } catch {
-        paletteModel.showFiles([{ name: 'Git bilgisi alınamadı', path: cwd }]);
-        focusManager.set('palette');
+      const explorerState = explorerModel.getState();
+      const cwd = explorerState.rootPath ?? explorerState.files[0]?.path ?? '.';
+      const isOpen = gitModel.getState().isOpen;
+      if (isOpen) {
+        gitModel.close();
+        focusManager.set('editor');
+        return { ok: true };
       }
+      gitModel.open();
+      focusManager.set('git');
+      await gitModel.loadStatus(window.api, cwd);
       return { ok: true };
     },
   });
