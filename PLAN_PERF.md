@@ -35,7 +35,7 @@
   - Commit: `feat: gezgin sanal listeyi ekle`
   - Dosyalar: `src/ui/ExplorerView.tsx` `max-height + overflow-y` ve `slice` ile sadece görünür 60 satır render, `src/core/explorer.ts` `rows()` cache.
 
-- [ ] **P2.2 — Büyük dosya lazy (10MB+ sadece görünür satır)**
+- [x] **P2.2 — Büyük dosya lazy (10MB+ sadece görünür satır)**
   - Commit: `feat: buyuk dosya lazy yuklemeyi ekle`
   - Dosyalar: `src/editor/EditorCore.tsx` `file.content.length > 10_000_000` ise `model.setValue` chunk, `src/editor/monacoSetup.ts` `renderLineHighlight: off`.
 
