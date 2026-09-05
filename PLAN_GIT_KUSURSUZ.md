@@ -112,7 +112,7 @@
   - Dosyalar: `src/ui/GitPanel.tsx` `loading` → `...` `var(--accent-soft)` `Orbitron`; `error` → `1px solid var(--error)` panel (`src/styles/app.css:247-254` benzeri), `StatusBar` kırmızı rozet (`src/ui/StatusBar.tsx:1-*`) yalnızca gerçek hata; `src/styles/app.css` `min-height` korunur (`src/styles/app.css:40-45` gibi).
   - Kabul: Depo değilse “Git deposu değil” `var(--accent-dim)`, yüklenirken spinner yok, metin tabanlı.
 
-- [ ] **G2.6 — GitPanel AppShell entegrasyonu + `tree` benzeri `git` palet komutu**
+- [x] **G2.6 — GitPanel AppShell entegrasyonu + `tree` benzeri `git` palet komutu**
   - Commit: `feat: git paneli appshell ve palet entegrasyonunu ekle`
   - Dosyalar: `src/layout/AppShell.tsx` `useGitPanelState`, `src/core/palette.ts` `showGitStatus`, `src/core/navCommands.ts` `git` alias (`git`, `status`); `src/hud/CommandHUD.tsx` fuzzy `git` → GitPanel.
   - Kabul: `Ctrl+I` → `git` → Enter GitPanel açılır, odak `git`.
