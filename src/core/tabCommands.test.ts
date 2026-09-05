@@ -62,4 +62,21 @@ describe('tab komutları', () => {
     const result = await registry.run('tab.close');
     expect(result.ok).toBe(true);
   });
+
+  it('ortadaki sekme kapatıldığında sağdaki aktif olur', () => {
+    tabsModel.open(file('/a.ts'));
+    tabsModel.open(file('/b.ts'));
+    tabsModel.open(file('/c.ts'));
+    tabsModel.activate('/b.ts');
+    tabsModel.close('/b.ts');
+    expect(tabsModel.getState().activeId).toBe('/c.ts');
+  });
+
+  it('son sekme kapatıldığında soldaki aktif olur', () => {
+    tabsModel.open(file('/a.ts'));
+    tabsModel.open(file('/b.ts'));
+    tabsModel.activate('/b.ts');
+    tabsModel.close('/b.ts');
+    expect(tabsModel.getState().activeId).toBe('/a.ts');
+  });
 });

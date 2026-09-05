@@ -150,7 +150,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: `adoptFile()` sonrası `focusManager.set('editor')` çağrılır. `tabsModel.open()` zaten `activeId`'yi ayarlar; ek olarak `ExplorerView` Enter akışında da odak transferi doğrulanır (`src/core/explorer.ts` ve `src/ui/ExplorerView.test.tsx` ile uyumlu).
   - Doğrulama: Gezginden Enter ile dosya aç → sekme belirir ve editör yazmaya hazır.
 
-- [ ] **A8 — Sekme kapatma sonrası doğru komşuya geçiş (sağ, yoksa sol)**
+- [x] **A8 — Sekme kapatma sonrası doğru komşuya geçiş (sağ, yoksa sol)**
   - Commit: `fix: sekme kapandiginda komsu sekmeye gecisi duzelt`
   - Dosyalar: `src/core/tabs.ts:56-67`, `src/core/tabCommands.ts:6-11`
   - İş: Mevcut `close()` zaten `tabs[index] ?? tabs[index-1]` mantığında; bu davranış korunur ve testle belgelenir. `dirtyTracker.clearDirty` çağrısı `TabBar` ve `tabCommands`'ta çiftlenmez.
