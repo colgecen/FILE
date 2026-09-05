@@ -262,7 +262,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
 
 ### Faz B4 — Çalıştır / Hata Ayıklama "Yakında" Temizliği
 
-- [ ] **B4.1 — Hata Ayıklamayı Başlat / Kesme Noktası (debug.start, debug.breakpoint.toggle)**
+- [x] **B4.1 — Hata Ayıklamayı Başlat / Kesme Noktası (debug.start, debug.breakpoint.toggle)**
   - Commit: `feat: hata ayiklama iskelet komutlarini ekle`
   - Dosyalar: `src/core/debugModel.ts` (yeni), `src/menus/menuTree.ts:139-140`, `src/core/menuCommands.ts:85-86`
   - İş: Gerçek debugger yok; iskelet: `debug.start` → `StatusBar`'da `IDLE → COMPUTING` kısa animasyon + `ErrorIndicator` değil, `paletteModel` üzerinden "Hata ayıklama çok yakında — yapılandırma bekleniyor" bilgisi. `breakpoint.toggle` → `bookmarkModel` benzeri `breakpointModel` ile satırda glyph ekler (`editor.glyphMargin`). Rozetler kalkar ama işlev iskelettir — ADR D-011 gibi dokümante edilir.
