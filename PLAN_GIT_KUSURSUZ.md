@@ -25,11 +25,11 @@
 
 | Faz | Başlık | Görev | Durum |
 |-----|--------|-------|-------|
-| **G0** | Hazırlık — IPC & Model | 4 | `[ ]` |
-| **G1** | Git Durum — branch/status/diff iskeleti | 5 | `[ ]` |
-| **G2** | Git Sekmesi — UI (VS Code benzeri) | 6 | `[ ]` |
-| **G3** | Code-benzeri akış — stage / commit / push / pull | 6 | `[ ]` |
-| **G4** | Çakışmasızlık, test, build, doküman & tag `v0.3.0` | 4 | `[ ]` |
+| **G0** | Hazırlık — IPC & Model | 4 | `[x]` |
+| **G1** | Git Durum — branch/status/diff iskeleti | 5 | `[x]` |
+| **G2** | Git Sekmesi — UI (VS Code benzeri) | 6 | `[x]` |
+| **G3** | Code-benzeri akış — stage / commit / push / pull | 6 | `[x]` |
+| **G4** | Çakışmasızlık, test, build, doküman & tag `v0.3.0` | 4 | `[x]` |
 | **Toplam** | | **25** | |
 
 ---
@@ -166,7 +166,7 @@
   - Dosyalar: `rg "border-radius" src` 0 dışı yok, `rg "#.{3,6}" src` token dışı yok, `rg "window.api" src` tek yüzey, `src/styles/git.css` tokenlar; `src/layout/AppShell.tsx` `ExplorerView` (1/7) + `GitPanel` (1/5) yan yana çakışmaz, `PaneManager` etkilenmez.
   - Kabul: `npm run typecheck && lint` yeşil, `src/styles/app.css:115-130` + `src/styles/git.css` keskin köşe.
 
-- [ ] **G4.4 — Üretim paketi + doküman + tag `v0.3.0` (kusursuz push)**
+- [x] **G4.4 — Üretim paketi + doküman + tag `v0.3.0` (kusursuz push)**
   - Commit: `chore: uretim paketini ve dokumani guncelle`
   - Dosyalar: `ARCHITECTURE.md §3` IPC tablosuna 7 git kanalı, `DECISIONS.md D-018` “Git sekmesi — VS Code benzeri” ADR, `README.md` “Git sekmessi nasıl açılır”, `TODO.md` Faz G kutucukları `[x]`; `npm run build` + `npm run dist:linux` → `dist/FILE-0.3.0.AppImage` (veya `0.1.0` → `0.3.0` senkron `package.json:4`).
   - Tag: `git tag -a v0.3.0 -m "feat: git sekmesi kusursuz — stage/commit/push/pull, code-benzeri, cakismasiz"` → `git push origin master v0.3.0`.

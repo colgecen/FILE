@@ -55,7 +55,7 @@ const SEEDS: readonly BindingSeed[] = [
 
   // Git paneli
   { commandId: 'git.stage', keys: ['Enter'], label: 'Git stage', zone: 'git' },
-  { commandId: 'git.unstage', keys: ['Enter'], label: 'Git unstage', zone: 'git' },
+  { commandId: 'git.unstage', keys: ['Backspace'], label: 'Git unstage', zone: 'git' },
   { commandId: 'git.commit', keys: ['Control+Enter'], label: 'Git commit', zone: 'git' },
   { commandId: 'git.push', keys: ['Control+Shift+KeyP'], label: 'Git push', zone: 'git' },
   { commandId: 'git.pull', keys: ['Control+Shift+KeyL'], label: 'Git pull', zone: 'git' },

@@ -122,6 +122,13 @@ Format: **Durum** — Bağlam — Karar — Sonuçlar.
 - **Karar:** Faz A (12 görev) boyunca **(A) korunur**; pane başına bar ihtiyacı gerçek kullanım ölçülmeden karmaşıklık eklememek için ertelenir. Gelecekte ihtiyaç doğrulanırsa ADR güncellenir ve `src/core/tabs.ts` pane-aware hale getirilir (kanal adları korunur, `window.api` etkilenmez).
 - **Sonuçlar:** Şimdilik ek bağımlılık / IPC değişimi yok; `AppShell` tek `TabBar` ile çalışmaya devam eder.
 
+## D-018 Git sekmesi — VS Code benzeri, kusursuz, çakışmasız
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Uygulama içi Git (uygulamanın git'i) Code'daki gibi commit/push/pull, stage/unstage, branch, log ve çakışma gösterimi ister; önceki iskelet (`src/core/viewCommands.ts:82-96`) yalnızca `gitBranch` paletiydi, tam sekme yoktu (`src/layout/AppShell.tsx:74-82`).
+- **Karar:** Sol panel `GitPanel` (`src/ui/GitPanel.tsx:1-*`, `src/styles/git.css`, genişlik %20, `1px var(--border)`, `border-radius:0`) `AppShell`'e `ExplorerView` yanına koşullu (`gitModel.isOpen`) eklenir; IPC 9 kanal (`git:status/diff/log/commit/push/pull/checkout/add/restore`, `electron/main/gitHandlers.ts:1-*`, `electron/shared/api-types.ts:1-*`, `electron/preload/index.ts:12-49`, `ARCHITECTURE.md §3`) Main'de `execFile('git', …)` ile, yol doğrulama ve boyut limiti ile; model `src/core/gitModel.ts:1-*` (`branch/files/staged/log/isOpen/selected`); komutlar `src/core/gitCommands.ts:1-*` + `Keymap` `git` zone (`src/core/defaultBindings.ts:1-*`, `src/core/types.ts:84`, `src/core/focus.ts:7-43`); tümü `window.api` ve `CommandRegistry` üzerinden, çakışma `UU` → `!` `var(--error)` yalnızca çakışma satırında (`ARCHITECTURE.md §7.1` istisnası).
+- **Sonuçlar:** `Görünüm → Kaynak Kontrolü` veya `Ctrl+I` → `git` ile panel açılır, `Tab/yön/Enter` `Ctrl+Enter` `Push`/`Pull` tamamen klavye ile, `StatusBar` branch `IDLE`, hata yalnızca gerçek git hatasında kırmızı; `ExplorerView` (1/7) ile yan yana çakışmaz.
+
 ## D-015 Doküman ve iletişim dili
 
 - **Durum:** Kabul edildi

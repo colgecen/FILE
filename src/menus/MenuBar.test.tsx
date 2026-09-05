@@ -9,6 +9,7 @@ import { menuModel } from './menuModel';
 import { paletteModel } from '../core/palette';
 import { recentFiles } from '../core/recentFiles';
 import { focusManager } from '../core/focus';
+import { gitModel } from '../core/gitModel';
 
 describe('MenuBar', () => {
   afterEach(() => {
@@ -17,6 +18,7 @@ describe('MenuBar', () => {
       menuModel.close();
       paletteModel.reset([]);
       recentFiles.reset();
+      gitModel.reset();
       while (focusManager.get() !== 'editor') focusManager.returnToPrevious();
     });
   });
@@ -93,6 +95,7 @@ describe('menü klavye akışı', () => {
       menuModel.openAt(0);
       menuModel.close();
       paletteModel.reset([]);
+      gitModel.reset();
       while (focusManager.get() !== 'editor') focusManager.returnToPrevious();
     });
   });
