@@ -97,7 +97,7 @@
   - Dosyalar: `src/ui/GitPanel.tsx` bölümler: `Değişiklikler` (unstaged), `Hazırlanan` (staged), `Branch: <ad>` başlık, `Log` alt liste; her bölüm `1px var(--border)` ayraç, `JetBrains Mono` + `Orbitron` başlık; `src/styles/git.css` (yeni, tokenlar).
   - Kabul: Boş repo “Değişiklik yok” `var(--accent-dim)` ile, 4 bölüm görünür.
 
-- [ ] **G2.3 — Dosya satırları — M/A/D rozeti + stage toggle**
+- [x] **G2.3 — Dosya satırları — M/A/D rozeti + stage toggle**
   - Commit: `feat: git dosya satirlarini ve stage toggle ekle`
   - Dosyalar: `src/ui/GitPanel.tsx` satır: `M` `var(--accent)`, `A` `var(--accent-soft)`, `D` `var(--error)` yalnızca silinende (kırmızı yalnızca hata — silme hata değil ama `ARCHITECTURE.md §7.1` istisnası: silme rozeti `var(--accent-dim)` kullanılır, kırmızı yok), `?` `var(--accent-dim)`; satır tıklama → diff, `+` butonu → `git add` (`window.api.gitAdd`).
   - Kabul: `Tab / yön` ile dosyalar arası gezinme (`ExplorerView` gibi `F3/Tab` değil, `Tab/yön` — `AGENTS.md §3` klavye kuralı), `Enter` stage/unstage.
