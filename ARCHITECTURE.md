@@ -64,6 +64,15 @@ Renderer → Main `ipcRenderer.invoke`; Main → Renderer `webContents.send` (it
 | `fs:write-file`              | R → M    | Belirtilen yola içerik yazma |
 | `fs:read-dir`                | R → M    | Klasör ağacı (gezgin için) |
 | `git:branch`                 | R → M    | Aktif branch + durum |
+| `git:status`                 | R → M    | `git status --porcelain` dosya listesi |
+| `git:diff`                   | R → M    | Tek dosya `git diff` |
+| `git:log`                    | R → M    | `git log --oneline` |
+| `git:commit`                 | R → M    | `git commit -m` |
+| `git:push`                   | R → M    | `git push` |
+| `git:pull`                   | R → M    | `git pull --rebase` |
+| `git:checkout`               | R → M    | `git checkout <branch>` |
+| `git:add`                    | R → M    | `git add` (stage) |
+| `git:restore`                | R → M    | `git restore --staged` (unstage) |
 | `sys:start` / `sys:stop`     | R → M    | Telemetri itkisini başlat/durdur |
 | `sys:metrics`                | M → R    | Periyodik CPU/RAM örnekleri |
 | `app:exit`                   | R → M    | Uygulamayı kapat |

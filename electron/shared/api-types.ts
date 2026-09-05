@@ -18,6 +18,18 @@ export type GitBranchInfo = {
   readonly dirty: boolean;
 };
 
+export type GitFile = {
+  readonly path: string;
+  readonly status: 'M' | 'A' | 'D' | '?' | '!' | 'U';
+};
+
+export type GitLogEntry = {
+  readonly hash: string;
+  readonly message: string;
+  readonly author: string;
+  readonly date: string;
+};
+
 export type TelemetrySnapshot = {
   readonly cpuPercent: number;
   readonly memUsedMb: number;
@@ -58,6 +70,15 @@ export type Api = {
   writeFile(path: string, content: string): Promise<WriteFileResult>;
   readDir(path: string): Promise<DirEntry[]>;
   gitBranch(path: string): Promise<GitBranchInfo | null>;
+  gitStatus(path: string): Promise<GitFile[] | null>;
+  gitDiff(path: string, file: string): Promise<string | null>;
+  gitLog(path: string, limit?: number): Promise<GitLogEntry[] | null>;
+  gitCommit(path: string, message: string): Promise<{ ok: boolean; error?: string }>;
+  gitPush(path: string): Promise<{ ok: boolean; error?: string }>;
+  gitPull(path: string): Promise<{ ok: boolean; error?: string }>;
+  gitCheckout(path: string, branch: string): Promise<{ ok: boolean; error?: string }>;
+  gitAdd(path: string, files: string[]): Promise<{ ok: boolean; error?: string }>;
+  gitRestore(path: string, files: string[]): Promise<{ ok: boolean; error?: string }>;
   sysStart(): Promise<void>;
   sysStop(): Promise<void>;
   onMetrics(listener: (snapshot: TelemetrySnapshot) => void): () => void;
