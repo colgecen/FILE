@@ -133,7 +133,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - İş: `.tab-bar { overflow-x: auto; scrollbar-width: thin; }` + `scrollbar-color: var(--border) transparent` (token). Aktif sekmeye geçişte `element.scrollIntoView({ block: 'nearest', inline: 'nearest' })` çağrılır (`tabsModel.subscribe` ile). Fare tekerleği yatay değilse dikey → yatay çevrilmez; yalnızca native scroll.
   - Doğrulama: 10 dosya aç → bar taşar, aktif sekme otomatik görünür.
 
-- [ ] **A5 — Orta tık ve çift tık ile sekme kapatma**
+- [x] **A5 — Orta tık ve çift tık ile sekme kapatma**
   - Commit: `feat: orta tik ve cift tik ile sekme kapatmayi ekle`
   - Dosyalar: `src/ui/TabBar.tsx:12-40`, `src/core/tabCommands.ts:6-11`
   - İş: `onMouseDown` → `button === 1` (orta) ise `closeOpenedTab(tab.id)`; `onDoubleClick` → kapat. `onClick` ile çakışma önlenir. Klavye erişimi korunur (Enter ile seç, Ctrl+W ile kapat zaten var).

@@ -50,6 +50,13 @@ export function TabBar(): React.JSX.Element {
             role="tab"
             title={tooltip}
             aria-label={tooltip}
+            onMouseDown={(event) => {
+              if (event.button === 1) {
+                event.preventDefault();
+                closeOpenedTab(tab.id);
+              }
+            }}
+            onDoubleClick={() => closeOpenedTab(tab.id)}
           >
             <span className={`tab-bar__icon ${icon.variant}`.trim()} aria-hidden="true">
               {icon.label}
