@@ -167,7 +167,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/ui/TabBar.tsx`, `src/menus/menuModel.ts`
   - İş: Sağ tık → `menuModel.setFeedback('Yakında: sekme menüsü')` yerine gerçek bir context menü iskeleti hazırlanır veya en azından hata göstermeden sessiz kalır. Kırmızı yok. İleride ADR ile genişletilebilir.
 
-- [ ] **A11 — TabBar birim testleri: tooltip, taşma, orta tık**
+- [x] **A11 — TabBar birim testleri: tooltip, taşma, orta tık**
   - Commit: `test: sekme gorunumu testlerini genislet`
   - Dosyalar: `src/ui/TabBar.test.tsx:1-57`
   - İş: Yeni testler: tooltip tam yol içerir, kirli nokta varlığı, orta tık kapatma, aktif sekme sınıfı. `vitest run` yeşil.

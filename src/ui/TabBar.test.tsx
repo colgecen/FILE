@@ -54,4 +54,36 @@ describe('TabBar', () => {
     expect(tabsModel.getState().tabs).toHaveLength(0);
     expect(dirtyTracker.isDirty('/kirli.ts')).toBe(false);
   });
+
+  it('tooltip tam yol içerir ve kirliyse Kaydedilmedi ekler', () => {
+    tabsModel.open(file('/derin/yol/dosya.ts', 'dosya.ts'));
+    dirtyTracker.markDirty('/derin/yol/dosya.ts');
+    render(<TabBar />);
+    const tab = screen.getByRole('tab', { name: /dosya\.ts/ });
+    expect(tab.getAttribute('title')).toBe('/derin/yol/dosya.ts • Kaydedilmedi');
+  });
+
+  it('orta tık sekmeyi kapatır', () => {
+    tabsModel.open(file('/orta.ts', 'orta.ts'));
+    render(<TabBar />);
+    const tab = screen.getByRole('tab', { name: /orta\.ts/ });
+    fireEvent.mouseDown(tab, { button: 1 });
+    expect(tabsModel.getState().tabs).toHaveLength(0);
+  });
+
+  it('çift tık sekmeyi kapatır', () => {
+    tabsModel.open(file('/cift.ts', 'cift.ts'));
+    render(<TabBar />);
+    const tab = screen.getByRole('tab', { name: /cift\.ts/ });
+    fireEvent.doubleClick(tab);
+    expect(tabsModel.getState().tabs).toHaveLength(0);
+  });
+
+  it('uzantıya göre ikon etiketi gösterir', () => {
+    tabsModel.open(file('/app.ts', 'app.ts'));
+    tabsModel.open(file('/style.css', 'style.css'));
+    render(<TabBar />);
+    expect(document.body.textContent).toContain('TS');
+    expect(document.body.textContent).toContain('CSS');
+  });
 });
