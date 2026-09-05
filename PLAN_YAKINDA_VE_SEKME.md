@@ -238,7 +238,7 @@ Tüm komut tohumları `src/core/menuCommands.ts:17-129` içinde tanımlı. `seed
   - Dosyalar: `src/ui/SearchPanel.tsx` (yeni), `src/layout/AppShell.tsx:78`, `src/menus/menuTree.ts:100`, `src/styles/app.css`
   - İş: Basit iskelet: input + "Yakında: tam metin arama" yerine gerçek iskelet metni "Arama (Find) — çok yakında tam" değil, **gerçek** filtre: açık dosyalar içinde `fuzzy` arama (`src/core/fuzzy.ts` reuse). Sonuçlar palet gibi listelenir; Enter ile dosyada o satıra atlar. Tokenlar, keskin köşe, 1px mavi çerçeve korunur. Rozet kalkar.
 
-- [ ] **B3.3 — Kaynak Kontrolü (view.sidebar.source) — git branch + durum iskeleti**
+- [x] **B3.3 — Kaynak Kontrolü (view.sidebar.source) — git branch + durum iskeleti**
   - Commit: `feat: kaynak kontrolu panel iskeletini ekle`
   - Dosyalar: `src/ui/SourcePanel.tsx` (yeni), `electron/main/git.ts`, `src/core/gitModel.ts`, `src/menus/menuTree.ts:101`
   - İş: `git:branch` (`ARCHITECTURE.md §3`) verisini gösterir; değişiklik dosyaları `git status --porcelain` (Main'de `child_process`) ile listelenir. Yoksa "Git deposu değil" bilgisi — kırmızı değil, `var(--accent-dim)` ile. Rozet kalkar.
