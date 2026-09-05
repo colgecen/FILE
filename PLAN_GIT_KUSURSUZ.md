@@ -156,7 +156,7 @@
   - Dosyalar: `electron/main/gitHandlers.ts` `git:status` içinde `UU` (unmerged) parse → `GitFile {status:'!'}`; `src/ui/GitPanel.tsx` çakışan dosya `!` `var(--error)` yalnızca burada (hata anlamı), tıklama → `DiffView` çakışma blokları; `src/core/gitCommands.ts` `git.resolve` iskelet (`git add` sonrası).
   - Kabul: `git merge` çakışmasında panel kırmızı yanıp sönmez, sadece dosya satırı `!` kırmızı + `StatusBar` `HATA` (`src/ui/StatusBar.tsx:1-*`).
 
-- [ ] **G4.2 — IPC & klavye uçtan uca test (F1/Ctrl+I/git/palette/Tab/Enter/Esc + push/pull)**
+- [x] **G4.2 — IPC & klavye uçtan uca test (F1/Ctrl+I/git/palette/Tab/Enter/Esc + push/pull)**
   - Commit: `test: git klavye akislarini ucten uca test et`
   - Dosyalar: `src/ui/paletteFlow.test.tsx` `git` → GitPanel, `src/menus/MenuBar.test.tsx:65-82` GitPanel `Yakında` 0 doğrulaması, `src/ui/GitPanel.test.tsx` full akış: `Tab` → `Enter` stage → `Ctrl+Enter` commit → `Push`.
   - Kabul: Tüm akış fare olmadan, `focusManager` `git` zone doğru.
