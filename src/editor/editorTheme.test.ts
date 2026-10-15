@@ -31,9 +31,10 @@ describe('defineEditorTheme', () => {
   it('zemin, metin ve imleç tokenlarını uygular', () => {
     defineEditorTheme();
     const { colors } = themeOfLastCall();
-    expect(colors['editor.background']).toBe('#03050A');
+    expect(colors['editor.background']).toBe('#0A141F');
     expect(colors['editor.foreground']).toBe('#FFFFFF');
     expect(colors['editorCursor.foreground']).toBe('#00E5FF');
+    expect(colors['editorWidget.background']).toBe('#0D1B2A');
   });
 
   it('anahtar kelime, string ve yorum renklerini tanımlar', () => {
@@ -42,7 +43,9 @@ describe('defineEditorTheme', () => {
     const colorOf = (token: string): string | undefined =>
       rules.find((rule) => rule.token === token)?.foreground;
     expect(colorOf('keyword')).toBe('#00d2ff');
-    expect(colorOf('string')).toBe('#82aaff');
+    expect(colorOf('keyword.control')).toBe('#c586c0');
+    expect(colorOf('string')).toBe('#ce9178');
+    expect(colorOf('type')).toBe('#7c4dff');
     expect(colorOf('comment')).toBe('#4a6b8c');
   });
 
