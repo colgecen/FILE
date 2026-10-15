@@ -41,6 +41,13 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'tab.next', keys: ['Control+Tab'], label: 'Sonraki sekme' },
   { commandId: 'tab.prev', keys: ['Control+Shift+Tab'], label: 'Önceki sekme' },
 
+  // Dosya ve klasör açma
+  { commandId: 'file.open.file', keys: ['Control+o'], label: 'Dosya aç' },
+  { commandId: 'file.open.folder', keys: ['Control+k', 'Control+o'], label: 'Klasör aç' },
+
+  // Terminal
+  { commandId: 'terminal.new', keys: ['Control+g'], label: 'Terminal aç' },
+
   // Ortamlar
   { commandId: 'env.next', keys: ['Control+Alt+ArrowRight'], label: 'Sonraki ortam' },
   { commandId: 'env.prev', keys: ['Control+Alt+ArrowLeft'], label: 'Önceki ortam' },

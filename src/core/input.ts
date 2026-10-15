@@ -29,6 +29,8 @@ export class KeyboardController {
   private readonly keymap: Keymap;
   private readonly registry: CommandRegistry;
   private readonly detachers = new WeakMap<EventTarget, () => void>();
+  private pendingPrefix: string | null = null;
+  private pendingTimer: ReturnType<typeof setTimeout> | undefined = undefined;
 
   constructor(keymap: Keymap, registry: CommandRegistry) {
     this.keymap = keymap;
@@ -38,11 +40,42 @@ export class KeyboardController {
   handle(event: KeyboardEvent): boolean {
     const chord = keyChordFromEvent(event);
     if (chord === null) return false;
-    const binding = this.keymap.resolve([chord], getFocusZone());
-    if (!binding) return false;
-    event.preventDefault();
-    void this.registry.run(binding.commandId);
-    return true;
+    const zone = getFocusZone();
+    if (this.pendingPrefix !== null) {
+      const first = this.pendingPrefix;
+      this.clearPending();
+      if (chord !== 'Escape') {
+        const binding = this.keymap.resolve([first, chord], zone);
+        if (binding === undefined) return false;
+        event.preventDefault();
+        void this.registry.run(binding.commandId);
+        return true;
+      }
+    }
+    const binding = this.keymap.resolve([chord], zone);
+    if (binding !== undefined) {
+      event.preventDefault();
+      void this.registry.run(binding.commandId);
+      return true;
+    }
+    if (this.keymap.hasPrefix(chord, zone)) {
+      event.preventDefault();
+      this.pendingPrefix = chord;
+      this.pendingTimer = setTimeout(() => {
+        this.pendingPrefix = null;
+        this.pendingTimer = undefined;
+      }, 1500);
+      return true;
+    }
+    return false;
+  }
+
+  private clearPending(): void {
+    this.pendingPrefix = null;
+    if (this.pendingTimer !== undefined) {
+      clearTimeout(this.pendingTimer);
+      this.pendingTimer = undefined;
+    }
   }
 
   attach(target: EventTarget): () => void {

@@ -26,3 +26,19 @@ describe('registerDefaultBindings çoklu imleç', () => {
     expect(keymap.resolve(['Control+Shift+l'])?.commandId).toBeUndefined();
   });
 });
+describe('registerDefaultBindings dosya ve terminal', () => {
+  it('dosya açma genel bağlıdır', () => {
+    const keymap = createKeymap();
+    expect(keymap.resolve(['Control+o'])?.commandId).toBe('file.open.file');
+  });
+
+  it('klasör açma akoru genel bağlıdır', () => {
+    const keymap = createKeymap();
+    expect(keymap.resolve(['Control+k', 'Control+o'])?.commandId).toBe('file.open.folder');
+  });
+
+  it('terminal açma genel bağlıdır', () => {
+    const keymap = createKeymap();
+    expect(keymap.resolve(['Control+g'])?.commandId).toBe('terminal.new');
+  });
+});

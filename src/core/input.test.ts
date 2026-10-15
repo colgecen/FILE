@@ -73,4 +73,69 @@ describe('KeyboardController', () => {
     expect(controller.handle(event)).toBe(false);
     expect(run).not.toHaveBeenCalled();
   });
+
+  it('iki basamaklı akoru çalıştırır', () => {
+    const run = vi.fn();
+    const registry = new CommandRegistry();
+    registry.register({
+      id: 'file.open.folder',
+      title: 'Klasör Aç',
+      category: 'file',
+      run: () => {
+        run();
+        return { ok: true };
+      },
+    });
+    const keymap = new Keymap();
+    keymap.bind(binding('a', 'file.open.folder', ['Control+k', 'Control+o']));
+    const controller = new KeyboardController(keymap, registry);
+
+    expect(controller.handle(press({ key: 'k', ctrlKey: true }))).toBe(true);
+    expect(run).not.toHaveBeenCalled();
+    expect(controller.handle(press({ key: 'o', ctrlKey: true }))).toBe(true);
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+
+  it('akorun ikinci basamağı yanlışsa çalıştırmaz', () => {
+    const run = vi.fn();
+    const registry = new CommandRegistry();
+    registry.register({
+      id: 'file.open.folder',
+      title: 'Klasör Aç',
+      category: 'file',
+      run: () => {
+        run();
+        return { ok: true };
+      },
+    });
+    const keymap = new Keymap();
+    keymap.bind(binding('a', 'file.open.folder', ['Control+k', 'Control+o']));
+    const controller = new KeyboardController(keymap, registry);
+
+    expect(controller.handle(press({ key: 'k', ctrlKey: true }))).toBe(true);
+    expect(controller.handle(press({ key: 'x', ctrlKey: true }))).toBe(false);
+    expect(run).not.toHaveBeenCalled();
+  });
+
+  it('Escape bekleyen akoru iptal eder', () => {
+    const run = vi.fn();
+    const registry = new CommandRegistry();
+    registry.register({
+      id: 'file.open.folder',
+      title: 'Klasör Aç',
+      category: 'file',
+      run: () => {
+        run();
+        return { ok: true };
+      },
+    });
+    const keymap = new Keymap();
+    keymap.bind(binding('a', 'file.open.folder', ['Control+k', 'Control+o']));
+    const controller = new KeyboardController(keymap, registry);
+
+    expect(controller.handle(press({ key: 'k', ctrlKey: true }))).toBe(true);
+    controller.handle(press({ key: 'Escape' }));
+    expect(controller.handle(press({ key: 'o', ctrlKey: true }))).toBe(false);
+    expect(run).not.toHaveBeenCalled();
+  });
 });

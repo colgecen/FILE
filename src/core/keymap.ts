@@ -43,6 +43,27 @@ export class Keymap {
     return zoned ?? this.bindings.get(key);
   }
 
+  hasPrefix(chord: string, zone?: FocusZone): boolean {
+    const prefix = this.normalize(chord);
+    const check = (bindings: Map<string, KeyBinding>): boolean => {
+      for (const binding of bindings.values()) {
+        if (
+          binding.keys.length > 1 &&
+          binding.keys[0] !== undefined &&
+          this.normalize(binding.keys[0]) === prefix
+        ) {
+          return true;
+        }
+      }
+      return false;
+    };
+    if (zone !== undefined) {
+      const zoned = this.zoneBindings.get(zone);
+      if (zoned !== undefined && check(zoned)) return true;
+    }
+    return check(this.bindings);
+  }
+
   listByZone(zone: FocusZone): readonly KeyBinding[] {
     return [...(this.zoneBindings.get(zone)?.values() ?? [])];
   }
