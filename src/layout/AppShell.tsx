@@ -11,6 +11,7 @@ import { useTerminalOpen } from '../core/terminalModel';
 import { useViewMode } from '../core/viewMode';
 import { MenuBar } from '../menus/MenuBar';
 import { AIChatPanel } from '../ui/AIChatPanel';
+import { Breadcrumb } from '../ui/Breadcrumb';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
@@ -79,6 +80,7 @@ export function AppShell({
         )}
         <div className="app-shell__tabbar">
           <TabBar />
+          <Breadcrumb />
         </div>
         <div className="app-shell__workspace">
           <ExplorerView />

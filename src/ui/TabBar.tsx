@@ -8,7 +8,8 @@ function iconForFile(name: string): { label: string; variant: string } {
   const ext = dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
   if (ext === 'ts' || ext === 'tsx') return { label: 'TS', variant: 'tab-bar__icon--accent' };
   if (ext === 'js' || ext === 'jsx' || ext === 'mjs' || ext === 'cjs')
-    return { label: 'JS', variant: 'tab-bar__icon--soft' };
+    return { label: 'JS', variant: 'tab-bar__icon--warm' };
+  if (ext === 'py') return { label: 'PY', variant: 'tab-bar__icon--warm' };
   if (ext === 'json') return { label: 'JSON', variant: 'tab-bar__icon--soft' };
   if (ext === 'css') return { label: 'CSS', variant: 'tab-bar__icon--soft' };
   if (ext === 'html') return { label: 'HTML', variant: 'tab-bar__icon--soft' };

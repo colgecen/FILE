@@ -115,13 +115,14 @@ body,
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 32px;
+  height: 34px;
   padding: 0 4px 0 12px;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--border-dim);
+  color: var(--accent-dim);
 }
 
 .tab-bar__item--active {
-  background: var(--bg-editor);
+  background: var(--bg-panel);
   border-top: 1px solid var(--holo-cyan);
   border-radius: 0;
   box-shadow:
@@ -177,6 +178,11 @@ body,
   border-color: var(--accent-dim);
 }
 
+.tab-bar__icon--warm {
+  color: var(--accent-warm);
+  border-color: var(--accent-warm);
+}
+
 .tab-bar__dirty {
   color: var(--accent);
   font-size: 9px;
@@ -202,6 +208,39 @@ body,
 .tab-bar__close:focus-visible {
   outline: none;
   color: var(--error);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 26px;
+  padding: 0 12px;
+  border-top: 1px solid var(--border-dim);
+  background: var(--bg-deep);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.breadcrumb__crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumb__sep {
+  color: var(--accent-dim);
+}
+
+.breadcrumb__item {
+  color: var(--accent-dim);
+}
+
+.breadcrumb__item--active {
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
 }
 
 .app-shell__workspace {

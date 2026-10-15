@@ -11,6 +11,7 @@ export const themeColors = {
   holoViolet: '#7c4dff',
   holoIce: '#b8e6ff',
   accentSoft: '#82aaff',
+  accentWarm: '#ce9178',
   accentDim: '#4a6b8c',
   gridLine: 'rgba(124, 77, 255, 0.12)',
   scan: 'rgba(0, 210, 255, 0.06)',
