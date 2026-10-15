@@ -45,6 +45,21 @@ Tuş eşlemeleri merkezi `Keymap` kaydında tutulur; doğrudan hardcode edilmez.
 - `TRANSPARENT=1` ortam değişkeni ile saydam pencere + cam (blur) efekti denenebilir; desteklenmeyen ortamlarda mat siyah zemin kullanılır:
   `TRANSPARENT=1 npm run dev`
 
+## Yapay Zekâ
+
+- **Sağlayıcılar:** Yerleşik (cihaz içi Qwen) + OpenAI-uyumlu: OpenAI, DeepSeek, Groq,
+  OpenRouter, Ollama (`:11434`), LM Studio (`:1234`), llama.cpp (`:8080`), özel endpoint.
+- **Anahtarlar:** OS anahtarlığında şifreli (`safeStorage`); yoksa `OPENAI_API_KEY`,
+  `DEEPSEEK_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY` env değişkenleri okunur.
+  Anahtar değeri log/IPC'ye düşmez, yalnızca var/yok taşınır.
+- **Yerel tarama:** açılışta değil, `Yapay Zekâ → Modelleri Yenile` (veya paneldeki ⟳)
+  ile Ollama/LM Studio/llama.cpp taranır; biri çökse diğerleri yine listelenir.
+- **Sohbetler:** panel üstünde sekmeler; akış sürerken sekme geçişi engellenir.
+- **Kipler:** Plan (diff önizleme + `ai.apply.confirm` onayı) / Yapım (doğrudan yazar).
+  Efor: Düşük/Orta/Ultra (token + sıcaklık presetleri).
+- **Güvenli yazma:** `ai.apply` son önerideki ` ```yol ` bloklarını yalnızca aktif proje
+  kökü altına yazar (`..` kaçışı ve `/proj-evil` önek tuzağı reddedilir), açık sekmeyi tazeler.
+
 ## Dokümanlar
 
 - `ARCHITECTURE.md` — mimari, bellek/çizim stratejisi, güvenlik
