@@ -14,7 +14,7 @@ import { installMonacoEnvironment, monaco } from './monacoSetup';
 
 const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
-  minimap: { enabled: false },
+  minimap: { enabled: true, scale: 1, renderCharacters: false, maxColumn: 120 },
   scrollBeyondLastLine: false,
   fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
   fontLigatures: true,

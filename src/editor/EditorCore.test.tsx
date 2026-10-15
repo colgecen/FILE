@@ -120,6 +120,14 @@ describe('EditorCore', () => {
     expect(options.cursorSmoothCaretAnimation).toBe('off');
   });
 
+  it('minimapi hafif kipte açar', () => {
+    render(<EditorCore file={null} />);
+    const options = api.create.mock.calls[0]?.[1] as Record<string, unknown>;
+    const minimap = options.minimap as Record<string, unknown>;
+    expect(minimap.enabled).toBe(true);
+    expect(minimap.renderCharacters).toBe(false);
+  });
+
   it('dosya yokken yer tutucu gösterir ve modeli boşaltır', () => {
     render(<EditorCore file={null} />);
     expect(screen.getByText('Dosya seçin')).not.toBeNull();
