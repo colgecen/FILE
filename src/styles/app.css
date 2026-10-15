@@ -89,11 +89,15 @@ body,
 }
 
 .app-shell__tabbar {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   min-height: 32px;
   border-bottom: 1px solid var(--border);
-  background: var(--bg-base);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .tab-bar {
@@ -118,9 +122,12 @@ body,
 
 .tab-bar__item--active {
   background: var(--bg-editor);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--holo-cyan);
   border-radius: 0;
-  box-shadow: inset 0 1px 0 var(--accent);
+  box-shadow:
+    inset 0 1px 0 var(--holo-cyan),
+    0 0 12px rgba(0, 229, 255, 0.35);
+  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
 }
 
 .tab-bar__select {
@@ -136,7 +143,8 @@ body,
 }
 
 .tab-bar__item--active .tab-bar__select {
-  color: var(--accent);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
 }
 
 .tab-bar__select:focus-visible {
@@ -312,7 +320,9 @@ body,
 
 .explorer-row--active {
   background: var(--selection);
-  color: var(--accent);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(0, 229, 255, 0.35);
 }
 
 .explorer-row__state {
@@ -342,10 +352,11 @@ body,
 
 .explorer-view__loading {
   padding: 12px;
-  color: var(--accent-soft);
+  color: var(--holo-ice);
   font-family: var(--font-display);
   font-size: 11px;
   letter-spacing: 2px;
+  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
 }
 
 .explorer-view__error {

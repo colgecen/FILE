@@ -55,22 +55,26 @@
 
 .pane-split--vertical .pane + .pane {
   border-left: 1px solid var(--border);
+  box-shadow: -1px 0 8px rgba(0, 229, 255, 0.25);
 }
 
 .pane-split--horizontal .pane + .pane {
   border-top: 1px solid var(--border);
+  box-shadow: 0 -1px 8px rgba(0, 229, 255, 0.25);
 }
 
 .pane-split--vertical .pane-split + .pane,
 .pane-split--vertical .pane + .pane-split,
 .pane-split--vertical .pane-split + .pane-split {
   border-left: 1px solid var(--border);
+  box-shadow: -1px 0 8px rgba(0, 229, 255, 0.25);
 }
 
 .pane-split--horizontal .pane-split + .pane,
 .pane-split--horizontal .pane + .pane-split,
 .pane-split--horizontal .pane-split + .pane-split {
   border-top: 1px solid var(--border);
+  box-shadow: 0 -1px 8px rgba(0, 229, 255, 0.25);
 }
 
 .pane-split--vertical > .pane:first-child,

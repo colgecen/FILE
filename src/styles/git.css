@@ -5,7 +5,9 @@
   min-width: 240px;
   max-width: 360px;
   border-right: 1px solid var(--border);
-  background: var(--bg-base);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   overflow: hidden;
 }
 
@@ -20,12 +22,13 @@
 }
 
 .git-panel__branch {
-  color: var(--accent);
+  color: var(--holo-ice);
   font-family: var(--font-mono);
   font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
 }
 
 .git-panel__loading {
@@ -76,7 +79,9 @@
 
 .git-panel__row--active {
   background: var(--selection);
-  color: var(--accent);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(0, 229, 255, 0.35);
 }
 
 .git-panel__status {
@@ -188,7 +193,8 @@
 
 .git-panel__btn--primary {
   background: var(--selection);
-  color: var(--accent);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
 }
 
 .git-panel__btn:hover {
