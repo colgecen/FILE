@@ -541,28 +541,6 @@ body,
   text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
 }
 
-.env-bar__add {
-  appearance: none;
-  flex: none;
-  width: 30px;
-  margin: 4px 6px 4px 4px;
-  border: 1px solid var(--border);
-  border-radius: 0;
-  background: transparent;
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 15px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.env-bar__add:hover,
-.env-bar__add:focus-visible {
-  outline: none;
-  background: var(--selection);
-  color: var(--holo-ice);
-}
-
 .explorer-row,
 .command-hud__item {
   cursor: pointer;

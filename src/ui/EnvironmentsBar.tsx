@@ -1,8 +1,4 @@
-import {
-  addEnvironmentViaDialog,
-  removeEnvironment,
-  switchToEnvironment,
-} from '../core/envCommands';
+import { removeEnvironment, switchToEnvironment } from '../core/envCommands';
 import { useEnvironmentsState } from '../core/environments';
 
 export function EnvironmentsBar(): React.JSX.Element {
@@ -43,15 +39,6 @@ export function EnvironmentsBar(): React.JSX.Element {
           </span>
         ))}
       </div>
-      <button
-        type="button"
-        className="env-bar__add"
-        title="Ortam Ekle"
-        aria-label="Ortam Ekle"
-        onClick={() => void addEnvironmentViaDialog()}
-      >
-        +
-      </button>
     </div>
   );
 }

@@ -19,10 +19,9 @@ afterEach(() => {
 });
 
 describe('EnvironmentsBar', () => {
-  it('ortam yokken ipucu ve ekle düğmesi gösterir', () => {
+  it('ortam yokken ipucu gösterir', () => {
     render(<EnvironmentsBar />);
     expect(screen.getByText('Ortam yok')).not.toBeNull();
-    expect(screen.getByRole('button', { name: 'Ortam Ekle' })).not.toBeNull();
   });
 
   it('çiplere tıklayınca ortam ve sekmeler değişir', async () => {
@@ -42,11 +41,12 @@ describe('EnvironmentsBar', () => {
     expect(tabsModel.getState().activeId).toBe('/proj/a/a.ts');
   });
 
-  it('sağdaki artı diyalogdan ortam ekler', async () => {
+  it('komutla eklenen ortam çip olarak görünür', async () => {
     vi.mocked(window.api.openFolder).mockResolvedValue({ path: '/proj/c', name: 'c' });
     render(<EnvironmentsBar />);
+    const { createCore } = await import('../core/instances');
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Ortam Ekle' }));
+      await createCore().registry.run('env.add');
     });
     expect(environmentsModel.getState().activeId).toBe('/proj/c');
     expect(screen.getByRole('button', { name: 'Ortam: c' })).not.toBeNull();
