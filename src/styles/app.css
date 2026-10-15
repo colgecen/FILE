@@ -33,7 +33,7 @@ body,
   display: flex;
   flex-direction: column;
   background: var(--bg-base);
-  color: var(--fg);
+  color: var(--text-primary);
 }
 
 .app-shell--zen .app-shell__tabbar,
