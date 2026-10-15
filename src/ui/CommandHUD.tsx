@@ -41,7 +41,17 @@ export function CommandHUD(): React.JSX.Element | null {
               .filter(Boolean)
               .join(' ');
             return (
-              <div key={item.commandId} role="option" aria-selected={active} className={className}>
+              <div
+                key={item.commandId}
+                role="option"
+                aria-selected={active}
+                className={className}
+                onMouseEnter={() => paletteModel.setActive(index)}
+                onClick={() => {
+                  paletteModel.setActive(index);
+                  void registry.run('palette.confirm');
+                }}
+              >
                 <span className="command-hud__title">{item.title}</span>
                 <span className="command-hud__category">{item.category}</span>
               </div>

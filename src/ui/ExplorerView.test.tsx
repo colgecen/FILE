@@ -276,6 +276,49 @@ describe('ExplorerView', () => {
     expect(explorerModel.getState().isOpen).toBe(true);
     expect(screen.getByRole('region', { name: 'Dosya gezgini' })).toBeInTheDocument();
   });
+
+  it('tıklama satırı seçer ve gezgine odaklar', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    fireEvent.click(screen.getByText('readme.md', { selector: '.explorer-row__name' }));
+    expect(explorerModel.getState().selectedPath).toBe('/proje/readme.md');
+    expect(focusManager.get()).toBe('explorer');
+  });
+
+  it('çift tıklama dosyayı açar ve editöre odaklar', async () => {
+    vi.mocked(window.api.readFile).mockResolvedValue({
+      path: '/proje/src/main.ts',
+      name: 'main.ts',
+      content: 'const a = 1;',
+      language: 'typescript',
+    });
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    await act(async () => {
+      fireEvent.doubleClick(screen.getByText('main.ts', { selector: '.explorer-row__name' }));
+    });
+    expect(tabsModel.getState().tabs).toHaveLength(1);
+    expect(focusManager.get()).toBe('editor');
+  });
+
+  it('çift tıklama klasörü açıp kapatır', async () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    expect(explorerModel.getState().expanded.has('/proje/src')).toBe(true);
+    await act(async () => {
+      fireEvent.doubleClick(screen.getByText('src', { selector: '.explorer-row__name' }));
+    });
+    expect(explorerModel.getState().expanded.has('/proje/src')).toBe(false);
+  });
 });
 
 describe('ExplorerView kök yükleme', () => {

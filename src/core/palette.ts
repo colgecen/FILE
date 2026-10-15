@@ -105,6 +105,14 @@ export class PaletteModel {
     this.emit();
   }
 
+  setActive(index: number): void {
+    const count = this.state.items.length;
+    if (count === 0 || index < 0 || index >= count) return;
+    if (index === this.state.activeIndex) return;
+    this.state = { ...this.state, activeIndex: index };
+    this.emit();
+  }
+
   activeItem(): PaletteItem | undefined {
     return this.state.items[this.state.activeIndex];
   }

@@ -1,7 +1,9 @@
 import { useEffect, useMemo } from 'react';
 import { perfModel } from '../core/perfModel';
 import { useExplorerState, explorerModel } from '../core/explorer';
+import { focusManager } from '../core/focus';
 import { gitModel, useGitPanelState } from '../core/gitModel';
+import { useCore } from '../layout/AppShell';
 import { ModulesPanel } from './ModulesPanel';
 import { ChevronDownIcon, ChevronRightIcon, FileLogo, FolderIcon } from './icons';
 
@@ -15,6 +17,7 @@ function badgeClass(status: string): string {
 export function ExplorerView(): React.JSX.Element | null {
   const state = useExplorerState();
   const git = useGitPanelState();
+  const { registry } = useCore();
 
   useEffect(() => {
     if (state.rootPath === null) return;
@@ -58,6 +61,14 @@ export function ExplorerView(): React.JSX.Element | null {
               role="option"
               aria-selected={active}
               className={className}
+              onClick={() => {
+                explorerModel.select(row.path);
+                focusManager.set('explorer');
+              }}
+              onDoubleClick={() => {
+                explorerModel.select(row.path);
+                void registry.run('explorer.activate');
+              }}
             >
               <span className="explorer-row__state" aria-hidden="true">
                 {row.kind === 'directory' ? (

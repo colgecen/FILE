@@ -70,6 +70,16 @@ describe('PaletteModel', () => {
     expect(paletteModel.getState().activeIndex).toBe(0);
   });
 
+  it('setActive geçerli dizini seçer, geçersizi yoksayar', () => {
+    paletteModel.reset(registry.list());
+    paletteModel.setActive(3);
+    expect(paletteModel.getState().activeIndex).toBe(3);
+    paletteModel.setActive(99);
+    expect(paletteModel.getState().activeIndex).toBe(3);
+    paletteModel.setActive(-1);
+    expect(paletteModel.getState().activeIndex).toBe(3);
+  });
+
   it('dağınık harflerle bulanık eşleşir', () => {
     paletteModel.reset(registry.list());
     paletteModel.setQuery('kdt', registry.list());

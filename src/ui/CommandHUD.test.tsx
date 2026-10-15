@@ -120,6 +120,31 @@ describe('palet klavye akışı', () => {
     expect(paletteModel.getState().query).toBe('');
   });
 
+  it('tıklama öğeyi çalıştırır ve paleti kapatır', async () => {
+    const core = createCore();
+    let executed = false;
+    core.registry.register({
+      id: 'test.flag',
+      title: 'Bayrak Komutu',
+      category: 'file',
+      run: () => {
+        executed = true;
+        return { ok: true };
+      },
+    });
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
+    act(() => {
+      paletteModel.setQuery('bayrak', core.registry.list());
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByText('Bayrak Komutu'));
+    });
+    expect(executed).toBe(true);
+    expect(focusManager.get()).toBe('editor');
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
   it('Esc paleti kapatır ve sorguyu temizler', () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });

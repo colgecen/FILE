@@ -75,6 +75,7 @@
   padding: 4px 8px;
   font-family: var(--font-mono);
   font-size: 12px;
+  cursor: pointer;
 }
 
 .git-panel__row--active {

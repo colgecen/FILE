@@ -127,7 +127,16 @@ export function GitPanel(): React.JSX.Element | null {
             <div className="git-panel__empty">Hazırlanan yok</div>
           ) : (
             stagedList.map((file) => (
-              <div key={file.path} role="listitem" className="git-panel__row">
+              <div
+                key={file.path}
+                role="listitem"
+                className="git-panel__row"
+                onClick={() => {
+                  const index = files.findIndex((entry) => entry.path === file.path);
+                  if (index >= 0) gitModel.setSelected(index);
+                  focusManager.set('git');
+                }}
+              >
                 <span className="git-panel__status" data-status={file.status}>
                   {file.status}
                 </span>
