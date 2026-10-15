@@ -132,6 +132,35 @@ export class AIEngine {
     this.patch({ chat: { messages: [], error: null } });
   }
 
+  /** Uzak akış girişi: hesaplanıyor durumuna geçirir. */
+  beginRemote(): void {
+    this.patch({ status: 'computing', error: null, progress: null });
+  }
+
+  /** Uzak akış token'ı: son asistan iletisini kümülatif metinle günceller. */
+  appendRemoteToken(text: string): void {
+    const messages = [...this.state.chat.messages];
+    const last = messages[messages.length - 1];
+    if (last !== undefined && last.role === 'assistant') {
+      messages[messages.length - 1] = { role: 'assistant', content: text };
+    } else {
+      messages.push({ role: 'assistant', content: text });
+    }
+    this.patch({ chat: { ...this.state.chat, messages } });
+  }
+
+  /** Uzak akış finali: durumu boşa alır, son iletiyi netleştirir. */
+  finishRemote(text: string): void {
+    const messages = [...this.state.chat.messages];
+    const last = messages[messages.length - 1];
+    if (last !== undefined && last.role === 'assistant') {
+      messages[messages.length - 1] = { role: 'assistant', content: text };
+    } else {
+      messages.push({ role: 'assistant', content: text });
+    }
+    this.patch({ status: 'idle', chat: { messages, error: null } });
+  }
+
   /** Başka sekmeden gelen geçmişi aynaya yükler (akış hedefi değişmez). */
   loadMessages(messages: readonly ChatMessage[]): void {
     this.patch({ chat: { messages: [...messages], error: null } });
@@ -153,16 +182,7 @@ export class AIEngine {
         this.patch({ status: 'computing' });
         break;
       case 'token':
-        {
-          const messages = [...this.state.chat.messages];
-          const last = messages[messages.length - 1];
-          if (last !== undefined && last.role === 'assistant') {
-            messages[messages.length - 1] = { role: 'assistant', content: event.text };
-          } else {
-            messages.push({ role: 'assistant', content: event.text });
-          }
-          this.patch({ chat: { ...this.state.chat, messages } });
-        }
+        this.appendRemoteToken(event.text);
         break;
       case 'done':
         {
@@ -171,16 +191,7 @@ export class AIEngine {
           if (pending !== null) {
             pending.resolve(event.text);
           }
-          this.patch({
-            status: 'idle',
-            chat: {
-              messages: [
-                ...this.state.chat.messages.slice(0, -1),
-                { role: 'assistant', content: event.text },
-              ],
-              error: null,
-            },
-          });
+          this.finishRemote(event.text);
         }
         break;
       case 'error':

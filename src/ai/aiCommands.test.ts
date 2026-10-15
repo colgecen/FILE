@@ -5,6 +5,7 @@ import { focusManager } from '../core/focus';
 import { DEFAULT_MODEL } from './models';
 import { modelCatalog } from './catalog';
 import { sessionStore } from './sessions';
+import type { AiChatDoneEvent, AiChatTokenEvent } from '../../electron/shared/api-types';
 import { registerAICommands } from './aiCommands';
 import type { CommandDef, CommandResult } from '../core/types';
 
@@ -194,17 +195,64 @@ describe('aiCommands — birleşik katalog', () => {
     ).toBe(true);
   });
 
-  it('uzak modelde gönderim worker yerine bilgi verir', async () => {
+  it('uzak modelde gönderim köprüye gider ve yayınlanır', async () => {
     const { selectModel } = await import('./aiCommands');
+    const { resetRemoteClient } = await import('./remoteClient');
+    resetRemoteClient();
+    const listeners: {
+      token: ((event: AiChatTokenEvent) => void) | null;
+      done: ((event: AiChatDoneEvent) => void) | null;
+    } = { token: null, done: null };
+    vi.mocked(window.api.aiChatStart).mockResolvedValue({ started: true });
+    vi.mocked(window.api.onAiChatToken).mockImplementation(
+      (fn: (event: AiChatTokenEvent) => void) => {
+        listeners.token = fn;
+        return () => undefined;
+      },
+    );
+    vi.mocked(window.api.onAiChatDone).mockImplementation(
+      (fn: (event: AiChatDoneEvent) => void) => {
+        listeners.done = fn;
+        return () => undefined;
+      },
+    );
     selectModel({ id: 'llama3', name: 'llama3', provider: 'ollama', source: 'ollama' });
     aiChatModel.setDraft('selam');
-    const result = await registry.run('ai.chat.send');
+    const pending = registry.run('ai.chat.send');
+    await vi.waitFor(() => {
+      expect(window.api.aiChatStart).toHaveBeenCalledWith(
+        expect.objectContaining({ model: 'llama3', provider: 'ollama' }),
+      );
+    });
+    const calls = vi.mocked(window.api.aiChatStart).mock.calls[0];
+    expect(calls).toBeDefined();
+    const requestId = (calls?.[0] as { requestId: string }).requestId;
+    listeners.token?.({ requestId, text: 'kısmi' });
+    expect(aiEngine.getState().status).toBe('computing');
+    listeners.done?.({ requestId, text: 'tam yanıt' });
+    const result = await pending;
     expect(result.ok).toBe(true);
     expect(ensureSpy).not.toHaveBeenCalled();
     expect(generateSpy).not.toHaveBeenCalled();
     expect(
-      aiEngine.getState().chat.messages.some((message) => message.content.includes('F8')),
+      aiEngine.getState().chat.messages.some((message) => message.content === 'tam yanıt'),
     ).toBe(true);
+  });
+
+  it('anahtar yoksa uzak gönderim hata mesajı bırakır', async () => {
+    const { selectModel } = await import('./aiCommands');
+    const { resetRemoteClient } = await import('./remoteClient');
+    resetRemoteClient();
+    vi.mocked(window.api.aiChatStart).mockResolvedValue({
+      started: false,
+      error: 'API anahtarı yok',
+    });
+    selectModel({ id: 'gpt-4o-mini', name: 'gpt-4o-mini', provider: 'openai', source: 'cloud' });
+    aiChatModel.setDraft('selam');
+    const result = await registry.run('ai.chat.send');
+    expect(result.ok).toBe(true);
+    expect(aiEngine.getState().status).toBe('error');
+    expect(aiEngine.getState().error).toContain('API anahtarı yok');
   });
 
   it('ai.models.refresh tarar, yerleşikler korunur', async () => {

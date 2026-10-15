@@ -12,7 +12,10 @@ import type { ModelRef } from './providers';
 import { modelCatalog } from './catalog';
 import { scanLocalModels } from './localScan';
 import { sessionStore } from './sessions';
-import { DEFAULT_EFFORT, EFFORT_PRESETS, effortLabel, modeLabel, type EffortLevel, type PlanMode } from './modes';
+import { DEFAULT_EFFORT, EFFORT_PRESETS, effortLabel, modeLabel, type EffortLevel, type EffortPreset, type PlanMode } from './modes';
+import type { ActiveRef } from './modelStore';
+import { resolveEndpoint } from './endpoints';
+import { getRemoteClient } from './remoteClient';
 import type { CommandDef } from '../core/types';
 import type { ModelId } from './types';
 
@@ -101,11 +104,10 @@ async function runAssistant(instruction: string): Promise<void> {
   aiEngine.appendUserMessage(instruction);
   aiChatModel.open();
   sessionStore.retitleFrom(sessionId, instruction);
+  const session = sessionStore.getSnapshot().sessions.find((entry) => entry.id === sessionId);
+  const preset = EFFORT_PRESETS[session?.effort ?? DEFAULT_EFFORT];
   if (ref.provider !== 'builtin' || !isModelId(ref.id)) {
-    aiEngine.appendSystemMessage(
-      'Uzak model sohbete F8 fazında bağlanacak; şimdilik yerleşik model seçin.',
-    );
-    syncSession(sessionId);
+    await runRemote(sessionId, ref, preset);
     return;
   }
   const modelId: ModelId = ref.id;
@@ -118,8 +120,6 @@ async function runAssistant(instruction: string): Promise<void> {
     return;
   }
   if (sessionStore.active()?.id !== sessionId) return;
-  const session = sessionStore.getSnapshot().sessions.find((entry) => entry.id === sessionId);
-  const preset = EFFORT_PRESETS[session?.effort ?? DEFAULT_EFFORT];
   const recent = aiEngine.getState().chat.messages.slice(-MAX_CONTEXT_MESSAGES);
   try {
     await aiEngine.generate({
@@ -131,6 +131,56 @@ async function runAssistant(instruction: string): Promise<void> {
     // generate hata durumunu zaten engine'e işler
   }
   syncSession(sessionId);
+}
+
+let remoteAbort: (() => void) | null = null;
+
+async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset): Promise<void> {
+  if (engineBusy()) {
+    aiEngine.appendSystemMessage('Yanıt bekleniyor, bitince tekrar gönderin.');
+    syncSession(sessionId);
+    return;
+  }
+  const endpoint = resolveEndpoint(ref.provider);
+  if ('error' in endpoint) {
+    aiEngine.appendSystemMessage(endpoint.error);
+    syncSession(sessionId);
+    return;
+  }
+  const recent = aiEngine.getState().chat.messages.slice(-MAX_CONTEXT_MESSAGES);
+  aiEngine.beginRemote();
+  const client = getRemoteClient();
+  await new Promise<void>((resolve) => {
+    const handle = client.send(
+      {
+        provider: ref.provider,
+        baseUrl: endpoint.baseUrl,
+        apiKey: null,
+        keyEnv: endpoint.keyEnv,
+        keyRequired: endpoint.keyRequired,
+        model: ref.id,
+        messages: recent.map((message) => ({ role: message.role, content: message.content })),
+        temperature: preset.temperature,
+        maxTokens: preset.maxTokens,
+      },
+      {
+        onToken: (text) => aiEngine.appendRemoteToken(text),
+        onDone: (text) => {
+          remoteAbort = null;
+          aiEngine.finishRemote(text);
+          syncSession(sessionId);
+          resolve();
+        },
+        onError: (message) => {
+          remoteAbort = null;
+          aiEngine.setError(message);
+          syncSession(sessionId);
+          resolve();
+        },
+      },
+    );
+    remoteAbort = handle.abort;
+  });
 }
 
 export async function setActiveModel(modelId: ModelId): Promise<boolean> {
@@ -176,6 +226,13 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
     category: 'ai',
     title: 'İndirmeyi İptal Et',
     run: () => {
+      if (remoteAbort !== null) {
+        remoteAbort();
+        remoteAbort = null;
+        aiEngine.cancel();
+        aiEngine.appendSystemMessage('Yanıt iptal edildi.');
+        return { ok: true };
+      }
       const status = aiEngine.getState().status;
       if (status !== 'loading' && status !== 'computing') {
         return { ok: false, error: 'Aktif işlem yok' };
