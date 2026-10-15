@@ -129,6 +129,9 @@ const SEEDS: readonly CommandSeed[] = [
   { id: 'ai.effort.low', title: 'Efor: Düşük', category: 'ai' },
   { id: 'ai.effort.medium', title: 'Efor: Orta', category: 'ai' },
   { id: 'ai.effort.ultra', title: 'Efor: Ultra', category: 'ai' },
+  { id: 'ai.apply', title: 'Öneriyi Uygula', category: 'ai' },
+  { id: 'ai.apply.confirm', title: 'Öneriyi Onayla', category: 'ai' },
+  { id: 'ai.apply.cancel', title: 'Öneriyi Vazgeç', category: 'ai' },
   { id: 'ai.prefs', title: 'Yapay Zekâ Tercihleri', category: 'ai' },
   { id: 'ai.models.download', title: 'Model İndir', category: 'ai' },
 

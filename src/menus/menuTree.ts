@@ -199,6 +199,7 @@ export const menuTree: readonly MenuTopLevel[] = [
       command('ai.models.refresh', 'Modelleri Yenile'),
       command('ai.model.status', 'Model Durumu'),
       command('ai.models.download', 'Model İndir'),
+      command('ai.apply', 'Öneriyi Uygula'),
       command('ai.prefs', 'Yapay Zekâ Tercihleri'),
       separator('sep-ai-mode'),
       command('ai.mode.plan', 'Plan Modu'),

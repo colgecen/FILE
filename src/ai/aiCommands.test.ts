@@ -311,6 +311,78 @@ describe('aiCommands — birleşik katalog', () => {
   });
 });
 
+describe('aiCommands — öneri uygulama', () => {
+  let registry: ReturnType<typeof buildRegistry>;
+
+  beforeEach(async () => {
+    registry = buildRegistry();
+    resetAI();
+    vi.spyOn(aiEngine, 'ensureModel').mockResolvedValue(undefined);
+    vi.spyOn(aiEngine, 'generate').mockResolvedValue('Selam!');
+    vi.mocked(window.api.writeFile).mockResolvedValue({ ok: true, path: '/p/a.ts' });
+    const { explorerModel } = await import('../core/explorer');
+    await explorerModel.loadRoot('/p', async () => []);
+    const { clearPending } = await import('./apply');
+    clearPending();
+  });
+
+  afterEach(async () => {
+    vi.restoreAllMocks();
+    resetAI();
+    const { tabsModel } = await import('../core/tabs');
+    tabsModel.reset();
+    const { explorerModel } = await import('../core/explorer');
+    explorerModel.settle([], null);
+    const { clearPending } = await import('./apply');
+    clearPending();
+  });
+
+  it('plan modda öneri aşamalanır, onay uygular', async () => {
+    await registry.run('ai.session.new');
+    aiEngine.appendUserMessage('yap');
+    aiEngine.finishRemote('```a.ts\nYENİ\n```');
+    expect(await registry.run('ai.apply')).toEqual({ ok: true });
+    expect(window.api.writeFile).not.toHaveBeenCalled();
+    expect(await registry.run('ai.apply.confirm')).toEqual({ ok: true });
+    expect(window.api.writeFile).toHaveBeenCalledWith('/p/a.ts', 'YENİ');
+  });
+
+  it('yapım modunda direkt yazar', async () => {
+    await registry.run('ai.session.new');
+    await registry.run('ai.mode.build');
+    aiEngine.appendUserMessage('yap');
+    aiEngine.finishRemote('```b.ts\nB\n```');
+    expect(await registry.run('ai.apply')).toEqual({ ok: true });
+    expect(window.api.writeFile).toHaveBeenCalledWith('/p/b.ts', 'B');
+  });
+
+  it('kök dışı blok reddedilir', async () => {
+    await registry.run('ai.session.new');
+    await registry.run('ai.mode.build');
+    aiEngine.appendUserMessage('yap');
+    aiEngine.finishRemote('```../disa.ts\nX\n```');
+    const result = await registry.run('ai.apply');
+    expect(result.ok).toBe(false);
+    expect(window.api.writeFile).not.toHaveBeenCalled();
+  });
+
+  it('vazgeç bekleyeni temizler', async () => {
+    await registry.run('ai.session.new');
+    aiEngine.appendUserMessage('yap');
+    aiEngine.finishRemote('```a.ts\nX\n```');
+    expect(await registry.run('ai.apply')).toEqual({ ok: true });
+    expect(await registry.run('ai.apply.cancel')).toEqual({ ok: true });
+    const confirm = await registry.run('ai.apply.confirm');
+    expect(confirm.ok).toBe(false);
+  });
+
+  it('öneri yoksa hata verir', async () => {
+    await registry.run('ai.session.new');
+    const result = await registry.run('ai.apply');
+    expect(result.ok).toBe(false);
+  });
+});
+
 describe('aiCommands — indirme akışı', () => {
   let registry: ReturnType<typeof buildRegistry>;
   let ensureSpy: MockInstance<typeof aiEngine.ensureModel>;

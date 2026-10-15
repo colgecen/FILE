@@ -12,10 +12,13 @@ import type { ModelRef } from './providers';
 import { modelCatalog } from './catalog';
 import { scanLocalModels } from './localScan';
 import { sessionStore } from './sessions';
-import { DEFAULT_EFFORT, EFFORT_PRESETS, effortLabel, modeLabel, type EffortLevel, type EffortPreset, type PlanMode } from './modes';
+import { DEFAULT_EFFORT, DEFAULT_MODE, EFFORT_PRESETS, effortLabel, modeLabel, type EffortLevel, type EffortPreset, type PlanMode } from './modes';
 import type { ActiveRef } from './modelStore';
 import { resolveEndpoint } from './endpoints';
 import { getRemoteClient } from './remoteClient';
+import { collectLiveProjectContext, renderContextBlock } from './context';
+import { applyEdits, clearPending, parseEditBlocks, stagePending, takePending } from './apply';
+import type { ApplyReport } from './apply';
 import type { CommandDef } from '../core/types';
 import type { ModelId } from './types';
 
@@ -150,6 +153,15 @@ async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset
   const recent = aiEngine.getState().chat.messages.slice(-MAX_CONTEXT_MESSAGES);
   aiEngine.beginRemote();
   const client = getRemoteClient();
+  const session = sessionStore.getSnapshot().sessions.find((entry) => entry.id === sessionId);
+  const contextBlock = renderContextBlock(
+    collectLiveProjectContext(),
+    session?.mode ?? DEFAULT_MODE,
+  );
+  const history = recent
+    .filter((message) => message.role !== 'system')
+    .slice(-MAX_CONTEXT_MESSAGES)
+    .map((message) => ({ role: message.role, content: message.content }));
   await new Promise<void>((resolve) => {
     const handle = client.send(
       {
@@ -159,7 +171,7 @@ async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset
         keyEnv: endpoint.keyEnv,
         keyRequired: endpoint.keyRequired,
         model: ref.id,
-        messages: recent.map((message) => ({ role: message.role, content: message.content })),
+        messages: [{ role: 'system' as const, content: contextBlock }, ...history],
         temperature: preset.temperature,
         maxTokens: preset.maxTokens,
       },
@@ -203,9 +215,15 @@ export function selectModel(ref: ModelRef): void {
     return;
   }
   saveActiveRef(refFromModel(ref));
-  aiEngine.appendSystemMessage(
-    `Model: ${displayName(ref)} — uzak sohbet F8 fazında bağlanacak.`,
-  );
+  aiEngine.appendSystemMessage(`Model: ${displayName(ref)} — hazır.`);
+}
+
+function reportText(report: ApplyReport): string {
+  const lines = [`Uygulandı (${report.applied.length}): ${report.applied.join(', ') || '—'}`];
+  for (const entry of report.rejected) {
+    lines.push(`Reddedildi: ${entry.path} (${entry.reason})`);
+  }
+  return lines.join('\n');
 }
 
 export function registerAICommands(register: (command: CommandDef) => void): void {
@@ -412,6 +430,68 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
       const source = editorSourceText();
       if (source === null) return { ok: false, error: 'Açık kod yok' };
       void runAssistant(`Aşağıdaki kodu satır satır Türkçe açıkla:\n\n${source}`);
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.apply',
+    category: 'ai',
+    title: 'Öneriyi Uygula',
+    run: async () => {
+      const ctx = collectLiveProjectContext();
+      if (ctx.rootPath === null) return { ok: false, error: 'Proje kökü yok' };
+      const messages = aiEngine.getState().chat.messages;
+      const lastAssistant = [...messages].reverse().find((message) => message.role === 'assistant');
+      if (lastAssistant === undefined) return { ok: false, error: 'Uygulanacak öneri yok' };
+      const edits = parseEditBlocks(lastAssistant.content);
+      if (edits.length === 0) return { ok: false, error: 'Kod bloğu bulunamadı' };
+      const mode = sessionStore.active()?.mode ?? DEFAULT_MODE;
+      if (mode === 'build') {
+        const report = await applyEdits(window.api, ctx.rootPath, edits);
+        aiEngine.appendSystemMessage(reportText(report));
+        aiChatModel.open();
+        return report.rejected.length === 0
+          ? { ok: true }
+          : { ok: false, error: 'Bazı dosyalar yazılamadı' };
+      }
+      stagePending(edits);
+      aiEngine.appendSystemMessage(
+        `Onay bekliyor (${edits.length} dosya): ${edits.map((edit) => edit.path).join(', ')} — ai.apply.confirm ile uygula.`,
+      );
+      aiChatModel.open();
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.apply.confirm',
+    category: 'ai',
+    title: 'Öneriyi Onayla',
+    run: async () => {
+      const staged = takePending();
+      if (staged === null || staged.length === 0) return { ok: false, error: 'Onay bekleyen yok' };
+      const ctx = collectLiveProjectContext();
+      if (ctx.rootPath === null) {
+        stagePending(staged);
+        return { ok: false, error: 'Proje kökü yok' };
+      }
+      const report = await applyEdits(window.api, ctx.rootPath, staged);
+      aiEngine.appendSystemMessage(reportText(report));
+      aiChatModel.open();
+      return report.rejected.length === 0
+        ? { ok: true }
+        : { ok: false, error: 'Bazı dosyalar yazılamadı' };
+    },
+  });
+
+  register({
+    id: 'ai.apply.cancel',
+    category: 'ai',
+    title: 'Öneriyi Vazgeç',
+    run: () => {
+      clearPending();
+      aiEngine.appendSystemMessage('Bekleyen öneri iptal edildi.');
       return { ok: true };
     },
   });
