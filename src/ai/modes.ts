@@ -13,7 +13,7 @@ export const EFFORT_PRESETS: Record<EffortLevel, EffortPreset> = {
   ultra: { maxTokens: 1024, temperature: 0.7, label: 'Ultra' },
 };
 
-export const DEFAULT_MODE: PlanMode = 'plan';
+export const DEFAULT_MODE: PlanMode = 'build';
 export const DEFAULT_EFFORT: EffortLevel = 'medium';
 
 export function modeLabel(mode: PlanMode): string {

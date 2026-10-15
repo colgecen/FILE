@@ -11,7 +11,7 @@ import { displayName } from './providers';
 import type { ModelRef } from './providers';
 import { modelCatalog, refreshCatalog } from './catalog';
 import { sessionStore } from './sessions';
-import { DEFAULT_EFFORT, DEFAULT_MODE, EFFORT_PRESETS, effortLabel, modeLabel, type EffortLevel, type EffortPreset, type PlanMode } from './modes';
+import { DEFAULT_EFFORT, DEFAULT_MODE, EFFORT_PRESETS, type EffortLevel, type EffortPreset, type PlanMode } from './modes';
 import type { ActiveRef } from './modelStore';
 import { resolveEndpoint } from './endpoints';
 import { getRemoteClient } from './remoteClient';
@@ -71,7 +71,6 @@ function setSessionMode(mode: PlanMode): { ok: boolean; error?: string } {
   const id = activeSessionOrCreate();
   if (id === null) return { ok: false, error: 'Aktif sohbet yok' };
   sessionStore.setMode(id, mode);
-  aiEngine.appendSystemMessage(`Kip: ${modeLabel(mode)}`);
   syncSession(id);
   return { ok: true };
 }
@@ -80,7 +79,6 @@ function setSessionEffort(effort: EffortLevel): { ok: boolean; error?: string } 
   const id = activeSessionOrCreate();
   if (id === null) return { ok: false, error: 'Aktif sohbet yok' };
   sessionStore.setEffort(id, effort);
-  aiEngine.appendSystemMessage(`Efor: ${effortLabel(effort)}`);
   syncSession(id);
   return { ok: true };
 }

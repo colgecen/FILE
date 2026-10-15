@@ -98,21 +98,19 @@ describe('AIChatPanel', () => {
     ]);
     aiChatModel.open();
     render(<AIChatPanel />);
-    const select = screen.getByLabelText('Model seç');
-    expect(select.textContent).toContain('llama3');
-    fireEvent.change(select, { target: { value: 'ollama:llama3' } });
+    const picker = screen.getByRole('button', { name: 'Model seç' });
+    fireEvent.click(picker);
+    fireEvent.click(screen.getByRole('button', { name: /llama3/ }));
     expect(JSON.parse(localStorage.getItem('ai.activeRef') ?? '{}')).toEqual({
       id: 'llama3',
       provider: 'ollama',
     });
   });
 
-  it('kip düğmeleri komut koşar', () => {
+  it('kip düğmesi komut koşar', () => {
     aiChatModel.open();
     render(<AIChatPanel />);
-    fireEvent.click(screen.getByRole('button', { name: 'Yapım' }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.mode.build');
-    fireEvent.click(screen.getByRole('button', { name: 'Plan' }));
+    fireEvent.click(screen.getByText('Yapım'));
     expect(mockCore.registry.run).toHaveBeenCalledWith('ai.mode.plan');
   });
 

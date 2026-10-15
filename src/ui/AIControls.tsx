@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { AiEnvEntry } from '../../electron/shared/api-types';
 import { useCore } from '../layout/AppShell';
 import { useAIEngine } from '../ai/engine';
@@ -15,80 +15,99 @@ export function AIModelToolbar(): React.JSX.Element {
   const catalog = useModelCatalog();
   const sessions = useSessions();
   const ai = useAIEngine();
-  const [, setTick] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const listRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
   const ref = loadActiveRef();
   const activeSession = sessions.sessions.find((session) => session.id === sessions.activeId) ?? null;
-  const mode = activeSession?.mode ?? 'plan';
+  const mode = activeSession?.mode ?? 'build';
   const effort = activeSession?.effort ?? 'medium';
   const value = `${ref.provider}:${ref.id}`;
 
+  useEffect(() => {
+    if (open) {
+      setQuery('');
+      searchRef.current?.focus();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: MouseEvent): void => {
+      if (listRef.current !== null && !listRef.current.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [open]);
+
   const groups = new Map<string, ModelRef[]>();
   for (const entry of catalog.entries) {
-    const label = getProvider(entry.provider)?.name ?? entry.provider;
-    const list = groups.get(label) ?? [];
+    const providerName = getProvider(entry.provider)?.name ?? entry.provider;
+    const haystack = `${entry.name} ${entry.id} ${providerName}`.toLowerCase();
+    if (query.length > 0 && !haystack.includes(query.toLowerCase())) continue;
+    const list = groups.get(providerName) ?? [];
     list.push(entry);
-    groups.set(label, list);
-  }
-
-  function toggleMode(): void {
-    void registry.run(mode === 'plan' ? 'ai.mode.build' : 'ai.mode.plan');
+    groups.set(providerName, list);
   }
 
   return (
-    <div className="ai-chat__toolbar">
-      <div className="ai-chat__modeseg" role="group" aria-label="Kip">
-        <button
-          type="button"
-          aria-pressed={mode === 'plan'}
-          className={mode === 'plan' ? 'ai-chat__modebtn ai-chat__modebtn--plan' : 'ai-chat__modebtn'}
-          onClick={() => registry.run('ai.mode.plan')}
-        >
-          Plan
-        </button>
-        <button
-          type="button"
-          aria-pressed={mode === 'build'}
-          className={mode === 'build' ? 'ai-chat__modebtn ai-chat__modebtn--build' : 'ai-chat__modebtn'}
-          onClick={() => registry.run('ai.mode.build')}
-        >
-          Yapım
-        </button>
-      </div>
+    <div className="ai-chat__toolbar" ref={listRef}>
       <button
         type="button"
-        className="ai-chat__iconbtn"
-        aria-label="Kip değiştir"
-        title="Kip değiştir (Tab)"
-        onClick={toggleMode}
+        className={mode === 'plan' ? 'ai-chat__modebtn ai-chat__modebtn--plan' : 'ai-chat__modebtn ai-chat__modebtn--build'}
+        aria-label="Mod"
+        onClick={() => void registry.run(mode === 'plan' ? 'ai.mode.build' : 'ai.mode.plan')}
       >
-        ⇆
+        {mode === 'plan' ? 'Plan' : 'Yapım'}
       </button>
-      <select
-        className="ai-chat__modelsel"
-        aria-label="Model seç"
-        title="Model seç"
-        value={catalog.entries.some((entry) => `${entry.provider}:${entry.id}` === value) ? value : ''}
-        onChange={(event) => {
-          const [provider, ...rest] = event.currentTarget.value.split(':');
-          const id = rest.join(':');
-          const found = catalog.entries.find((entry) => entry.provider === provider && entry.id === id);
-          if (found !== undefined) {
-            selectModel(found);
-            setTick((tick) => tick + 1);
-          }
-        }}
-      >
-        {value === '' && <option value="">Model yok</option>}
-        {[...groups.entries()].map(([label, entries]) => (
-          <optgroup key={label} label={label}>
-            {entries.map((entry) => (
-              <option key={`${entry.provider}:${entry.id}`} value={`${entry.provider}:${entry.id}`}>
-                {displayName(entry)}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-      </select>
+      <div className="ai-chat__modelpicker">
+        <button
+          type="button"
+          className="ai-chat__modelsel"
+          aria-label="Model seç"
+          aria-expanded={open}
+          onClick={() => setOpen((current) => !current)}
+        >
+          {catalog.entries.find((entry) => `${entry.provider}:${entry.id}` === value)?.name ?? value}
+        </button>
+        {open && (
+          <div className="ai-chat__modelpop">
+            <input
+              ref={searchRef}
+              className="ai-chat__modelsearch"
+              aria-label="Model ara"
+              placeholder="Model ara..."
+              value={query}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+            />
+            <div className="ai-chat__modellist">
+              {[...groups.entries()].map(([label, entries]) => (
+                <div key={label} className="ai-chat__modelgroup">
+                  <div className="ai-chat__modelgrouplabel">{label}</div>
+                  {entries.map((entry) => (
+                    <button
+                      key={`${entry.provider}:${entry.id}`}
+                      type="button"
+                      className={
+                        `${entry.provider}:${entry.id}` === value
+                          ? 'ai-chat__modelopt ai-chat__modelopt--active'
+                          : 'ai-chat__modelopt'
+                      }
+                      onClick={() => {
+                        selectModel(entry);
+                        setOpen(false);
+                      }}
+                    >
+                      {displayName(entry)}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
       <button
         type="button"
         className="ai-chat__iconbtn"

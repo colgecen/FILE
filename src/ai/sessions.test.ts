@@ -61,7 +61,7 @@ describe('SessionStore', () => {
 
   it('kip ve efor atanır', () => {
     const id = sessionStore.create();
-    expect(sessionStore.active()?.mode).toBe('plan');
+    expect(sessionStore.active()?.mode).toBe('build');
     expect(sessionStore.active()?.effort).toBe('medium');
     expect(sessionStore.setMode(id, 'build')).toBe(true);
     expect(sessionStore.setEffort(id, 'ultra')).toBe(true);

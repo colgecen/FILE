@@ -354,6 +354,7 @@ describe('aiCommands — öneri uygulama', () => {
 
   it('plan modda öneri aşamalanır, onay uygular', async () => {
     await registry.run('ai.session.new');
+    await registry.run('ai.mode.plan');
     aiEngine.appendUserMessage('yap');
     aiEngine.finishRemote('```a.ts\nYENİ\n```');
     expect(await registry.run('ai.apply')).toEqual({ ok: true });

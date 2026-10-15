@@ -240,6 +240,93 @@
   outline: 1px solid var(--accent);
 }
 
+
+/* ---------- model seçici ---------- */
+.ai-chat__modelpicker {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-chat__modelsel {
+  width: 100%;
+  text-align: left;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-chat__modelpop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  border: 1px solid var(--border-dim);
+  background: rgba(0, 16, 24, 0.98);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  z-index: 6;
+}
+
+.ai-chat__modelsearch {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  background: var(--bg-deep);
+  border: none;
+  border-bottom: 1px solid var(--border-dim);
+  color: var(--holo-ice);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.ai-chat__modelsearch:focus {
+  outline: none;
+  border-bottom-color: var(--holo-cyan);
+}
+
+.ai-chat__modellist {
+  max-height: 240px;
+  overflow: auto;
+}
+
+.ai-chat__modelgroup {
+  padding: 6px 0;
+}
+
+.ai-chat__modelgrouplabel {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  padding: 0 10px 4px;
+}
+
+.ai-chat__modelopt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.ai-chat__modelopt:hover {
+  background: var(--selection);
+  color: var(--holo-ice);
+}
+
+.ai-chat__modelopt--active {
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}
+
 /* ---------- model şeridi ---------- */
 .ai-chat__modelbar {
   display: flex;

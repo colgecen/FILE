@@ -3,7 +3,7 @@ import { DEFAULT_EFFORT, DEFAULT_MODE, EFFORT_PRESETS, effortLabel, modeLabel, m
 
 describe('mod ve efor', () => {
   it('varsayılanlar güvenlidir', () => {
-    expect(DEFAULT_MODE).toBe('plan');
+    expect(DEFAULT_MODE).toBe('build');
     expect(DEFAULT_EFFORT).toBe('medium');
   });
 
