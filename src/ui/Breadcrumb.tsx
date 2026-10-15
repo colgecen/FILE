@@ -5,10 +5,11 @@ function segmentsOf(path: string): readonly string[] {
   return parts.slice(-3);
 }
 
-export function Breadcrumb(): React.JSX.Element {
+export function Breadcrumb(): React.JSX.Element | null {
   const { tabs, activeId } = useTabsState();
   const activeFile = tabs.find((tab) => tab.id === activeId)?.file ?? null;
-  const crumbs = activeFile === null ? ['Karşılama'] : segmentsOf(activeFile.path);
+  if (activeFile === null) return null;
+  const crumbs = segmentsOf(activeFile.path);
 
   return (
     <nav className="breadcrumb" aria-label="Dosya yolu">

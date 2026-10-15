@@ -19,9 +19,9 @@ beforeEach(() => {
 });
 
 describe('Breadcrumb', () => {
-  it('sekme yokken karşılama gösterir', () => {
-    render(<Breadcrumb />);
-    expect(screen.getByText('Karşılama')).not.toBeNull();
+  it('sekme yokken çizilmez', () => {
+    const { container } = render(<Breadcrumb />);
+    expect(container.querySelector('.breadcrumb')).toBeNull();
   });
 
   it('aktif dosyanın yol parçalarını gösterir', () => {
