@@ -17,7 +17,6 @@ export function AIModelToolbar(): React.JSX.Element {
   const ai = useAIEngine();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const listRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const ref = loadActiveRef();
   const activeSession = sessions.sessions.find((session) => session.id === sessions.activeId) ?? null;
@@ -28,17 +27,20 @@ export function AIModelToolbar(): React.JSX.Element {
   useEffect(() => {
     if (open) {
       setQuery('');
-      searchRef.current?.focus();
+      requestAnimationFrame(() => searchRef.current?.focus());
     }
   }, [open]);
 
   useEffect(() => {
     if (!open) return;
-    const close = (event: MouseEvent): void => {
-      if (listRef.current !== null && !listRef.current.contains(event.target as Node)) setOpen(false);
+    const close = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setOpen(false);
+      }
     };
-    document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
   }, [open]);
 
   const groups = new Map<string, ModelRef[]>();
@@ -50,9 +52,23 @@ export function AIModelToolbar(): React.JSX.Element {
     list.push(entry);
     groups.set(providerName, list);
   }
+  const filtered = [...groups.values()].flat();
+
+  function selectEntry(entry: ModelRef): void {
+    selectModel(entry);
+    setOpen(false);
+  }
+
+  function handleEnter(event: React.KeyboardEvent<HTMLInputElement>): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const first = filtered[0];
+      if (first !== undefined) selectEntry(first);
+    }
+  }
 
   return (
-    <div className="ai-chat__toolbar" ref={listRef}>
+    <div className="ai-chat__toolbar">
       <button
         type="button"
         className={mode === 'plan' ? 'ai-chat__modebtn ai-chat__modebtn--plan' : 'ai-chat__modebtn ai-chat__modebtn--build'}
@@ -61,53 +77,14 @@ export function AIModelToolbar(): React.JSX.Element {
       >
         {mode === 'plan' ? 'Plan' : 'Yapım'}
       </button>
-      <div className="ai-chat__modelpicker">
-        <button
-          type="button"
-          className="ai-chat__modelsel"
-          aria-label="Model seç"
-          aria-expanded={open}
-          onClick={() => setOpen((current) => !current)}
-        >
-          {catalog.entries.find((entry) => `${entry.provider}:${entry.id}` === value)?.name ?? value}
-        </button>
-        {open && (
-          <div className="ai-chat__modelpop">
-            <input
-              ref={searchRef}
-              className="ai-chat__modelsearch"
-              aria-label="Model ara"
-              placeholder="Model ara..."
-              value={query}
-              onChange={(event) => setQuery(event.currentTarget.value)}
-            />
-            <div className="ai-chat__modellist">
-              {[...groups.entries()].map(([label, entries]) => (
-                <div key={label} className="ai-chat__modelgroup">
-                  <div className="ai-chat__modelgrouplabel">{label}</div>
-                  {entries.map((entry) => (
-                    <button
-                      key={`${entry.provider}:${entry.id}`}
-                      type="button"
-                      className={
-                        `${entry.provider}:${entry.id}` === value
-                          ? 'ai-chat__modelopt ai-chat__modelopt--active'
-                          : 'ai-chat__modelopt'
-                      }
-                      onClick={() => {
-                        selectModel(entry);
-                        setOpen(false);
-                      }}
-                    >
-                      {displayName(entry)}
-                    </button>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      <button
+        type="button"
+        className="ai-chat__modelopen"
+        aria-label="Model seç"
+        onClick={() => setOpen(true)}
+      >
+        {catalog.entries.find((entry) => `${entry.provider}:${entry.id}` === value)?.name ?? value}
+      </button>
       <select
         className="ai-chat__effortsel"
         aria-label="Efor"
@@ -132,6 +109,48 @@ export function AIModelToolbar(): React.JSX.Element {
       >
         Durdur
       </button>
+      {open && (
+        <div
+          className="ai-chat__centermodal"
+          role="dialog"
+          aria-label="Model seç"
+          onClick={() => setOpen(false)}
+        >
+          <div className="ai-chat__centerpanel" onClick={(event) => event.stopPropagation()}>
+            <div className="ai-chat__centertitle">MODEL SEÇ</div>
+            <input
+              ref={searchRef}
+              className="ai-chat__modalsearch"
+              aria-label="Model ara"
+              placeholder="Model ara..."
+              value={query}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+              onKeyDown={handleEnter}
+            />
+            <div className="ai-chat__modallist">
+              {[...groups.entries()].map(([label, entries]) => (
+                <div key={label} className="ai-chat__modalgroup">
+                  <div className="ai-chat__modalgrouplabel">{label}</div>
+                  {entries.map((entry) => (
+                    <button
+                      key={`${entry.provider}:${entry.id}`}
+                      type="button"
+                      className={
+                        `${entry.provider}:${entry.id}` === value
+                          ? 'ai-chat__modalopt ai-chat__modalopt--active'
+                          : 'ai-chat__modalopt'
+                      }
+                      onClick={() => selectEntry(entry)}
+                    >
+                      {displayName(entry)}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

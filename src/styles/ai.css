@@ -241,6 +241,105 @@
 }
 
 
+
+/* ---------- merkez model modalı ---------- */
+.ai-chat__modelopen {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  padding: 7px 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-chat__centermodal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.ai-chat__centerpanel {
+  width: min(420px, calc(100vw - 24px));
+  max-height: min(520px, calc(100vh - 48px));
+  overflow: auto;
+  border: 1px solid var(--border-dim);
+  background: var(--bg-deep);
+  padding: 12px;
+}
+
+.ai-chat__centertitle {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--accent-dim);
+  margin-bottom: 8px;
+}
+
+.ai-chat__modalsearch {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: rgba(0, 16, 24, 0.75);
+  border: 1px solid var(--border-dim);
+  color: var(--holo-ice);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.ai-chat__modalsearch:focus {
+  outline: none;
+  border-color: var(--holo-cyan);
+  box-shadow: 0 0 0 1px rgba(0, 229, 255, 0.35);
+}
+
+.ai-chat__modallist {
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-chat__modalgroup {
+  padding: 4px 0;
+}
+
+.ai-chat__modalgrouplabel {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  padding: 4px 2px;
+}
+
+.ai-chat__modalopt {
+  appearance: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 7px 8px;
+  cursor: pointer;
+}
+
+.ai-chat__modalopt:hover {
+  border-color: var(--border-dim);
+  background: var(--selection);
+  color: var(--holo-ice);
+}
+
+.ai-chat__modalopt--active {
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}
+
 /* ---------- model seçici ---------- */
 .ai-chat__modelpicker {
   position: relative;
