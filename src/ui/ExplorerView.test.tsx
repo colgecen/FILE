@@ -7,6 +7,7 @@ vi.mock('../editor/EditorCore', () => ({
   EditorCore: () => <div data-testid="editor-core-mock" />,
 }));
 import { explorerModel } from '../core/explorer';
+import { gitModel } from '../core/gitModel';
 import { createCore } from '../core/instances';
 import { paletteModel } from '../core/palette';
 import { tabsModel } from '../core/tabs';
@@ -58,7 +59,7 @@ describe('ExplorerView', () => {
     const pane = screen.getByRole('region', { name: 'Dosya gezgini' });
     expect(pane).toBeInTheDocument();
     expect(pane).toHaveClass('explorer-view');
-    expect(screen.getByText('GEZGİN')).toBeInTheDocument();
+    expect(screen.getByText('Sekmeler & Projeler')).toBeInTheDocument();
   });
 
   it('ağaç satırları girinti sınıflarıyla çizilir', () => {
@@ -306,5 +307,20 @@ describe('ExplorerView kök yükleme', () => {
     expect(explorerModel.getState().rootPath).toBe('/proje');
     expect(screen.getByText('main.ts', { selector: '.explorer-row__name' })).toBeInTheDocument();
     expect(focusManager.get()).toBe('explorer');
+  });
+
+  it('git durumu olan satırda rozet gösterir', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      gitModel.setFiles([{ path: 'src/main.ts', status: 'M' }]);
+    });
+    const badge = screen.getByLabelText('Git durumu M');
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent('M');
+    act(() => {
+      gitModel.reset();
+    });
   });
 });

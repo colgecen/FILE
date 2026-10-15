@@ -389,6 +389,26 @@ body,
   text-overflow: ellipsis;
 }
 
+.explorer-row__badge {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--accent-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.explorer-row__badge--modified {
+  color: var(--accent);
+}
+
+.explorer-row__badge--added {
+  color: var(--accent-soft);
+}
+
+.explorer-row__badge--conflict {
+  color: var(--error);
+}
+
 .explorer-view__loading {
   padding: 12px;
   color: var(--holo-ice);
