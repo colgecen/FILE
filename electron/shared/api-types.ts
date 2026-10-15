@@ -48,6 +48,58 @@ export type WriteFileResult = {
   readonly path: string;
 };
 
+export type AiApiMessage = {
+  readonly role: 'system' | 'user' | 'assistant';
+  readonly content: string;
+};
+
+export type AiChatStartArgs = {
+  readonly requestId: string;
+  readonly baseUrl: string;
+  readonly apiKey: string | null;
+  readonly model: string;
+  readonly messages: readonly AiApiMessage[];
+  readonly temperature?: number;
+  readonly maxTokens?: number;
+};
+
+export type AiChatAbortArgs = {
+  readonly requestId: string;
+};
+
+export type AiChatTokenEvent = {
+  readonly requestId: string;
+  readonly text: string;
+};
+
+export type AiChatDoneEvent = {
+  readonly requestId: string;
+  readonly text: string;
+};
+
+export type AiChatErrorEvent = {
+  readonly requestId: string;
+  readonly message: string;
+};
+
+export type AiPingResult = {
+  readonly ok: boolean;
+  readonly status?: number;
+  readonly error?: string;
+};
+
+export type AiModelsResult = {
+  readonly ok: boolean;
+  readonly models: readonly string[];
+  readonly error?: string;
+};
+
+export type AiOllamaTagsResult = {
+  readonly ok: boolean;
+  readonly models: readonly string[];
+  readonly error?: string;
+};
+
 export type PtySpawnOptions = {
   readonly cols: number;
   readonly rows: number;
@@ -91,4 +143,12 @@ export type Api = {
   ptyKill(id: string): Promise<boolean>;
   onPtyData(listener: (id: string, data: string) => void): () => void;
   onPtyExit(listener: (id: string, exitCode: number) => void): () => void;
+  aiPing(baseUrl: string): Promise<AiPingResult>;
+  aiModels(baseUrl: string, apiKey: string | null): Promise<AiModelsResult>;
+  aiOllamaTags(origin: string): Promise<AiOllamaTagsResult>;
+  aiChatStart(args: AiChatStartArgs): Promise<{ started: boolean }>;
+  aiChatAbort(requestId: string): Promise<void>;
+  onAiChatToken(listener: (event: AiChatTokenEvent) => void): () => void;
+  onAiChatDone(listener: (event: AiChatDoneEvent) => void): () => void;
+  onAiChatError(listener: (event: AiChatErrorEvent) => void): () => void;
 };

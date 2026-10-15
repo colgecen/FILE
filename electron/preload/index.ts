@@ -56,6 +56,38 @@ const api: Api = {
       ipcRenderer.removeListener('pty:exit', handler);
     };
   },
+  aiPing: (baseUrl) => ipcRenderer.invoke('ai:ping', baseUrl),
+  aiModels: (baseUrl, apiKey) => ipcRenderer.invoke('ai:models', baseUrl, apiKey),
+  aiOllamaTags: (origin) => ipcRenderer.invoke('ai:ollama:tags', origin),
+  aiChatStart: (args) => ipcRenderer.invoke('ai:chat:start', args),
+  aiChatAbort: (requestId) => ipcRenderer.invoke('ai:chat:abort', { requestId }),
+  onAiChatToken: (listener) => {
+    const handler = (_event: unknown, event: Parameters<typeof listener>[0]): void => {
+      listener(event);
+    };
+    ipcRenderer.on('ai:chat:token', handler);
+    return () => {
+      ipcRenderer.removeListener('ai:chat:token', handler);
+    };
+  },
+  onAiChatDone: (listener) => {
+    const handler = (_event: unknown, event: Parameters<typeof listener>[0]): void => {
+      listener(event);
+    };
+    ipcRenderer.on('ai:chat:done', handler);
+    return () => {
+      ipcRenderer.removeListener('ai:chat:done', handler);
+    };
+  },
+  onAiChatError: (listener) => {
+    const handler = (_event: unknown, event: Parameters<typeof listener>[0]): void => {
+      listener(event);
+    };
+    ipcRenderer.on('ai:chat:error', handler);
+    return () => {
+      ipcRenderer.removeListener('ai:chat:error', handler);
+    };
+  },
 };
 
 export type WindowApi = typeof api;

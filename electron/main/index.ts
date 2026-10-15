@@ -8,6 +8,7 @@ import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
 import { registerTelemetry } from './telemetry';
 import { registerWindowHandlers } from './windowHandlers';
+import { registerAiNetHandlers } from './aiNet';
 import { createPtyManager, type PtySpawnFn } from './pty/manager';
 import { registerPtyIpc } from './pty/ipc';
 
@@ -73,6 +74,7 @@ void app.whenReady().then((): void => {
   registerAppHandlers(getWindow);
   registerTelemetry(getWindow);
   registerWindowHandlers(getWindow);
+  registerAiNetHandlers();
   registerPtyIpc(getWindow, ptyManager);
   ptyManager.start();
 

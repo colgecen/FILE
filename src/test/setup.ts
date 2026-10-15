@@ -15,6 +15,14 @@ const api = {
   sysStop: vi.fn().mockResolvedValue(undefined),
   onMetrics: vi.fn(() => () => undefined),
   appExit: vi.fn().mockResolvedValue(undefined),
+  aiPing: vi.fn().mockResolvedValue({ ok: false, error: 'mock' }),
+  aiModels: vi.fn().mockResolvedValue({ ok: true, models: [] }),
+  aiOllamaTags: vi.fn().mockResolvedValue({ ok: true, models: [] }),
+  aiChatStart: vi.fn().mockResolvedValue({ started: true }),
+  aiChatAbort: vi.fn().mockResolvedValue(undefined),
+  onAiChatToken: vi.fn(() => () => undefined),
+  onAiChatDone: vi.fn(() => () => undefined),
+  onAiChatError: vi.fn(() => () => undefined),
 };
 
 if (typeof window !== 'undefined') {
