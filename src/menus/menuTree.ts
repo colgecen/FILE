@@ -200,6 +200,14 @@ export const menuTree: readonly MenuTopLevel[] = [
       command('ai.model.status', 'Model Durumu'),
       command('ai.models.download', 'Model İndir'),
       command('ai.prefs', 'Yapay Zekâ Tercihleri'),
+      separator('sep-ai-mode'),
+      command('ai.mode.plan', 'Plan Modu'),
+      command('ai.mode.build', 'Yapım Modu'),
+      submenu('ai.effort.menu', 'Efor', [
+        command('ai.effort.low', 'Düşük'),
+        command('ai.effort.medium', 'Orta'),
+        command('ai.effort.ultra', 'Ultra'),
+      ]),
     ],
   },
 ];

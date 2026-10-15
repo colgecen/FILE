@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
+import { DEFAULT_EFFORT, DEFAULT_MODE, type EffortLevel, type PlanMode } from './modes';
 import type { ChatMessage } from './types';
 
 export type ChatSession = {
   readonly id: string;
   readonly title: string;
   readonly messages: readonly ChatMessage[];
+  readonly mode: PlanMode;
+  readonly effort: EffortLevel;
   readonly updatedAt: number;
 };
 
@@ -49,7 +52,17 @@ export class SessionStore {
   create(): string {
     const id = nextId();
     const now = Date.now();
-    this.sessions = [...this.sessions, { id, title: 'Yeni sohbet', messages: [], updatedAt: now }];
+    this.sessions = [
+      ...this.sessions,
+      {
+        id,
+        title: 'Yeni sohbet',
+        messages: [],
+        mode: DEFAULT_MODE,
+        effort: DEFAULT_EFFORT,
+        updatedAt: now,
+      },
+    ];
     this.activeId = id;
     this.emit();
     return id;
@@ -90,6 +103,24 @@ export class SessionStore {
         : session,
     );
     this.emit();
+  }
+
+  setMode(id: string, mode: PlanMode): boolean {
+    if (!this.sessions.some((session) => session.id === id)) return false;
+    this.sessions = this.sessions.map((session) =>
+      session.id === id ? { ...session, mode, updatedAt: Date.now() } : session,
+    );
+    this.emit();
+    return true;
+  }
+
+  setEffort(id: string, effort: EffortLevel): boolean {
+    if (!this.sessions.some((session) => session.id === id)) return false;
+    this.sessions = this.sessions.map((session) =>
+      session.id === id ? { ...session, effort, updatedAt: Date.now() } : session,
+    );
+    this.emit();
+    return true;
   }
 
   reset(): void {

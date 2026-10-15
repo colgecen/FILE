@@ -239,6 +239,28 @@ describe('aiCommands — birleşik katalog', () => {
     const empty = await registry.run('ai.session.close');
     expect(empty.ok).toBe(false);
   });
+
+  it('kip ve efor komutları aktif sekmeyi değiştirir', async () => {
+    await registry.run('ai.session.new');
+    expect(await registry.run('ai.mode.build')).toEqual({ ok: true });
+    expect(sessionStore.active()?.mode).toBe('build');
+    expect(await registry.run('ai.effort.ultra')).toEqual({ ok: true });
+    expect(sessionStore.active()?.effort).toBe('ultra');
+    expect(await registry.run('ai.mode.plan')).toEqual({ ok: true });
+    expect(sessionStore.active()?.mode).toBe('plan');
+  });
+
+  it('ultra efor daha büyük bütçeyle üretir', async () => {
+    await registry.run('ai.session.new');
+    await registry.run('ai.effort.ultra');
+    aiChatModel.setDraft('Merhaba');
+    await registry.run('ai.chat.send');
+    await vi.waitFor(() => {
+      expect(generateSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ maxNewTokens: 1024, temperature: 0.7 }),
+      );
+    });
+  });
 });
 
 describe('aiCommands — indirme akışı', () => {

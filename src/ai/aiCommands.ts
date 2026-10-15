@@ -12,6 +12,7 @@ import type { ModelRef } from './providers';
 import { modelCatalog } from './catalog';
 import { scanLocalModels } from './localScan';
 import { sessionStore } from './sessions';
+import { DEFAULT_EFFORT, EFFORT_PRESETS, effortLabel, modeLabel, type EffortLevel, type PlanMode } from './modes';
 import type { CommandDef } from '../core/types';
 import type { ModelId } from './types';
 
@@ -57,6 +58,28 @@ export function closeSession(id: string): boolean {
   return true;
 }
 
+function activeSessionOrCreate(): string | null {
+  return sessionStore.active()?.id ?? sessionStore.ensure(engineBusy());
+}
+
+function setSessionMode(mode: PlanMode): { ok: boolean; error?: string } {
+  const id = activeSessionOrCreate();
+  if (id === null) return { ok: false, error: 'Aktif sohbet yok' };
+  sessionStore.setMode(id, mode);
+  aiEngine.appendSystemMessage(`Kip: ${modeLabel(mode)}`);
+  syncSession(id);
+  return { ok: true };
+}
+
+function setSessionEffort(effort: EffortLevel): { ok: boolean; error?: string } {
+  const id = activeSessionOrCreate();
+  if (id === null) return { ok: false, error: 'Aktif sohbet yok' };
+  sessionStore.setEffort(id, effort);
+  aiEngine.appendSystemMessage(`Efor: ${effortLabel(effort)}`);
+  syncSession(id);
+  return { ok: true };
+}
+
 const MAX_CONTEXT_MESSAGES = 6;
 
 function editorSourceText(): string | null {
@@ -95,9 +118,15 @@ async function runAssistant(instruction: string): Promise<void> {
     return;
   }
   if (sessionStore.active()?.id !== sessionId) return;
+  const session = sessionStore.getSnapshot().sessions.find((entry) => entry.id === sessionId);
+  const preset = EFFORT_PRESETS[session?.effort ?? DEFAULT_EFFORT];
   const recent = aiEngine.getState().chat.messages.slice(-MAX_CONTEXT_MESSAGES);
   try {
-    await aiEngine.generate({ prompt: buildPrompt(recent), maxNewTokens: 256, temperature: 0.4 });
+    await aiEngine.generate({
+      prompt: buildPrompt(recent),
+      maxNewTokens: preset.maxTokens,
+      temperature: preset.temperature,
+    });
   } catch {
     // generate hata durumunu zaten engine'e işler
   }
@@ -267,6 +296,41 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
       if (!closeSession(active.id)) return { ok: false, error: 'Akış sürerken kapatılamaz' };
       return { ok: true };
     },
+  });
+
+  register({
+    id: 'ai.mode.plan',
+    category: 'ai',
+    title: 'Plan Modu',
+    run: () => setSessionMode('plan'),
+  });
+
+  register({
+    id: 'ai.mode.build',
+    category: 'ai',
+    title: 'Yapım Modu',
+    run: () => setSessionMode('build'),
+  });
+
+  register({
+    id: 'ai.effort.low',
+    category: 'ai',
+    title: 'Efor: Düşük',
+    run: () => setSessionEffort('low'),
+  });
+
+  register({
+    id: 'ai.effort.medium',
+    category: 'ai',
+    title: 'Efor: Orta',
+    run: () => setSessionEffort('medium'),
+  });
+
+  register({
+    id: 'ai.effort.ultra',
+    category: 'ai',
+    title: 'Efor: Ultra',
+    run: () => setSessionEffort('ultra'),
   });
 
   register({

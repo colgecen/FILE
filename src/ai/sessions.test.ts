@@ -58,4 +58,16 @@ describe('SessionStore', () => {
     sessionStore.retitleFrom(id, 'ikinci');
     expect(sessionStore.active()?.title).not.toBe('ikinci');
   });
+
+  it('kip ve efor atanır', () => {
+    const id = sessionStore.create();
+    expect(sessionStore.active()?.mode).toBe('plan');
+    expect(sessionStore.active()?.effort).toBe('medium');
+    expect(sessionStore.setMode(id, 'build')).toBe(true);
+    expect(sessionStore.setEffort(id, 'ultra')).toBe(true);
+    expect(sessionStore.active()?.mode).toBe('build');
+    expect(sessionStore.active()?.effort).toBe('ultra');
+    expect(sessionStore.setMode('yok', 'build')).toBe(false);
+    expect(sessionStore.setEffort('yok', 'low')).toBe(false);
+  });
 });
