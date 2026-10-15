@@ -6,9 +6,13 @@
   width: 340px;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--accent);
+  border-left: 1px solid var(--holo-cyan);
   background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: -1px 0 12px rgba(0, 229, 255, 0.25);
   z-index: 40;
+  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
 }
 
 .ai-chat__header {
@@ -23,7 +27,8 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 14px;
   letter-spacing: 0.08em;
-  color: var(--text-primary);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
 }
 
 .ai-chat__status {
@@ -96,6 +101,7 @@
 .ai-chat__message {
   padding: 8px 10px;
   border: 1px solid var(--border);
+  background: rgba(3, 8, 18, 0.5);
   white-space: pre-wrap;
   word-break: break-word;
 }

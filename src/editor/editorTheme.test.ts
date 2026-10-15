@@ -33,7 +33,7 @@ describe('defineEditorTheme', () => {
     const { colors } = themeOfLastCall();
     expect(colors['editor.background']).toBe('#03050A');
     expect(colors['editor.foreground']).toBe('#FFFFFF');
-    expect(colors['editorCursor.foreground']).toBe('#00D2FF');
+    expect(colors['editorCursor.foreground']).toBe('#00E5FF');
   });
 
   it('anahtar kelime, string ve yorum renklerini tanımlar', () => {

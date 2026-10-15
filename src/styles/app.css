@@ -387,10 +387,13 @@ body,
   border: 1px solid var(--error);
   border-radius: 0;
   background: rgba(255, 82, 82, 0.1);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   font-family: var(--font-display);
   font-size: 11px;
   letter-spacing: 1px;
   color: var(--error);
+  box-shadow: 0 0 12px rgba(255, 82, 82, 0.35);
 }
 
 .error-indicator__dot {
@@ -419,7 +422,15 @@ body,
   padding: 16px 20px;
   border: 1px solid var(--border);
   border-radius: 0;
-  background: var(--bg-overlay);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 0 0 1px rgba(124, 77, 255, 0.25),
+    var(--glow-soft);
+  animation:
+    holo-fade-in 180ms ease-out,
+    holo-pulse var(--sync-speed) ease-in-out infinite;
 }
 
 .confirm-overlay__message {

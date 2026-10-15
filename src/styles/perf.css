@@ -4,7 +4,10 @@
   gap: 6px;
   padding: 8px;
   border: 1px solid var(--border);
-  background: var(--bg-base);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: var(--glow-soft);
 }
 
 .perf-panel__header {

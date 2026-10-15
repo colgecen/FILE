@@ -1,4 +1,6 @@
 .status-bar {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6,13 +8,17 @@
   height: 26px;
   padding: 0 12px;
   box-sizing: border-box;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--holo-cyan);
   border-radius: 0;
-  background: var(--bg-base);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   color: var(--accent-soft);
   font-family: var(--font-display);
   font-size: 11px;
   letter-spacing: 0.08em;
+  box-shadow: 0 -1px 12px rgba(0, 229, 255, 0.25);
+  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
 }
 
 .status-bar__group {
@@ -34,7 +40,8 @@
 }
 
 .status-bar__ai--computing {
-  color: var(--accent);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
 }
 
 .status-bar__ai--error {
@@ -44,9 +51,14 @@
 .status-bar__badge--error {
   border: 1px solid var(--error);
   color: var(--error);
-  background: transparent;
+  background: rgba(255, 82, 82, 0.1);
   padding: 1px 8px;
   cursor: pointer;
   font: inherit;
   letter-spacing: inherit;
+}
+
+.status-bar__file {
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
 }

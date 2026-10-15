@@ -13,17 +13,26 @@
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border);
   background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   padding: 16px;
   overflow-y: auto;
+  box-shadow:
+    0 0 0 1px rgba(124, 77, 255, 0.25),
+    var(--glow-soft);
+  animation:
+    holo-fade-in 180ms ease-out,
+    holo-pulse var(--sync-speed) ease-in-out infinite;
 }
 
 .help-overlay__title {
   font-family: 'Orbitron', sans-serif;
   font-size: 15px;
   letter-spacing: 0.08em;
-  color: var(--text-primary);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
   margin-bottom: 14px;
 }
 
