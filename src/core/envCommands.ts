@@ -37,14 +37,31 @@ export async function switchToEnvironment(id: string): Promise<CommandResult> {
   return { ok: true };
 }
 
+export function adoptFolderAsEnvironment(rootPath: string, name: string): void {
+  const current = environmentsModel.active();
+  if (current !== null && current.rootPath !== rootPath) {
+    environmentsModel.storeTabs(current.id, snapshotTabs());
+  }
+  const existing = environmentsModel
+    .getState()
+    .environments.find((env) => env.rootPath === rootPath);
+  if (existing !== undefined) {
+    applyTabs(existing.tabs);
+    environmentsModel.setActive(existing.id);
+    return;
+  }
+  environmentsModel.add(rootPath, name);
+  tabsModel.reset();
+  openFilesModel.set([]);
+}
+
 export async function addEnvironmentViaDialog(): Promise<CommandResult> {
   const picked = await window.api.openFolder();
   if (picked === null) return { ok: true };
   const existing = environmentsModel
     .getState()
     .environments.find((env) => env.rootPath === picked.path);
-  if (existing !== undefined) return switchToEnvironment(existing.id);
-  const current = environmentsModel.active();
+  if (existing !== undefined) return switchToEnvironment(existing.id);  const current = environmentsModel.active();
   if (current !== null) environmentsModel.storeTabs(current.id, snapshotTabs());
   const loaded = await explorerModel.loadRoot(picked.path, window.api.readDir);
   if (!loaded) {

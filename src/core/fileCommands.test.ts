@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Api } from '../../electron/shared/api-types';
 import { CommandRegistry } from './commands';
-import { adoptFile, registerFileCommands, runOpenFile, runOpenRecent } from './fileCommands';
+import { adoptFile, registerFileCommands, runOpenFile, runOpenFolder, runOpenRecent } from './fileCommands';
+import { environmentsModel } from './environments';
+import { explorerModel } from './explorer';
 import { openFilesModel } from './openFiles';
 import { recentFiles } from './recentFiles';
 import { tabsModel } from './tabs';
@@ -74,5 +76,21 @@ describe('dosya açma akışı', () => {
     registerFileCommands(registry.register.bind(registry));
     expect(registry.get('file.open.recent.0')).toBeDefined();
     expect(registry.get('file.open.recent.4')).toBeDefined();
+  });
+
+  it('klasör açınca proje alanına sekme eklenir', async () => {
+    environmentsModel.reset();
+    const api = {
+      openFolder: vi.fn().mockResolvedValue({ path: '/projeler/uygulama', name: 'uygulama' }),
+      readDir: vi.fn().mockResolvedValue([]),
+    } satisfies Pick<Api, 'openFolder' | 'readDir'>;
+
+    const result = await runOpenFolder(api);
+
+    expect(result).toEqual({ ok: true });
+    expect(environmentsModel.getState().activeId).toBe('/projeler/uygulama');
+    expect(explorerModel.getState().rootPath).toBe('/projeler/uygulama');
+    environmentsModel.reset();
+    explorerModel.settle([], null);
   });
 });

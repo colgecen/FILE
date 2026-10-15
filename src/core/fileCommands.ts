@@ -123,13 +123,13 @@ export async function runOpenFolder(
   api: Pick<Api, 'openFolder' | 'readDir'>,
 ): Promise<CommandResult> {
   const { explorerModel } = await import('./explorer');
-  const ok = await explorerModel.pickAndLoad(
-    () => api.openFolder(),
-    (path) => api.readDir(path),
-  );
-  if (!ok) return { ok: true };
-  const { explorerModel: model } = await import('./explorer');
-  model.open();
+  const picked = await api.openFolder();
+  if (picked === null) return { ok: true };
+  const loaded = await explorerModel.loadRoot(picked.path, (path) => api.readDir(path));
+  if (!loaded) return { ok: true };
+  const { adoptFolderAsEnvironment } = await import('./envCommands');
+  adoptFolderAsEnvironment(picked.path, picked.name);
+  explorerModel.open();
   focusManager.set('explorer');
   return { ok: true };
 }

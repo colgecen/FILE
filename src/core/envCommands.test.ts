@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   addEnvironmentViaDialog,
+  adoptFolderAsEnvironment,
   cycleEnvironment,
   removeEnvironment,
   switchToEnvironment,
@@ -121,5 +122,24 @@ describe('envCommands', () => {
     expect(environmentsModel.getState().activeId).toBe('/proj/a');
     await cycleEnvironment(-1);
     expect(environmentsModel.getState().activeId).toBe('/proj/b');
+  });
+
+  it('klasör benimsenince proje sekmesi eklenir', () => {
+    adoptFolderAsEnvironment('/proj/yeni', 'yeni');
+    expect(environmentsModel.getState().activeId).toBe('/proj/yeni');
+    expect(tabsModel.getState().tabs).toHaveLength(0);
+  });
+
+  it('açık klasör yeniden açılınca kayıtlı sekmeleri geri yüklenir', () => {
+    environmentsModel.add('/proj/a', 'a');
+    tabsModel.open(fileA());
+    environmentsModel.storeTabs('/proj/a', {
+      files: [fileA()],
+      activeId: '/proj/a/a.ts',
+    });
+    adoptFolderAsEnvironment('/proj/b', 'b');
+    expect(tabsModel.getState().tabs).toHaveLength(0);
+    adoptFolderAsEnvironment('/proj/a', 'a');
+    expect(tabsModel.getState().activeId).toBe('/proj/a/a.ts');
   });
 });
