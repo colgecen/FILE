@@ -2,10 +2,18 @@
   --bg-base: #000000;
   --bg-editor: #03050a;
   --bg-overlay: rgba(0, 0, 0, 0.9);
+  --glass-bg: rgba(3, 8, 18, 0.72);
   --text-primary: #ffffff;
   --accent: #00d2ff;
+  --holo-cyan: #00e5ff;
+  --holo-violet: #7c4dff;
+  --holo-ice: #b8e6ff;
   --accent-soft: #82aaff;
   --accent-dim: #4a6b8c;
+  --grid-line: rgba(124, 77, 255, 0.12);
+  --scan: rgba(0, 210, 255, 0.06);
+  --glow-soft: 0 0 12px rgba(0, 229, 255, 0.35);
+  --sync-speed: 2.4s;
   --selection: rgba(0, 85, 255, 0.4);
   --line-active: rgba(0, 210, 255, 0.05);
   --error: #ff5252;
