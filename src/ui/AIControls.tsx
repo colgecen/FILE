@@ -108,15 +108,6 @@ export function AIModelToolbar(): React.JSX.Element {
           </div>
         )}
       </div>
-      <button
-        type="button"
-        className="ai-chat__iconbtn"
-        aria-label="Modelleri yenile"
-        title="Modelleri yenile"
-        onClick={() => registry.run('ai.models.refresh')}
-      >
-        ⟳
-      </button>
       <select
         className="ai-chat__effortsel"
         aria-label="Efor"

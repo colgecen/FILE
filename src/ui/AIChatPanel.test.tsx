@@ -114,13 +114,6 @@ describe('AIChatPanel', () => {
     expect(mockCore.registry.run).toHaveBeenCalledWith('ai.mode.plan');
   });
 
-  it('yenile düğmesi taramayı tetikler', () => {
-    aiChatModel.open();
-    render(<AIChatPanel />);
-    fireEvent.click(screen.getByRole('button', { name: 'Modelleri yenile' }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.models.refresh');
-  });
-
   it('anahtar kaydetme kasaya yazar', async () => {
     aiChatModel.open();
     render(<AIChatPanel />);
