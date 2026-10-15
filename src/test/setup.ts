@@ -23,6 +23,10 @@ const api = {
   onAiChatToken: vi.fn(() => () => undefined),
   onAiChatDone: vi.fn(() => () => undefined),
   onAiChatError: vi.fn(() => () => undefined),
+  aiKeyHas: vi.fn().mockResolvedValue({ present: false }),
+  aiKeySet: vi.fn().mockResolvedValue({ ok: true }),
+  aiKeyDelete: vi.fn().mockResolvedValue({ ok: true }),
+  aiEnvScan: vi.fn().mockResolvedValue([]),
 };
 
 if (typeof window !== 'undefined') {

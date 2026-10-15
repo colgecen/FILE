@@ -255,7 +255,9 @@ export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
   return { ping, listOpenAIModels, listOllamaTags, startChat };
 }
 
-export function registerAiNetHandlers(): void {
+export function registerAiNetHandlers(
+  resolveKey: (provider: string, keyEnv: string | null, override: string | null) => Promise<string | null>,
+): void {
   const aiNet = createAiNet();
   const inflight = new Map<string, () => void>();
 
@@ -268,12 +270,16 @@ export function registerAiNetHandlers(): void {
   ipcMain.handle('ai:ollama:tags', async (_event: IpcMainInvokeEvent, origin: string) =>
     aiNet.listOllamaTags(origin),
   );
-  ipcMain.handle('ai:chat:start', (event: IpcMainInvokeEvent, args: AiChatStartArgs) => {
+  ipcMain.handle('ai:chat:start', async (event: IpcMainInvokeEvent, args: AiChatStartArgs) => {
     const sender = event.sender;
+    const apiKey = await resolveKey(args.provider, args.keyEnv, args.apiKey);
+    if (apiKey === null && args.keyRequired) {
+      return { started: false, error: 'API anahtarı yok — anahtar ekleyin ya da env tanımlayın' };
+    }
     const abort = aiNet.startChat(
       {
         baseUrl: args.baseUrl,
-        apiKey: args.apiKey,
+        apiKey,
         model: args.model,
         messages: args.messages,
         ...(args.temperature !== undefined ? { temperature: args.temperature } : {}),

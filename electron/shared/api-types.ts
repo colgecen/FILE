@@ -55,12 +55,21 @@ export type AiApiMessage = {
 
 export type AiChatStartArgs = {
   readonly requestId: string;
+  readonly provider: string;
   readonly baseUrl: string;
+  /** Açık override (özel endpoint girişi); boşsa kasa + env denenir. */
   readonly apiKey: string | null;
+  readonly keyEnv: string | null;
+  readonly keyRequired: boolean;
   readonly model: string;
   readonly messages: readonly AiApiMessage[];
   readonly temperature?: number;
   readonly maxTokens?: number;
+};
+
+export type AiChatStartResult = {
+  readonly started: boolean;
+  readonly error?: string;
 };
 
 export type AiChatAbortArgs = {
@@ -98,6 +107,30 @@ export type AiOllamaTagsResult = {
   readonly ok: boolean;
   readonly models: readonly string[];
   readonly error?: string;
+};
+
+export type AiKeySetArgs = {
+  readonly provider: string;
+  readonly key: string;
+};
+
+export type AiKeyDeleteArgs = {
+  readonly provider: string;
+};
+
+export type AiKeyHasResult = {
+  readonly present: boolean;
+};
+
+export type AiEnvCandidate = {
+  readonly provider: string;
+  readonly envVar: string | null;
+};
+
+export type AiEnvEntry = {
+  readonly provider: string;
+  readonly envVar: string;
+  readonly present: boolean;
 };
 
 export type PtySpawnOptions = {
@@ -146,9 +179,13 @@ export type Api = {
   aiPing(baseUrl: string): Promise<AiPingResult>;
   aiModels(baseUrl: string, apiKey: string | null): Promise<AiModelsResult>;
   aiOllamaTags(origin: string): Promise<AiOllamaTagsResult>;
-  aiChatStart(args: AiChatStartArgs): Promise<{ started: boolean }>;
+  aiChatStart(args: AiChatStartArgs): Promise<AiChatStartResult>;
   aiChatAbort(requestId: string): Promise<void>;
   onAiChatToken(listener: (event: AiChatTokenEvent) => void): () => void;
   onAiChatDone(listener: (event: AiChatDoneEvent) => void): () => void;
   onAiChatError(listener: (event: AiChatErrorEvent) => void): () => void;
+  aiKeyHas(provider: string): Promise<AiKeyHasResult>;
+  aiKeySet(args: AiKeySetArgs): Promise<{ ok: boolean; error?: string }>;
+  aiKeyDelete(args: AiKeyDeleteArgs): Promise<{ ok: boolean }>;
+  aiEnvScan(candidates: readonly AiEnvCandidate[]): Promise<readonly AiEnvEntry[]>;
 };

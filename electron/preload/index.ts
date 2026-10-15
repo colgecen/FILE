@@ -88,6 +88,10 @@ const api: Api = {
       ipcRenderer.removeListener('ai:chat:error', handler);
     };
   },
+  aiKeyHas: (provider) => ipcRenderer.invoke('ai:key:has', provider),
+  aiKeySet: (args) => ipcRenderer.invoke('ai:key:set', args),
+  aiKeyDelete: (args) => ipcRenderer.invoke('ai:key:delete', args),
+  aiEnvScan: (candidates) => ipcRenderer.invoke('ai:env:scan', candidates),
 };
 
 export type WindowApi = typeof api;
