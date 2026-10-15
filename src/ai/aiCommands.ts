@@ -218,6 +218,10 @@ export function selectModel(ref: ModelRef): void {
 
 function reportText(report: ApplyReport): string {
   const lines = [`Uygulandı (${report.applied.length}): ${report.applied.join(', ') || '—'}`];
+  for (const entry of report.changes) {
+    lines.push(`--- ${entry.path}`);
+    lines.push(entry.preview);
+  }
   for (const entry of report.rejected) {
     lines.push(`Reddedildi: ${entry.path} (${entry.reason})`);
   }

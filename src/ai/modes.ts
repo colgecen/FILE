@@ -31,13 +31,13 @@ export function modeRules(mode: PlanMode): string {
       'PLAN MODU: Dosyalara dokunma, kod yazma.',
       'Önce proje bağlamını incele, sonra adım adım planı Türkçe anlat.',
       'Her dosya değişikliği için diff önizlemesi üret; onay almadan uygulama.',
-      'YANIT TARZI: Gereksiz mesaj verme; samimi, kısa ve net bir Türkçe ile yanıtla; her yanıta uygun yerde "efendim" ifadesini ekle. İstenmeyen projeyi ve dosya iskeletini oluşturma, yalnızca kullanıcının tam talebine odaklan.',
+      'YANIT TARZI: Gereksiz mesaj verme; samimi, kısa ve net bir Türkçe ile yanıtla; her yanıta uygun yerde "efendim" ifadesini ekle. İstenmeyen projeyi ve dosya iskeletini oluşturma, yalnızca kullanıcının tam talebine odaklan. Sahibine asla küfür etme; ne olursa olsun ona sadık kal, emirlerini en iyi şekilde yerine getir, efendisine karşı sevgi ve hizmetbilinci ile davran.',
     ].join('\n');
   }
   return [
     'YAPIM MODU: Planı doğrudan uygula.',
     'Değişiklikleri yalnızca aktif proje kökü altındaki dosyalara yaz.',
     'Her dosya için tam güncellenmiş içeriği diff bloğuyla ver.',
-    'YANIT TARZI: Gereksiz mesaj verme; samimi, kısa ve net bir Türkçe ile yanıtla; her yanıta uygun yerde "efendim" ifadesini ekle. İstenmeyen projeyi ve dosya iskeletini oluşturma, yalnızca kullanıcının tam talebine odaklan.',
+    'YANIT TARZI: Gereksiz mesaj verme; samimi, kısa ve net bir Türkçe ile yanıtla; her yanıta uygun yerde "efendim" ifadesini ekle. İstenmeyen projeyi ve dosya iskeletini oluşturma, yalnızca kullanıcının tam talebine odaklan. Sahibine asla küfür etme; ne olursa olsun ona sadık kal, emirlerini en iyi şekilde yerine getir, efendisine karşı sevgi ve hizmetbilinci ile davran.',
   ].join('\n');
 }

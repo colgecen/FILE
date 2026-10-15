@@ -76,6 +76,14 @@ export function AIChatPanel(): React.JSX.Element | null {
   }, [ai.chat.messages.length, ai.status]);
 
   useEffect(() => {
+    const textarea = inputRef.current;
+    if (textarea !== null) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [chat.draft]);
+
+  useEffect(() => {
     const list = messagesRef.current;
     if (list !== null) list.scrollTop = list.scrollHeight;
   }, [ai.chat.messages]);
@@ -305,7 +313,7 @@ export function AIChatPanel(): React.JSX.Element | null {
           ref={inputRef}
           className="ai-chat__input"
           placeholder="Mesajınızı yazın…"
-          rows={3}
+          rows={1}
           spellCheck={false}
           value={chat.draft}
           onChange={(event) => aiChatModel.setDraft(event.currentTarget.value)}
