@@ -18,7 +18,6 @@ import { ExplorerView } from '../ui/ExplorerView';
 import { GitPanel } from '../ui/GitPanel';
 import { HelpOverlay } from '../ui/HelpOverlay';
 import { PaneManager } from '../ui/PaneManager';
-import { ReticleCursor } from '../ui/ReticleCursor';
 import { StatusBar } from '../ui/StatusBar';
 import { TabBar } from '../ui/TabBar';
 import { TerminalView } from '../terminal/TerminalView';
@@ -65,7 +64,6 @@ export function AppShell({
   return (
     <CoreContext.Provider value={core}>
       <div className={className}>
-        <ReticleCursor />
         <MenuBar />
         <ErrorIndicator />
         <CommandHUD />
