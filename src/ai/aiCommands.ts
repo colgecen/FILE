@@ -11,7 +11,7 @@ import { displayName } from './providers';
 import type { ModelRef } from './providers';
 import { modelCatalog, refreshCatalog } from './catalog';
 import { sessionStore } from './sessions';
-import { DEFAULT_EFFORT, DEFAULT_MODE, EFFORT_PRESETS, type EffortLevel, type EffortPreset, type PlanMode } from './modes';
+import { DEFAULT_EFFORT, DEFAULT_MODE, EFFORT_PRESETS, modeRules, type EffortLevel, type EffortPreset, type PlanMode } from './modes';
 import type { ActiveRef } from './modelStore';
 import { resolveEndpoint } from './endpoints';
 import { getRemoteClient } from './remoteClient';
@@ -121,9 +121,10 @@ async function runAssistant(instruction: string): Promise<void> {
   }
   if (sessionStore.active()?.id !== sessionId) return;
   const recent = aiEngine.getState().chat.messages.slice(-MAX_CONTEXT_MESSAGES);
+  const styledRecent = [{ role: 'system' as const, content: modeRules(session?.mode ?? DEFAULT_MODE) }, ...recent];
   try {
     await aiEngine.generate({
-      prompt: buildPrompt(recent),
+      prompt: buildPrompt(styledRecent),
       maxNewTokens: preset.maxTokens,
       temperature: preset.temperature,
     });
