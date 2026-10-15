@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { aiChatModel } from '../core/chatModel';
 import { aiEngine } from '../ai/engine';
+import { modelCatalog } from '../ai/catalog';
 import { sessionStore } from '../ai/sessions';
 import { focusManager } from '../core/focus';
 import { AIChatPanel } from './AIChatPanel';
@@ -22,6 +23,8 @@ describe('AIChatPanel', () => {
     aiChatModel.reset();
     aiEngine.resetChat();
     sessionStore.reset();
+    modelCatalog.reset();
+    localStorage.clear();
     focusManager.set('editor');
   });
 
@@ -29,6 +32,8 @@ describe('AIChatPanel', () => {
     aiChatModel.reset();
     aiEngine.resetChat();
     sessionStore.reset();
+    modelCatalog.reset();
+    localStorage.clear();
     focusManager.set('editor');
   });
 
@@ -105,6 +110,47 @@ describe('AIChatPanel', () => {
     fireEvent.click(screen.getAllByRole('tab')[0]!);
     expect(screen.getByText('birinci-mesaj')).toBeInTheDocument();
     expect(screen.queryByText('ikinci-mesaj')).toBeNull();
+  });
+
+  it('model seçimi kataloğu listeler ve değiştirir', async () => {
+    modelCatalog.setScanned([
+      { id: 'llama3', name: 'llama3', provider: 'ollama', source: 'ollama' },
+    ]);
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    const select = screen.getByLabelText('Model seç');
+    expect(select.textContent).toContain('llama3');
+    fireEvent.change(select, { target: { value: 'ollama:llama3' } });
+    expect(JSON.parse(localStorage.getItem('ai.activeRef') ?? '{}')).toEqual({
+      id: 'llama3',
+      provider: 'ollama',
+    });
+  });
+
+  it('kip düğmeleri komut koşar', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    fireEvent.click(screen.getByRole('button', { name: 'Yapım' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.mode.build');
+    fireEvent.click(screen.getByRole('button', { name: 'Plan' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.mode.plan');
+  });
+
+  it('yenile düğmesi taramayı tetikler', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    fireEvent.click(screen.getByRole('button', { name: 'Modelleri yenile' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.models.refresh');
+  });
+
+  it('anahtar kaydetme kasaya yazar', async () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    fireEvent.change(screen.getByLabelText('API anahtarı'), { target: { value: 'sk-test' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Kaydet' }));
+    await vi.waitFor(() => {
+      expect(window.api.aiKeySet).toHaveBeenCalledWith({ provider: 'openai', key: 'sk-test' });
+    });
   });
 });
 

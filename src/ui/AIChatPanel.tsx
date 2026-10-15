@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { useAIEngine } from '../ai/engine';
-import { modelName } from '../ai/models';
+import { displayName } from '../ai/providers';
+import { useModelCatalog } from '../ai/catalog';
+import { loadActiveRef } from '../ai/modelStore';
 import { closeSession, newSession, switchSession } from '../ai/aiCommands';
 import { useSessions } from '../ai/sessions';
 import { aiChatModel, useAIChat } from '../core/chatModel';
 import { useFocusZone } from '../core/focus';
 import { useCore } from '../layout/AppShell';
 import { phaseLabel, statusLabel } from '../ai/format';
+import { AIKeyVault, AIModelToolbar } from './AIControls';
 import { Waveform } from './Waveform';
 
 function roleLabel(role: string): string {
@@ -21,6 +24,7 @@ export function AIChatPanel(): React.JSX.Element | null {
   const ai = useAIEngine();
   const chat = useAIChat();
   const sessions = useSessions();
+  const catalog = useModelCatalog();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const busy = ai.status === 'loading' || ai.status === 'computing';
@@ -45,6 +49,11 @@ export function AIChatPanel(): React.JSX.Element | null {
   if (!chat.open) return null;
 
   const draftEmpty = chat.draft.trim().length === 0;
+  const activeRef = loadActiveRef();
+  const activeEntry = catalog.entries.find(
+    (entry) => entry.provider === activeRef.provider && entry.id === activeRef.id,
+  );
+  const activeName = activeEntry ? displayName(activeEntry) : activeRef.id;
 
   return (
     <aside className="ai-chat" aria-label="Yapay zekâ sohbeti">
@@ -117,10 +126,10 @@ export function AIChatPanel(): React.JSX.Element | null {
 
       <div className="ai-chat__modelbar">
         <span className="ai-chat__modellabel">MODEL</span>
-        <span className="ai-chat__modelname">
-          {ai.modelId === null ? 'Seçilmedi' : modelName(ai.modelId)}
-        </span>
+        <span className="ai-chat__modelname">{activeName}</span>
       </div>
+      <AIModelToolbar />
+      <AIKeyVault />
 
       <div className="ai-chat__signal">
         <span className="ai-chat__signal-label" aria-hidden="true">
