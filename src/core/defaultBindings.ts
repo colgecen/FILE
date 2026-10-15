@@ -46,6 +46,7 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'file.open.folder', keys: ['Control+k', 'Control+o'], label: 'Klasör aç' },
 
   // Terminal
+  { commandId: 'terminal.new', keys: ['Control+"'], label: 'Terminal aç (Ctrl+")' },
   { commandId: 'terminal.new', keys: ['Control+Shift+"'], label: 'Terminal aç (Ctrl+")' },
 
   // Ortamlar
