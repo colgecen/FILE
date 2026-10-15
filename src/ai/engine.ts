@@ -4,6 +4,7 @@ import type {
   AIProgress,
   AIStatus,
   AIWorkerEvent,
+  ChatMessage,
   ChatState,
   CompletionRequest,
   ModelId,
@@ -129,6 +130,11 @@ export class AIEngine {
 
   resetChat(): void {
     this.patch({ chat: { messages: [], error: null } });
+  }
+
+  /** Başka sekmeden gelen geçmişi aynaya yükler (akış hedefi değişmez). */
+  loadMessages(messages: readonly ChatMessage[]): void {
+    this.patch({ chat: { messages: [...messages], error: null } });
   }
 
   setError(message: string): void {

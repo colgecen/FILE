@@ -11,8 +11,51 @@ import { displayName } from './providers';
 import type { ModelRef } from './providers';
 import { modelCatalog } from './catalog';
 import { scanLocalModels } from './localScan';
+import { sessionStore } from './sessions';
 import type { CommandDef } from '../core/types';
 import type { ModelId } from './types';
+
+function engineBusy(): boolean {
+  const status = aiEngine.getState().status;
+  return status === 'loading' || status === 'computing';
+}
+
+function syncSession(sessionId: string): void {
+  sessionStore.saveMessages(sessionId, aiEngine.getState().chat.messages);
+}
+
+export function newSession(): string | null {
+  if (engineBusy()) return null;
+  const current = sessionStore.active();
+  if (current !== null) syncSession(current.id);
+  const id = sessionStore.create();
+  aiEngine.resetChat();
+  return id;
+}
+
+export function switchSession(id: string): boolean {
+  const current = sessionStore.active();
+  if (current !== null && current.id !== id) {
+    syncSession(current.id);
+  }
+  const target = sessionStore.getSnapshot().sessions.find((session) => session.id === id);
+  if (target === undefined) return false;
+  if (!sessionStore.switch(id, engineBusy())) return false;
+  aiEngine.loadMessages(target.messages);
+  return true;
+}
+
+export function closeSession(id: string): boolean {
+  const current = sessionStore.active();
+  if (current !== null) {
+    syncSession(current.id);
+  }
+  if (!sessionStore.close(id, engineBusy())) return false;
+  const active = sessionStore.active();
+  if (active === null) aiEngine.resetChat();
+  else aiEngine.loadMessages(active.messages);
+  return true;
+}
 
 const MAX_CONTEXT_MESSAGES = 6;
 
@@ -30,12 +73,16 @@ function editorSourceText(): string | null {
 
 async function runAssistant(instruction: string): Promise<void> {
   const ref = loadActiveRef();
+  const sessionId = sessionStore.ensure(engineBusy());
+  if (sessionId === null) return;
   aiEngine.appendUserMessage(instruction);
   aiChatModel.open();
+  sessionStore.retitleFrom(sessionId, instruction);
   if (ref.provider !== 'builtin' || !isModelId(ref.id)) {
     aiEngine.appendSystemMessage(
       'Uzak model sohbete F8 fazında bağlanacak; şimdilik yerleşik model seçin.',
     );
+    syncSession(sessionId);
     return;
   }
   const modelId: ModelId = ref.id;
@@ -44,14 +91,17 @@ async function runAssistant(instruction: string): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     aiEngine.setError(message);
+    syncSession(sessionId);
     return;
   }
+  if (sessionStore.active()?.id !== sessionId) return;
   const recent = aiEngine.getState().chat.messages.slice(-MAX_CONTEXT_MESSAGES);
   try {
     await aiEngine.generate({ prompt: buildPrompt(recent), maxNewTokens: 256, temperature: 0.4 });
   } catch {
     // generate hata durumunu zaten engine'e işler
   }
+  syncSession(sessionId);
 }
 
 export async function setActiveModel(modelId: ModelId): Promise<boolean> {
@@ -190,6 +240,31 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
       if (draft.length === 0) return { ok: false, error: 'Mesaj boş' };
       aiChatModel.setDraft('');
       void runAssistant(draft);
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.session.new',
+    category: 'ai',
+    title: 'Yeni Sohbet',
+    run: () => {
+      const id = newSession();
+      if (id === null) return { ok: false, error: 'Akış sürerken yeni sohbet açılamaz' };
+      aiChatModel.open();
+      focusManager.set('ai');
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.session.close',
+    category: 'ai',
+    title: 'Sekmeyi Kapat',
+    run: () => {
+      const active = sessionStore.active();
+      if (active === null) return { ok: false, error: 'Açık sohbet yok' };
+      if (!closeSession(active.id)) return { ok: false, error: 'Akış sürerken kapatılamaz' };
       return { ok: true };
     },
   });

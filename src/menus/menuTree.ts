@@ -190,6 +190,8 @@ export const menuTree: readonly MenuTopLevel[] = [
     label: 'Yapay Zekâ',
     items: [
       command('ai.chat', 'Yapay Zekâ ile Sohbet'),
+      command('ai.session.new', 'Yeni Sohbet'),
+      command('ai.session.close', 'Sekmeyi Kapat'),
       command('ai.inline.complete', 'Satır İçi Tamamlama'),
       command('ai.explain', 'Kodu Açıkla'),
       separator('sep-ai-models'),

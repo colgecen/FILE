@@ -4,6 +4,7 @@ import { aiChatModel } from '../core/chatModel';
 import { focusManager } from '../core/focus';
 import { DEFAULT_MODEL } from './models';
 import { modelCatalog } from './catalog';
+import { sessionStore } from './sessions';
 import { registerAICommands } from './aiCommands';
 import type { CommandDef, CommandResult } from '../core/types';
 
@@ -26,6 +27,7 @@ function resetAI(): void {
   aiEngine.cancel();
   aiEngine.resetChat();
   modelCatalog.reset();
+  sessionStore.reset();
   localStorage.clear();
 }
 
@@ -210,6 +212,32 @@ describe('aiCommands — birleşik katalog', () => {
     const result = await registry.run('ai.models.refresh');
     expect(result.ok).toBe(true);
     expect(modelCatalog.all().some((entry) => entry.provider === 'builtin')).toBe(true);
+  });
+
+  it('sekmeler mesajları izole eder', async () => {
+    const { closeSession, newSession, switchSession } = await import('./aiCommands');
+    const first = newSession();
+    expect(first).not.toBeNull();
+    aiEngine.appendUserMessage('birinci');
+    const second = newSession();
+    expect(second).not.toBeNull();
+    expect(aiEngine.getState().chat.messages).toHaveLength(0);
+    expect(switchSession(first ?? '')).toBe(true);
+    expect(aiEngine.getState().chat.messages.map((m) => m.content)).toContain('birinci');
+    expect(closeSession(second ?? '')).toBe(true);
+    expect(sessionStore.active()?.id).toBe(first);
+  });
+
+  it('ai.session.new akışı paletten açar', async () => {
+    const result = await registry.run('ai.session.new');
+    expect(result.ok).toBe(true);
+    expect(sessionStore.active()).not.toBeNull();
+    expect(aiChatModel.isOpen()).toBe(true);
+    const closed = await registry.run('ai.session.close');
+    expect(closed.ok).toBe(true);
+    expect(sessionStore.active()).toBeNull();
+    const empty = await registry.run('ai.session.close');
+    expect(empty.ok).toBe(false);
   });
 });
 

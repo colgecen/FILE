@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { aiChatModel } from '../core/chatModel';
+import { aiEngine } from '../ai/engine';
+import { sessionStore } from '../ai/sessions';
 import { focusManager } from '../core/focus';
 import { AIChatPanel } from './AIChatPanel';
 
@@ -18,11 +20,15 @@ describe('AIChatPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     aiChatModel.reset();
+    aiEngine.resetChat();
+    sessionStore.reset();
     focusManager.set('editor');
   });
 
   afterEach(() => {
     aiChatModel.reset();
+    aiEngine.resetChat();
+    sessionStore.reset();
     focusManager.set('editor');
   });
 
@@ -55,6 +61,50 @@ describe('AIChatPanel', () => {
     const input = screen.getByPlaceholderText('Mesajınızı yazın…');
     fireEvent.keyDown(input, { key: 'Enter', shiftKey: true });
     expect(mockCore.registry.run).not.toHaveBeenCalled();
+  });
+
+  it('başlıktaki kapat düğmesi kapatma komutunu çalıştırır', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    fireEvent.click(screen.getByRole('button', { name: 'Kapat' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.chat.close');
+  });
+
+  it('Gönder butonu taslağı gönderir', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    const input = screen.getByPlaceholderText('Mesajınızı yazın…');
+    fireEvent.change(input, { target: { value: 'Selam' } });
+    fireEvent.click(screen.getByRole('button', { name: /Gönder/ }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.chat.send');
+  });
+
+  it('öneri çipleri ilgili komutları çalıştırır', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    fireEvent.click(screen.getByRole('button', { name: 'Kodu Açıkla' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.explain');
+    fireEvent.click(screen.getByRole('button', { name: 'Model Seç' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.model.select');
+    fireEvent.click(screen.getByRole('button', { name: 'Model Durumu' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.model.status');
+  });
+
+  it('sekme çubuğu geçişte mesajları değiştirir', async () => {
+    const { newSession } = await import('../ai/aiCommands');
+    aiChatModel.open();
+    const first = newSession();
+    aiEngine.appendUserMessage('birinci-mesaj');
+    if (first !== null) sessionStore.saveMessages(first, aiEngine.getState().chat.messages);
+    newSession();
+    aiEngine.appendUserMessage('ikinci-mesaj');
+    const second = sessionStore.active();
+    if (second !== null) sessionStore.saveMessages(second.id, aiEngine.getState().chat.messages);
+    render(<AIChatPanel />);
+    expect(screen.getAllByRole('tab')).toHaveLength(2);
+    fireEvent.click(screen.getAllByRole('tab')[0]!);
+    expect(screen.getByText('birinci-mesaj')).toBeInTheDocument();
+    expect(screen.queryByText('ikinci-mesaj')).toBeNull();
   });
 });
 

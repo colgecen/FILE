@@ -122,6 +122,8 @@ const SEEDS: readonly CommandSeed[] = [
   { id: 'ai.model.select', title: 'Model Seç', category: 'ai' },
   { id: 'ai.model.status', title: 'Model Durumu', category: 'ai' },
   { id: 'ai.models.refresh', title: 'Modelleri Yenile', category: 'ai' },
+  { id: 'ai.session.new', title: 'Yeni Sohbet', category: 'ai' },
+  { id: 'ai.session.close', title: 'Sekmeyi Kapat', category: 'ai' },
   { id: 'ai.prefs', title: 'Yapay Zekâ Tercihleri', category: 'ai' },
   { id: 'ai.models.download', title: 'Model İndir', category: 'ai' },
 
