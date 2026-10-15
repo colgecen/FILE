@@ -6,6 +6,7 @@
 #   ./file                      -> etkileşimli menü (OS seç -> format seç -> derle)
 #   ./file --list               -> tüm derleme seçeneklerini listele
 #   ./file linux appimage       -> direkt derle (argümanlı, menüsüz)
+#   ./file --fast linux appimage -> hızlı derle (doğrulama atlanır)
 #   ./file windows portable
 #   ./file macos dmg
 #   ./file --install            -> ~/.local/bin'e sembolik bağ kur,
@@ -37,6 +38,21 @@ export PATH="$HOME/node/bin:$PATH"
 
 VERSION="$(node -p "require('$ROOT/package.json').version" 2>/dev/null || echo bilinmiyor)"
 
+# Hızlı mod: --fast / -f verilirse doğrulama zinciri atlanır.
+FAST=0
+ARGS=()
+for a in "$@"; do
+  case "$a" in
+    --fast|-f) FAST=1 ;;
+    *) ARGS+=("$a") ;;
+  esac
+done
+if [ "${#ARGS[@]}" -gt 0 ]; then
+  set -- "${ARGS[@]}"
+else
+  set --
+fi
+
 banner() {
   echo "=============================================="
   echo "  Derleme araci  v$VERSION"
@@ -49,6 +65,7 @@ usage() {
   echo "Kullanım:"
   echo "  ./file                      Etkileşimli menü"
   echo "  ./file <os> <format>        Direkt derle"
+  echo "  ./file --fast <os> <format> Hızlı derle (doğrulama atlanır)"
   echo "  ./file --list               Seçenekleri listele"
   echo "  ./file --install            Komutu sisteme kur (her yerden 'file')"
   echo "  ./file --help               Bu yardım"
@@ -60,9 +77,11 @@ usage() {
   echo
   echo "Örnekler:"
   echo "  ./file linux appimage"
+  echo "  ./file --fast linux appimage"
   echo "  ./file windows portable"
   echo
-  echo "Not: paketleme öncesi typecheck + lint + test + build zinciri çalışır."
+  echo "Not: normalde paketleme öncesi typecheck + lint + test + build zinciri"
+  echo "çalışır. --fast ile doğrulama atlanır, sadece build + paketleme yapılır."
   echo "Windows/macOS paketleri Linux üstünde ek araç isteyebilir (wine vb.)."
 }
 
@@ -87,8 +106,12 @@ do_install() {
   esac
 }
 
-# verify: her paketleme öncesi zorunlu doğrulama zinciri
+# verify: paketleme öncesi doğrulama zinciri (hızlı modda atlanır)
 verify() {
+  if [ "$FAST" = "1" ]; then
+    echo "==> Hızlı mod: doğrulama atlandı."
+    return 0
+  fi
   echo "==> Doğrulama zinciri çalışıyor (typecheck + lint + test)..."
   (cd "$ROOT" && npm run typecheck)
   (cd "$ROOT" && npm run lint)
@@ -99,7 +122,11 @@ verify() {
 build_target() {
   local os="$1" fmt="$2"
   banner
-  echo "Hedef: OS=$os  Format=$fmt  Sürüm=$VERSION"
+  if [ "$FAST" = "1" ]; then
+    echo "Hedef: OS=$os  Format=$fmt  Sürüm=$VERSION  Mod=HIZLI"
+  else
+    echo "Hedef: OS=$os  Format=$fmt  Sürüm=$VERSION  Mod=TAM"
+  fi
   echo
   verify
   echo "==> Renderer/main derleniyor..."
@@ -201,6 +228,15 @@ interactive() {
       done
       ;;
   esac
+
+  if [ "$FAST" = "0" ]; then
+    echo
+    read -r -p "Hızlı derleme (doğrulama atlanır)? [E/h] " fast_choice
+    case "$fast_choice" in
+      [Hh]) FAST=0 ;;
+      *) FAST=1 ;;
+    esac
+  fi
 
   build_target "$OS" "$FMT"
 }
