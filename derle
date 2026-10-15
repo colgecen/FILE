@@ -1,0 +1,241 @@
+#!/usr/bin/env bash
+#
+# derle — etkileşimli üretim/paket derleme aracı
+#
+# Kullanım:
+#   ./derle                      -> etkileşimli menü (OS seç -> format seç -> derle)
+#   ./derle --list               -> tüm derleme seçeneklerini listele
+#   ./derle linux appimage       -> direkt derle (argümanlı, menüsüz)
+#   ./derle windows portable
+#   ./derle macos dmg
+#   ./derle --install            -> ~/.local/bin'e sembolik bağ kur,
+#                                  sonra her klasörden `derle` yazman yeterli
+#   ./derle --help               -> yardım
+#
+# Geçerli hedefler (package.json > build alanıyla birebir):
+#   linux   : appimage | deb | rpm | targz
+#   windows : nsis | portable | zip
+#   macos   : dmg | zip
+#
+set -euo pipefail
+
+# ROOT = bu scriptin bulunduğu repo kökü. $0 symlink (örn. ~/.local/bin)
+# üzerinden çağrılabilir, o yüzden tüm symlink'ler çözülür.
+resolve_root() {
+  local src="${BASH_SOURCE[0]}"
+  while [ -L "$src" ]; do
+    local dir
+    dir="$(cd -P "$(dirname "$src")" && pwd)"
+    src="$(readlink "$src")"
+    [[ "$src" != /* ]] && src="$dir/$src"
+  done
+  cd -P "$(dirname "$src")" && pwd
+}
+ROOT="$(resolve_root)"
+
+export PATH="$HOME/node/bin:$PATH"
+
+VERSION="$(node -p "require('$ROOT/package.json').version" 2>/dev/null || echo bilinmiyor)"
+
+banner() {
+  echo "=============================================="
+  echo "  Derleme araci  v$VERSION"
+  echo "=============================================="
+}
+
+usage() {
+  banner
+  echo
+  echo "Kullanım:"
+  echo "  ./derle                      Etkileşimli menü"
+  echo "  ./derle <os> <format>        Direkt derle"
+  echo "  ./derle --list               Seçenekleri listele"
+  echo "  ./derle --install            Komutu sisteme kur (her yerden 'derle')"
+  echo "  ./derle --help               Bu yardım"
+  echo
+  echo "Hedefler:"
+  echo "  linux   : appimage | deb | rpm | targz"
+  echo "  windows : nsis | portable | zip"
+  echo "  macos   : dmg | zip"
+  echo
+  echo "Örnekler:"
+  echo "  ./derle linux appimage"
+  echo "  ./derle windows portable"
+  echo
+  echo "Not: paketleme öncesi typecheck + lint + test + build zinciri çalışır."
+  echo "Windows/macOS paketleri Linux üstünde ek araç isteyebilir (wine vb.)."
+}
+
+list_targets() {
+  echo "linux   : appimage | deb | rpm | targz"
+  echo "windows : nsis | portable | zip"
+  echo "macos   : dmg | zip"
+}
+
+do_install() {
+  local bindir="$HOME/.local/bin"
+  mkdir -p "$bindir"
+  ln -sf "$ROOT/derle" "$bindir/derle"
+  echo "Kuruldu: $bindir/derle -> $ROOT/derle"
+  case ":$PATH:" in
+    *":$bindir:"*) echo "PATH zaten '$bindir' içeriyor. Artık her klasörden 'derle' yazabilirsin." ;;
+    *)
+      echo "NOT: '$bindir' PATH'te yok. Şu satırı ~/.bashrc'ye ekle:"
+      echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
+      echo "Sonra yeni terminal aç ya da: source ~/.bashrc"
+      ;;
+  esac
+}
+
+# verify: her paketleme öncesi zorunlu doğrulama zinciri
+verify() {
+  echo "==> Doğrulama zinciri çalışıyor (typecheck + lint + test)..."
+  (cd "$ROOT" && npm run typecheck)
+  (cd "$ROOT" && npm run lint)
+  (cd "$ROOT" && npm test)
+  echo "==> Doğrulama temiz."
+}
+
+build_target() {
+  local os="$1" fmt="$2"
+  banner
+  echo "Hedef: OS=$os  Format=$fmt  Sürüm=$VERSION"
+  echo
+  verify
+  echo "==> Renderer/main derleniyor..."
+  (cd "$ROOT" && npm run build)
+  echo "==> Paketleniyor (çıktı: dist/)..."
+  case "$os" in
+    linux)
+      case "$fmt" in
+        appimage) (cd "$ROOT" && npx electron-builder --linux AppImage) ;;
+        deb) (cd "$ROOT" && npx electron-builder --linux deb) ;;
+        rpm) (cd "$ROOT" && npx electron-builder --linux rpm) ;;
+        targz) (cd "$ROOT" && npx electron-builder --linux tar.gz) ;;
+        *)
+          echo "Bilinmeyen linux formatı: $fmt (geçerli: appimage | deb | rpm | targz)"
+          exit 1
+          ;;
+      esac
+      ;;
+    windows)
+      case "$fmt" in
+        nsis) (cd "$ROOT" && npx electron-builder --win nsis) ;;
+        portable) (cd "$ROOT" && npx electron-builder --win portable) ;;
+        zip) (cd "$ROOT" && npx electron-builder --win zip) ;;
+        *)
+          echo "Bilinmeyen windows formatı: $fmt (geçerli: nsis | portable | zip)"
+          exit 1
+          ;;
+      esac
+      ;;
+    macos|darwin)
+      case "$fmt" in
+        dmg) (cd "$ROOT" && npx electron-builder --mac dmg) ;;
+        zip) (cd "$ROOT" && npx electron-builder --mac zip) ;;
+        *)
+          echo "Bilinmeyen macos formatı: $fmt (geçerli: dmg | zip)"
+          exit 1
+          ;;
+      esac
+      ;;
+    *)
+      echo "Bilinmeyen OS: $os (geçerli: linux | windows | macos)"
+      exit 1
+      ;;
+  esac
+  echo
+  echo "Bitti. Paketler: $ROOT/dist/"
+}
+
+interactive() {
+  banner
+  echo
+  echo "Hedef işletim sistemi seç:"
+  select os_choice in "Linux" "Windows" "macOS" "Vazgeç"; do
+    case "$os_choice" in
+      Linux)   OS="linux"; break ;;
+      Windows) OS="windows"; break ;;
+      macOS)   OS="macos"; break ;;
+      Vazgeç|"") echo "Vazgeçildi."; exit 0 ;;
+      *) echo "Geçersiz seçim, tekrar dene." ;;
+    esac
+  done
+
+  echo
+  case "$OS" in
+    linux)
+      echo "Paket formatı seç:"
+      select f in "AppImage (.AppImage)" "DEB (.deb)" "RPM (.rpm)" "tar.gz (.tar.gz)" "Vazgeç"; do
+        case "$REPLY" in
+          1) FMT="appimage"; break ;;
+          2) FMT="deb"; break ;;
+          3) FMT="rpm"; break ;;
+          4) FMT="targz"; break ;;
+          5|"") echo "Vazgeçildi."; exit 0 ;;
+          *) echo "Geçersiz seçim, tekrar dene." ;;
+        esac
+      done
+      ;;
+    windows)
+      echo "Paket formatı seç:"
+      select f in "NSIS kurulum (.exe)" "Portable (.exe)" "ZIP (.zip)" "Vazgeç"; do
+        case "$REPLY" in
+          1) FMT="nsis"; break ;;
+          2) FMT="portable"; break ;;
+          3) FMT="zip"; break ;;
+          4|"") echo "Vazgeçildi."; exit 0 ;;
+          *) echo "Geçersiz seçim, tekrar dene." ;;
+        esac
+      done
+      ;;
+    macos)
+      echo "Paket formatı seç:"
+      select f in "DMG (.dmg)" "ZIP (.zip)" "Vazgeç"; do
+        case "$REPLY" in
+          1) FMT="dmg"; break ;;
+          2) FMT="zip"; break ;;
+          3|"") echo "Vazgeçildi."; exit 0 ;;
+          *) echo "Geçersiz seçim, tekrar dene." ;;
+        esac
+      done
+      ;;
+  esac
+
+  build_target "$OS" "$FMT"
+}
+
+# ---- argüman yönlendirme ----
+if [ $# -eq 0 ]; then
+  interactive
+  exit 0
+fi
+
+case "${1:-}" in
+  -h|--help|help)
+    usage
+    ;;
+  -l|--list|list)
+    list_targets
+    ;;
+  --install|install)
+    do_install
+    ;;
+  --version|-v)
+    echo "derle $VERSION"
+    ;;
+  linux|windows|macos|darwin)
+    if [ $# -lt 2 ]; then
+      echo "Format eksik. Örnek: ./derle $1 <format>"
+      list_targets
+      exit 1
+    fi
+    build_target "$1" "$2"
+    ;;
+  *)
+    echo "Bilinmeyen komut: $1"
+    echo
+    usage
+    exit 1
+    ;;
+esac
