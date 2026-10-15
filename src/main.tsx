@@ -8,6 +8,7 @@ import '@fontsource/orbitron/500.css';
 import '@fontsource/orbitron/700.css';
 import './theme/tokens.css';
 import './styles/app.css';
+import './styles/holo.css';
 import './styles/pane.css';
 import './styles/statusbar.css';
 import './styles/terminal.css';

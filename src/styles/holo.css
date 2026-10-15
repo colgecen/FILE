@@ -1,0 +1,99 @@
+/* Holografik efekt katmanı (D-020, D-021) — tüm stiller tema tokenlarına bağlıdır. */
+
+@keyframes holo-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 4px rgba(0, 229, 255, 0.12);
+  }
+  50% {
+    box-shadow: var(--glow-soft);
+  }
+}
+
+@keyframes holo-scan-drift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 120px;
+  }
+}
+
+@keyframes holo-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.holo-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.holo-frame {
+  border: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow:
+    0 0 0 1px rgba(124, 77, 255, 0.25),
+    0 6px 24px rgba(0, 0, 0, 0.7);
+}
+
+.holo-pulse {
+  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
+}
+
+.holo-scan {
+  position: relative;
+  overflow: hidden;
+}
+
+.holo-scan::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 3px,
+    var(--scan) 3px,
+    var(--scan) 4px
+  );
+  animation: holo-scan-drift 12s linear infinite;
+}
+
+.holo-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.holo-glow {
+  box-shadow: var(--glow-soft);
+}
+
+.holo-title {
+  color: var(--holo-ice);
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
+}
+
+.holo-enter {
+  animation: holo-fade-in 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .holo-pulse,
+  .holo-scan::after,
+  .holo-enter {
+    animation: none;
+  }
+}
