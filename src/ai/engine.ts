@@ -31,10 +31,17 @@ type Pending = {
   readonly reject: (error: Error) => void;
 };
 
+/** Yükleme sırasında ilerleme gelmezse takıldı sayılan süre. */
+export const LOAD_STALL_MS = 180_000;
+
+const STALL_CHECK_MS = 10_000;
+
 export class AIEngine {
   private state: EngineState = INITIAL;
   private worker: Worker | null = null;
   private pending: Pending | null = null;
+  private loadGen = 0;
+  private lastActivityAt = 0;
   private readonly listeners = new Set<(state: EngineState) => void>();
 
   getState(): EngineState {
@@ -49,9 +56,9 @@ export class AIEngine {
   }
 
   init(modelId: ModelId): void {
-    if (this.state.status === 'loading' || this.state.status === 'computing') {
-      this.cancel();
-    }
+    this.terminateWorker();
+    this.loadGen += 1;
+    this.lastActivityAt = Date.now();
     this.patch({ status: 'loading', modelId, progress: null, error: null });
     const worker = new Worker(new URL('./ai.worker.ts', import.meta.url), {
       type: 'module',
@@ -63,18 +70,37 @@ export class AIEngine {
     worker.postMessage({ type: 'init', modelId });
   }
 
-  async ensureModel(modelId: ModelId): Promise<void> {
+  async ensureModel(modelId: ModelId, stallMs: number = LOAD_STALL_MS): Promise<void> {
     if (perfModel.getState().aiLazy && this.worker === null && this.state.status === 'idle') {
       // lazy: only init when actually needed via ensureModel — already here
     }
     if (this.state.modelId === modelId && this.state.status !== 'loading') return;
     this.init(modelId);
+    const gen = this.loadGen;
     return new Promise<void>((resolve, reject) => {
+      let settled = false;
+      const timer = setInterval(() => {
+        if (gen !== this.loadGen || settled) {
+          clearInterval(timer);
+          return;
+        }
+        if (this.state.status === 'loading' && Date.now() - this.lastActivityAt > stallMs) {
+          settled = true;
+          clearInterval(timer);
+          this.cancel();
+          reject(new Error('Model yüklemesi takıldı (ilerleme yok) — Durdur ile iptal edip tekrar deneyin'));
+        }
+      }, Math.min(STALL_CHECK_MS, Math.max(stallMs / 4, 10)));
       const unsubscribe = this.subscribe((state) => {
+        if (settled) return;
         if (state.modelId === modelId && state.status === 'idle') {
+          settled = true;
+          clearInterval(timer);
           unsubscribe();
           resolve();
         } else if (state.status === 'error') {
+          settled = true;
+          clearInterval(timer);
           unsubscribe();
           reject(new Error(state.error ?? 'Model yüklenemedi'));
         }
@@ -116,16 +142,20 @@ export class AIEngine {
   }
 
   cancel(): void {
-    if (this.worker !== null) {
-      this.worker.terminate();
-      this.worker = null;
-    }
+    this.terminateWorker();
     const pending = this.pending;
     this.pending = null;
     if (pending !== null) {
       pending.reject(new Error('İptal edildi'));
     }
     this.patch({ status: 'idle', progress: null, error: null });
+  }
+
+  private terminateWorker(): void {
+    if (this.worker !== null) {
+      this.worker.terminate();
+      this.worker = null;
+    }
   }
 
   resetChat(): void {
@@ -173,12 +203,15 @@ export class AIEngine {
   private handle(event: AIWorkerEvent): void {
     switch (event.kind) {
       case 'ready':
+        this.lastActivityAt = Date.now();
         this.patch({ status: 'idle', progress: null, error: null });
         break;
       case 'download':
+        this.lastActivityAt = Date.now();
         this.patch({ status: 'loading', progress: event.progress, error: null });
         break;
       case 'computing':
+        this.lastActivityAt = Date.now();
         this.patch({ status: 'computing' });
         break;
       case 'token':

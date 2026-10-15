@@ -124,4 +124,51 @@ describe('AIEngine', () => {
     expect(engine.getState().status).toBe('idle');
     expect(engine.getState().progress).toBeNull();
   });
+
+  it('yeniden init eski workerı sonlandırır', () => {
+    engine.init('Qwen/Qwen2.5-0.5B-Instruct');
+    engine.init('Qwen/Qwen2.5-1.5B-Instruct');
+    expect(fake.terminate).toHaveBeenCalledTimes(1);
+    expect(engine.getState().modelId).toBe('Qwen/Qwen2.5-1.5B-Instruct');
+  });
+
+  it('ensureModel ready gelince çözülür', async () => {
+    const pending = engine.ensureModel('Qwen/Qwen2.5-0.5B-Instruct', 5000);
+    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    await expect(pending).resolves.toBeUndefined();
+  });
+
+  it('ilerleme durursa ensureModel takılma hatasıyla reddeder', async () => {
+    const pending = engine.ensureModel('Qwen/Qwen2.5-0.5B-Instruct', 40);
+    fake.deliver({
+      kind: 'download',
+      progress: {
+        phase: 'downloading',
+        loaded: 100,
+        total: 100,
+        percent: 100,
+        modelId: 'Qwen/Qwen2.5-0.5B-Instruct',
+      },
+    });
+    await expect(pending).rejects.toThrow('takıldı');
+    expect(engine.getState().status).toBe('idle');
+  });
+
+  it('sürekli ilerleme takılma sayacını sıfırlar', async () => {
+    const pending = engine.ensureModel('Qwen/Qwen2.5-0.5B-Instruct', 120);
+    const progress = {
+      phase: 'downloading' as const,
+      loaded: 100,
+      total: 100,
+      percent: 100,
+      modelId: 'Qwen/Qwen2.5-0.5B-Instruct' as const,
+    };
+    fake.deliver({ kind: 'download', progress });
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    fake.deliver({ kind: 'download', progress });
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    expect(engine.getState().status).toBe('loading');
+    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    await expect(pending).resolves.toBeUndefined();
+  });
 });
