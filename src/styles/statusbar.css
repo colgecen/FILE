@@ -57,6 +57,22 @@
   letter-spacing: inherit;
 }
 
+.status-bar__perf {
+  border: 1px solid var(--border);
+  color: var(--accent-dim);
+  background: transparent;
+  padding: 1px 8px;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+.status-bar__perf--on {
+  border-color: var(--holo-cyan);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
+}
+
 .status-bar__version {
   color: var(--accent-dim);
 }

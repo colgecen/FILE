@@ -5,6 +5,7 @@ import { focusManager } from './focus';
 import { gitModel } from './gitModel';
 import { paletteModel } from './palette';
 import { panesModel } from './panes';
+import { perfModel, perfPanelModel } from './perfModel';
 import { openFilesModel } from './openFiles';
 import { tabsModel } from './tabs';
 import { viewModeModel } from './viewMode';
@@ -180,6 +181,27 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
       if (root === null) return { ok: false, error: 'Kök klasör yok' };
       const ok = await explorerModel.loadRoot(root, (path) => window.api.readDir(path));
       return ok ? { ok: true } : { ok: false, error: 'Yenileme başarısız' };
+    },
+  });
+
+  register({
+    id: 'perf.settings',
+    category: 'view',
+    title: 'Performans Ayarları',
+    run: () => {
+      perfPanelModel.togglePanel();
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'perf.fast.toggle',
+    category: 'view',
+    title: 'Hızlı Mod (animasyonları kapat)',
+    run: () => {
+      const next = !perfModel.getState().reducedMotion;
+      perfModel.set({ reducedMotion: next });
+      return { ok: true };
     },
   });
 }

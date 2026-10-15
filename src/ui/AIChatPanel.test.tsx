@@ -84,7 +84,7 @@ describe('AIChatPanel', () => {
     expect(mockCore.registry.run).toHaveBeenCalledWith('ai.chat.send');
   });
 
-  it('öneri çipleri ilgili komutları çalıştırır', () => {
+  it('işlem menüsündeki kısayollar komutları çalıştırır', () => {
     aiChatModel.open();
     render(<AIChatPanel />);
     fireEvent.click(screen.getByRole('button', { name: 'Kodu Açıkla' }));
@@ -151,6 +151,19 @@ describe('AIChatPanel', () => {
     await vi.waitFor(() => {
       expect(window.api.aiKeySet).toHaveBeenCalledWith({ provider: 'openai', key: 'sk-test' });
     });
+  });
+
+  it('işlemler menüsü komutları koşar', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    const menu = screen.getByText('İşlemler').closest('details');
+    expect(menu).not.toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Satır İçi Tamamlama' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.inline.complete');
+    fireEvent.click(screen.getByRole('button', { name: 'Öneriyi Uygula' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.apply');
+    fireEvent.click(screen.getByRole('button', { name: 'Modelleri Yenile' }));
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.models.refresh');
   });
 });
 

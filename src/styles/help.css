@@ -13,29 +13,17 @@
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  padding: 16px;
+  padding: 16px 20px;
   overflow-y: auto;
-  box-shadow:
-    0 0 0 1px rgba(124, 77, 255, 0.25),
-    var(--glow-soft);
   animation: holo-fade-in 180ms ease-out;
 }
 
 .help-overlay__title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 15px;
-  letter-spacing: 0.08em;
-  color: var(--holo-ice);
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
   margin-bottom: 14px;
 }
 
 .help-overlay__lines {
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.7;
   color: var(--accent-dim);
@@ -47,7 +35,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 5px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-dim);
   font-size: 13px;
 }
 
@@ -57,25 +45,11 @@
 
 .help-overlay__key-chord {
   color: var(--accent);
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 .help-overlay__footer {
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
-}
-
-.help-overlay__close {
-  background: transparent;
-  border: 1px solid var(--accent);
-  border-radius: 0;
-  color: var(--text-primary);
-  padding: 5px 18px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.help-overlay__close:focus-visible {
-  outline: 1px solid var(--accent);
 }

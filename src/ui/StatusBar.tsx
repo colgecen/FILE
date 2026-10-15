@@ -6,6 +6,7 @@ import { errorStore, useErrorStore } from '../core/errorStore';
 import { dirOf, useGitBranch } from '../core/gitInfo';
 import { useTabsState } from '../core/tabs';
 import { useTelemetry } from '../core/telemetry';
+import { perfModel, usePerfState } from '../core/perfModel';
 
 export function StatusBar(): React.JSX.Element {
   const cursor = useCursorState();
@@ -15,6 +16,7 @@ export function StatusBar(): React.JSX.Element {
   const telemetry = useTelemetry();
   const ai = useAIEngine();
   const errors = useErrorStore();
+  const perf = usePerfState();
 
   const aiText =
     ai.modelId === null
@@ -37,6 +39,18 @@ export function StatusBar(): React.JSX.Element {
         )}
       </div>
       <div className="status-bar__group">
+        <button
+          type="button"
+          className={
+            perf.reducedMotion ? 'status-bar__cell status-bar__perf status-bar__perf--on' : 'status-bar__cell status-bar__perf'
+          }
+          data-testid="status-perf"
+          title="Hızlı Mod: animasyon ve bulanıklığı kapat"
+          aria-pressed={perf.reducedMotion}
+          onClick={() => perfModel.set({ reducedMotion: !perf.reducedMotion })}
+        >
+          HIZLI
+        </button>
         {telemetry !== null && (
           <span className="status-bar__cell status-bar__metrics" data-testid="status-metrics">
             CPU %{telemetry.cpuPercent.toFixed(0)} ·{' '}

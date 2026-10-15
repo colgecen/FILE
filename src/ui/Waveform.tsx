@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { usePerfState } from '../core/perfModel';
 
 const BARS = 48;
 
 export function Waveform({ active }: { readonly active: boolean }): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const perf = usePerfState();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -11,7 +13,8 @@ export function Waveform({ active }: { readonly active: boolean }): React.JSX.El
     const context = canvas.getContext('2d');
     if (context === null) return;
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced =
+      perf.reducedMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ratio = window.devicePixelRatio || 1;
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
@@ -45,7 +48,7 @@ export function Waveform({ active }: { readonly active: boolean }): React.JSX.El
     };
     frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
-  }, [active]);
+  }, [active, perf.reducedMotion]);
 
   return <canvas ref={canvasRef} className="ai-chat__wave" aria-hidden="true" />;
 }

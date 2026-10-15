@@ -14,6 +14,7 @@ import './styles/statusbar.css';
 import './styles/terminal.css';
 import './styles/help.css';
 import './styles/ai.css';
+import './styles/perf.css';
 import 'xterm/css/xterm.css';
 import { AppShell } from './layout/AppShell';
 

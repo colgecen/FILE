@@ -31,7 +31,7 @@ export function ConfirmOverlay({
 
   return (
     <div className="confirm-overlay" role="alertdialog" aria-label={message}>
-      <div className="confirm-overlay__panel">
+      <div className="confirm-overlay__panel holo-panel">
         <p className="confirm-overlay__message">{message}</p>
         <p className="confirm-overlay__hint">
           Enter: {confirmLabel} · Esc: İptal

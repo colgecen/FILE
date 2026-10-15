@@ -232,6 +232,28 @@ describe('palet klavye akışı', () => {
     expect(screen.getByRole('region', { name: 'Dosya gezgini' })).toBeInTheDocument();
   });
 
+  it('açılışta overlay fade + flash + crt paneli ile gelir', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'p', ctrlKey: true });
+    expect(document.querySelector('.command-hud--open')).not.toBeNull();
+    expect(document.querySelector('.command-hud__flash')).not.toBeNull();
+    expect(document.querySelector('.command-hud__panel')).not.toBeNull();
+  });
+
+  it('kapatıp yeniden açınca panel yeniden monte olur (crt tekrar oynar)', async () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'p', ctrlKey: true });
+    const first = document.querySelector('.command-hud__panel')!;
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(document.querySelector('.command-hud--closing')).not.toBeNull();
+    await waitForClose();
+    expect(screen.queryByRole('dialog')).toBeNull();
+    fireEvent.keyDown(window, { key: 'p', ctrlKey: true });
+    const second = document.querySelector('.command-hud__panel')!;
+    expect(second).not.toBe(first);
+    expect(document.querySelector('.command-hud--open')).not.toBeNull();
+  });
+
   it('ctrl+p paleti açar ve ilk sonuç seçilidir', () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'p', ctrlKey: true });

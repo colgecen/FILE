@@ -80,7 +80,10 @@ export class ExplorerModel {
     const expanded = new Set<string>();
     const collect = (nodes: readonly FileNode[]): void => {
       for (const node of nodes) {
-        if (node.kind === 'directory') {
+        // Sadece içeriği gerçekten yüklenmiş klasörler açık başlar.
+        // Tembel (children henüz okunmamış) klasörler kapalı başlar ki
+        // ilk tık okuyup açsın; yoksa ilk tık boşuna daraltır.
+        if (node.kind === 'directory' && node.children.length > 0) {
           expanded.add(node.path);
           collect(node.children);
         }

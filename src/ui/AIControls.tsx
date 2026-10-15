@@ -114,6 +114,65 @@ type KeyRow = {
   readonly envPresent: boolean;
 };
 
+export type ActionGroup = {
+  readonly label: string;
+  readonly items: readonly { readonly label: string; readonly command: string }[];
+};
+
+export const AI_ACTION_GROUPS: readonly ActionGroup[] = [
+  {
+    label: 'Sohbet',
+    items: [
+      { label: 'Yeni Sohbet', command: 'ai.session.new' },
+      { label: 'Sekmeyi Kapat', command: 'ai.session.close' },
+    ],
+  },
+  {
+    label: 'Kod',
+    items: [
+      { label: 'Satır İçi Tamamlama', command: 'ai.inline.complete' },
+      { label: 'Kodu Açıkla', command: 'ai.explain' },
+      { label: 'Öneriyi Uygula', command: 'ai.apply' },
+      { label: 'Öneriyi Onayla', command: 'ai.apply.confirm' },
+      { label: 'Öneriyi Vazgeç', command: 'ai.apply.cancel' },
+    ],
+  },
+  {
+    label: 'Model',
+    items: [
+      { label: 'Model Seç', command: 'ai.model.select' },
+      { label: 'Modelleri Yenile', command: 'ai.models.refresh' },
+      { label: 'Model Durumu', command: 'ai.model.status' },
+      { label: 'Model İndir', command: 'ai.models.download' },
+      { label: 'Yapay Zekâ Tercihleri', command: 'ai.prefs' },
+    ],
+  },
+];
+
+export function AIActionsMenu(): React.JSX.Element {
+  const { registry } = useCore();
+  return (
+    <details className="ai-chat__ops">
+      <summary className="ai-chat__ops-title">İşlemler</summary>
+      {AI_ACTION_GROUPS.map((group) => (
+        <div key={group.label} className="ai-chat__ops-group">
+          <div className="ai-chat__ops-label">{group.label}</div>
+          {group.items.map((item) => (
+            <button
+              key={item.command}
+              type="button"
+              className="ai-chat__ops-btn"
+              onClick={() => registry.run(item.command)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      ))}
+    </details>
+  );
+}
+
 const KEY_PROVIDERS = PROVIDERS.filter((provider) => provider.keyEnv !== null);
 
 export function AIKeyVault(): React.JSX.Element {

@@ -424,35 +424,59 @@
   font-size: 10px;
 }
 
-/* ---------- sinyal ---------- */
-.ai-chat__signal {
-  padding: 10px 14px 0;
+/* ---------- işlemler menüsü ---------- */
+.ai-chat__ops {
+  margin: 10px 14px 0;
+  border: 1px solid var(--border-dim);
+  background: rgba(0, 16, 24, 0.5);
+  padding: 8px 10px;
 }
 
-.ai-chat__signal-label {
-  display: block;
+.ai-chat__ops-title {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--accent-dim);
+  cursor: pointer;
+}
+
+.ai-chat__ops-group {
+  margin-top: 8px;
+}
+
+.ai-chat__ops-label {
   font-family: var(--font-display);
   font-size: 9px;
   letter-spacing: 2px;
+  text-transform: uppercase;
   color: var(--accent-dim);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
-.ai-chat__wave {
+.ai-chat__ops-btn {
+  appearance: none;
   display: block;
   width: 100%;
-  height: 46px;
-  border: 1px solid var(--border-dim);
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 3px,
-      var(--scan) 3px,
-      var(--scan) 4px
-    ),
-    var(--bg-deep);
-  box-shadow: inset 0 0 24px rgba(0, 229, 255, 0.06);
+  box-sizing: border-box;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.ai-chat__ops-btn:hover {
+  border-color: var(--border-dim);
+  background: var(--selection);
+  color: var(--holo-ice);
+}
+
+.ai-chat__ops-btn:focus-visible {
+  outline: 1px solid var(--accent);
 }
 
 /* ---------- indirme ---------- */
@@ -701,36 +725,6 @@
   line-height: 1.7;
   color: var(--accent-dim);
   max-width: 260px;
-}
-
-.ai-chat__chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.ai-chat__chips button {
-  appearance: none;
-  background: rgba(0, 40, 52, 0.5);
-  border: 1px solid var(--border-dim);
-  color: var(--holo-ice);
-  font-family: var(--font-display);
-  font-size: 10px;
-  letter-spacing: 1px;
-  padding: 7px 12px;
-  cursor: pointer;
-}
-
-.ai-chat__chips button:hover {
-  border-color: var(--holo-cyan);
-  box-shadow: var(--glow-soft);
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
-}
-
-.ai-chat__chips button:focus-visible {
-  outline: 1px solid var(--accent);
 }
 
 /* hata */

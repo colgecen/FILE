@@ -4,7 +4,7 @@ import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
 import { recentFiles } from '../core/recentFiles';
 import { useSaveFlash } from '../core/saveSignal';
-import { perfModel } from '../core/perfModel';
+import { perfModel, usePerfPanelOpen, usePerfState } from '../core/perfModel';
 import { useGitPanelState } from '../core/gitModel';
 import { useTabsState } from '../core/tabs';
 import { useTerminalOpen } from '../core/terminalModel';
@@ -23,6 +23,7 @@ import { PaneManager } from '../ui/PaneManager';
 import { StatusBar } from '../ui/StatusBar';
 import { TabBar } from '../ui/TabBar';
 import { TerminalView } from '../terminal/TerminalView';
+import { PerfSettings } from '../ui/SettingsPanel';
 import '../styles/git.css';
 
 const CoreContext = createContext<Core | null>(null);
@@ -49,6 +50,8 @@ export function AppShell({
   const terminalOpen = useTerminalOpen();
   const viewMode = useViewMode();
   const gitState = useGitPanelState();
+  const perf = usePerfState();
+  const perfPanelOpen = usePerfPanelOpen();
   useIpcLifecycle(window.api);
   useEffect(() => perfModel.init(), []);
   useEffect(() => recentFiles.attach(window.localStorage), []);
@@ -60,6 +63,7 @@ export function AppShell({
     savedFlash ? 'app-shell--saved' : '',
     viewMode.zen ? 'app-shell--zen' : '',
     glass ? 'glass' : '',
+    perf.reducedMotion ? 'perf-reduced' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -78,6 +82,11 @@ export function AppShell({
             onConfirm={() => exitController.confirm()}
             onCancel={() => exitController.cancel()}
           />
+        )}
+        {perfPanelOpen && (
+          <div className="perf-sheet" role="dialog" aria-label="Performans ayarları">
+            <PerfSettings />
+          </div>
         )}
         <div className="app-shell__envbar">
           <EnvironmentsBar />

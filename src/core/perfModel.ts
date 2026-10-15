@@ -68,3 +68,48 @@ export function usePerfState(): PerfState {
   useEffect(() => perfModel.subscribe(() => setState(perfModel.getState())), []);
   return state;
 }
+
+export class PerfPanelModel {
+  private open = false;
+  private readonly listeners = new Set<() => void>();
+
+  isOpen(): boolean {
+    return this.open;
+  }
+
+  openPanel(): void {
+    if (this.open) return;
+    this.open = true;
+    this.emit();
+  }
+
+  closePanel(): void {
+    if (!this.open) return;
+    this.open = false;
+    this.emit();
+  }
+
+  togglePanel(): void {
+    this.open = !this.open;
+    this.emit();
+  }
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  private emit(): void {
+    this.listeners.forEach((listener) => listener());
+  }
+}
+
+export const perfPanelModel = new PerfPanelModel();
+
+export function usePerfPanelOpen(): boolean {
+  const [open, setOpen] = useState<boolean>(() => perfPanelModel.isOpen());
+  useEffect(() => perfPanelModel.subscribe(() => setOpen(perfPanelModel.isOpen())), []);
+  return open;
+}

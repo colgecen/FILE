@@ -8,8 +8,7 @@ import { aiChatModel, useAIChat } from '../core/chatModel';
 import { useFocusZone } from '../core/focus';
 import { useCore } from '../layout/AppShell';
 import { phaseLabel, statusLabel } from '../ai/format';
-import { AIKeyVault, AIModelToolbar } from './AIControls';
-import { Waveform } from './Waveform';
+import { AIActionsMenu, AIKeyVault, AIModelToolbar } from './AIControls';
 
 function roleLabel(role: string): string {
   if (role === 'user') return 'SEN';
@@ -135,13 +134,7 @@ export function AIChatPanel(): React.JSX.Element | null {
       </div>
       <AIModelToolbar />
       <AIKeyVault />
-
-      <div className="ai-chat__signal">
-        <span className="ai-chat__signal-label" aria-hidden="true">
-          SİNYAL
-        </span>
-        <Waveform active={ai.status === 'computing' || ai.status === 'loading'} />
-      </div>
+      <AIActionsMenu />
 
       {ai.status === 'loading' && ai.progress !== null && (
         <div className="ai-chat__progress" aria-label="Model indirme ilerlemesi">
@@ -190,18 +183,8 @@ export function AIChatPanel(): React.JSX.Element | null {
             <p className="ai-chat__greet">Seni dinliyorum, efendim.</p>
             <p className="ai-chat__hint">
               Dosya seçip “Kodu Açıkla”yı çalıştır ya da aşağıdan yazmaya başla.
+              Tüm komutlar üstteki İşlemler menüsünde.
             </p>
-            <div className="ai-chat__chips">
-              <button type="button" onClick={() => registry.run('ai.explain')}>
-                Kodu Açıkla
-              </button>
-              <button type="button" onClick={() => registry.run('ai.model.select')}>
-                Model Seç
-              </button>
-              <button type="button" onClick={() => registry.run('ai.model.status')}>
-                Model Durumu
-              </button>
-            </div>
           </div>
         )}
       </div>

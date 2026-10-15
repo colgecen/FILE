@@ -13,6 +13,7 @@ export function CommandHUD(): React.JSX.Element | null {
   const prevZone = useRef(zone);
   const [visible, setVisible] = useState(zone === 'palette');
   const [closing, setClosing] = useState(false);
+  const [openId, setOpenId] = useState(0);
 
   useEffect(() => {
     const was = prevZone.current;
@@ -20,6 +21,7 @@ export function CommandHUD(): React.JSX.Element | null {
     if (zone === 'palette') {
       setVisible(true);
       setClosing(false);
+      setOpenId((n) => n + 1);
       return;
     }
     if (was !== 'palette') return;
@@ -42,14 +44,15 @@ export function CommandHUD(): React.JSX.Element | null {
 
   return (
     <div
-      className={closing ? 'command-hud command-hud--closing' : 'command-hud'}
+      className={closing ? 'command-hud command-hud--closing' : 'command-hud command-hud--open'}
       role="dialog"
       aria-label="Komut paleti"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) void registry.run('palette.close');
       }}
     >
-      <div className="command-hud__panel holo-scan">
+      <span className="command-hud__flash" aria-hidden="true" />
+      <div key={openId} className="command-hud__panel holo-scan">
         <span className="command-hud__sweep" aria-hidden="true" />
         <span className="command-hud__corner command-hud__corner--tl" aria-hidden="true" />
         <span className="command-hud__corner command-hud__corner--tr" aria-hidden="true" />

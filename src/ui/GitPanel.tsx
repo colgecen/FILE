@@ -68,21 +68,21 @@ export function GitPanel(): React.JSX.Element | null {
   }
 
   return (
-    <div className="git-panel" role="complementary" aria-label="Git">
-      <div className="git-panel__header">
-        <span className="git-panel__branch" title={state.branch ?? 'Dal yok'}>
+    <div className="git-panel holo-panel" role="complementary" aria-label="Git">
+      <div className="git-panel__header holo-panel__header">
+        <span className="git-panel__branch holo-panel__title" title={state.branch ?? 'Dal yok'}>
           {state.branch ? `⑂ ${state.branch}${state.dirty ? ' • değişik' : ''}` : 'Git deposu değil'}
         </span>
-        <button type="button" className="git-panel__btn" onClick={refresh} title="Yenile">
+        <button type="button" className="git-panel__btn holo-btn" onClick={refresh} title="Yenile">
           Yenile
         </button>
       </div>
 
       {state.loading && <div className="git-panel__loading">Yükleniyor…</div>}
-      {state.error !== null && <div className="git-panel__error">{state.error}</div>}
+      {state.error !== null && <div className="git-panel__error holo-error">{state.error}</div>}
 
       <div className="git-panel__section">
-        <div className="git-panel__title">Değişiklikler ({unstaged.length})</div>
+        <div className="git-panel__title holo-label">Değişiklikler ({unstaged.length})</div>
         <div ref={listRef} className="git-panel__list" role="list">
           {unstaged.length === 0 ? (
             <div className="git-panel__empty">Değişiklik yok</div>
@@ -121,7 +121,7 @@ export function GitPanel(): React.JSX.Element | null {
       </div>
 
       <div className="git-panel__section">
-        <div className="git-panel__title">Hazırlanan ({stagedList.length})</div>
+        <div className="git-panel__title holo-label">Hazırlanan ({stagedList.length})</div>
         <div className="git-panel__list" role="list">
           {stagedList.length === 0 ? (
             <div className="git-panel__empty">Hazırlanan yok</div>
@@ -156,7 +156,7 @@ export function GitPanel(): React.JSX.Element | null {
       </div>
 
       <div className="git-panel__section">
-        <div className="git-panel__title">Log</div>
+        <div className="git-panel__title holo-label">Log</div>
         <div className="git-panel__log" role="list">
           {state.log.length === 0 ? (
             <div className="git-panel__empty">Log yok</div>
@@ -173,20 +173,20 @@ export function GitPanel(): React.JSX.Element | null {
 
       <div className="git-panel__commit">
         <textarea
-          className="git-panel__input"
+          className="git-panel__input holo-input"
           placeholder="Commit mesajı"
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           rows={3}
         />
         <div className="git-panel__actions">
-          <button type="button" className="git-panel__btn git-panel__btn--primary" onClick={() => void doCommit()}>
+          <button type="button" className="git-panel__btn holo-btn holo-btn--primary" onClick={() => void doCommit()}>
             Commit
           </button>
-          <button type="button" className="git-panel__btn" onClick={() => void doPush()}>
+          <button type="button" className="git-panel__btn holo-btn" onClick={() => void doPush()}>
             Push
           </button>
-          <button type="button" className="git-panel__btn" onClick={() => void doPull()}>
+          <button type="button" className="git-panel__btn holo-btn" onClick={() => void doPull()}>
             Pull
           </button>
         </div>

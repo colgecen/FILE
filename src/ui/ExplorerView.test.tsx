@@ -37,6 +37,11 @@ const TREE: readonly FileNode[] = [
   ]),
 ];
 
+// Gerçek uygulamada kök okunur, alt klasörler tembeldir (children boş).
+const LAZY_TREE: readonly FileNode[] = [
+  folder('/proje', 'proje', [folder('/proje/bos', 'bos', [])]),
+];
+
 describe('ExplorerView', () => {
   afterEach(() => {
     act(() => {
@@ -307,6 +312,23 @@ describe('ExplorerView', () => {
       fireEvent.click(screen.getByText('src', { selector: '.explorer-row__name' }));
     });
     expect(explorerModel.getState().expanded.has('/proje/src')).toBe(false);
+  });
+
+  it('tek tık tembel klasörü okuyup ilk seferde açar', async () => {
+    vi.mocked(window.api.readDir).mockResolvedValue([
+      { name: 'ic.ts', path: '/proje/bos/ic.ts', kind: 'file' },
+    ]);
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(LAZY_TREE, '/proje');
+    });
+    expect(explorerModel.getState().expanded.has('/proje/bos')).toBe(false);
+    await act(async () => {
+      fireEvent.click(screen.getByText('bos', { selector: '.explorer-row__name' }));
+    });
+    expect(explorerModel.getState().expanded.has('/proje/bos')).toBe(true);
+    expect(screen.getByText('ic.ts', { selector: '.explorer-row__name' })).toBeInTheDocument();
   });
 });
 

@@ -87,8 +87,8 @@ export function HelpOverlay(): React.JSX.Element | null {
 
   return (
     <div className="help-overlay" role="dialog" aria-label="Yardım">
-      <div className="help-overlay__panel">
-        <div className="help-overlay__title">
+      <div className="help-overlay__panel holo-panel">
+        <div className="help-overlay__title holo-panel__title">
           {screen === 'welcome' && 'Karşılama'}
           {screen === 'shortcuts' && 'Klavye Kısayolları'}
           {screen === 'about' && 'Hakkında'}
@@ -108,7 +108,7 @@ export function HelpOverlay(): React.JSX.Element | null {
           <ShortcutList />
         )}
         <div className="help-overlay__footer">
-          <button type="button" className="help-overlay__close" onClick={() => helpModel.close()}>
+          <button type="button" className="help-overlay__close holo-btn holo-btn--primary" onClick={() => helpModel.close()}>
             Kapat
           </button>
         </div>

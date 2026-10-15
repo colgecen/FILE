@@ -1,11 +1,10 @@
-import { perfModel, usePerfState } from '../core/perfModel';
-import { focusManager } from '../core/focus';
+import { perfModel, perfPanelModel, usePerfState } from '../core/perfModel';
 
 export function PerfSettings(): React.JSX.Element {
   const perf = usePerfState();
   return (
-    <div className="perf-panel" role="region" aria-label="Performans ayarları">
-      <div className="perf-panel__header">PERFORMANS</div>
+    <div className="perf-panel holo-panel" role="region" aria-label="Performans ayarları">
+      <div className="perf-panel__header holo-label">PERFORMANS</div>
       <label className="perf-panel__row">
         <input
           type="checkbox"
@@ -49,7 +48,7 @@ export function PerfSettings(): React.JSX.Element {
         />
         <span>Animasyon azalt</span>
       </label>
-      <button type="button" className="perf-panel__close" onClick={() => focusManager.set('editor')}>
+      <button type="button" className="perf-panel__close holo-btn" onClick={() => perfPanelModel.closePanel()}>
         Kapat
       </button>
     </div>

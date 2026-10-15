@@ -266,9 +266,21 @@ describe('ExplorerModel klasör eylemi', () => {
   it('toggleFolder boş klasörü okumadan genişletir', async () => {
     const model = new ExplorerModel();
     model.settle([folder('/bos', 'bos', [])], '/');
-    model.toggleExpanded('/bos');
     expect(model.getState().expanded.has('/bos')).toBe(false);
     await model.toggleFolder('/bos');
     expect(model.getState().expanded.has('/bos')).toBe(true);
+  });
+
+  it('tembel klasör ilk toggleFolder çağrısında okunup tek seferde açılır', async () => {
+    const model = new ExplorerModel();
+    model.settle([folder('/proje', 'proje', [folder('/proje/bos', 'bos', [])])], '/proje');
+    expect(model.getState().expanded.has('/proje/bos')).toBe(false);
+    const readDir = vi.fn(async (): Promise<DirEntry[]> => [
+      { name: 'ic.ts', path: '/proje/bos/ic.ts', kind: 'file' },
+    ]);
+    await model.toggleFolder('/proje/bos', readDir);
+    expect(readDir).toHaveBeenCalledWith('/proje/bos');
+    expect(model.getState().expanded.has('/proje/bos')).toBe(true);
+    expect(model.rows().map((row) => row.name)).toContain('ic.ts');
   });
 });
