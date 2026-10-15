@@ -219,4 +219,24 @@ describe('palet klavye akışı', () => {
     expect(explorerModel.getState().isOpen).toBe(true);
     expect(screen.getByRole('region', { name: 'Dosya gezgini' })).toBeInTheDocument();
   });
+
+  it('ctrl+p paleti açar ve ilk sonuç seçilidir', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'p', ctrlKey: true });
+    expect(focusManager.get()).toBe('palette');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    const items = document.querySelectorAll('.command-hud__item');
+    expect(items.length).toBeGreaterThan(0);
+    expect(items[0]!.className).toContain('command-hud__item--active');
+  });
+
+  it('zemine tıklama paleti kapatır', () => {
+    render(<AppShell />);
+    fireEvent.keyDown(window, { key: 'p', ctrlKey: true });
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    const backdrop = document.querySelector('.command-hud')!;
+    fireEvent.mouseDown(backdrop);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(focusManager.get()).toBe('editor');
+  });
 });

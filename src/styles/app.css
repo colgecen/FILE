@@ -668,35 +668,117 @@ body,
   align-items: flex-start;
   justify-content: center;
   padding-top: 12vh;
-  background: rgba(0, 0, 0, 0.75);
+  background: radial-gradient(circle at 50% 30%, rgba(0, 40, 52, 0.55), rgba(0, 0, 0, 0.78));
 }
 
 .command-hud__panel {
-  width: min(560px, 90vw);
-  border: 1px solid var(--border);
-  border-radius: 0;
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  position: relative;
+  width: min(640px, 92vw);
+  background: linear-gradient(160deg, rgba(0, 30, 40, 0.82), rgba(0, 12, 18, 0.92));
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border: 1px solid var(--border-dim);
   box-shadow:
-    0 0 0 1px rgba(124, 77, 255, 0.25),
-    0 6px 24px rgba(0, 0, 0, 0.7),
-    var(--glow-soft);
-  animation: holo-fade-in 180ms ease-out;
+    0 0 40px rgba(0, 210, 255, 0.25),
+    0 0 120px rgba(0, 229, 255, 0.12),
+    inset 0 0 60px rgba(0, 229, 255, 0.05);
+  clip-path: polygon(24px 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%, 0 24px);
+  transform: scale(0.001, 0.004);
+  filter: brightness(10) blur(4px);
+  animation: crt-on 0.34s cubic-bezier(0.22, 0.9, 0.26, 1) forwards;
+  will-change: transform, filter;
+}
+
+@keyframes crt-on {
+  0% {
+    transform: scale(0.001, 0.004);
+    filter: brightness(12) blur(6px);
+  }
+  30% {
+    transform: scale(1, 0.008);
+    filter: brightness(8) blur(3px);
+  }
+  55% {
+    transform: scale(1, 0.55);
+    filter: brightness(3) blur(1px);
+  }
+  75% {
+    transform: scale(1, 1.04);
+    filter: brightness(1.8);
+  }
+  88% {
+    transform: scale(1, 0.985);
+    filter: brightness(0.9);
+  }
+  100% {
+    transform: scale(1, 1);
+    filter: brightness(1) blur(0);
+  }
+}
+
+.command-hud__corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--holo-cyan);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.command-hud__corner--tl {
+  top: 6px;
+  left: 6px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.command-hud__corner--tr {
+  top: 6px;
+  right: 6px;
+  border-left: 0;
+  border-bottom: 0;
+}
+
+.command-hud__corner--bl {
+  bottom: 6px;
+  left: 6px;
+  border-right: 0;
+  border-top: 0;
+}
+
+.command-hud__corner--br {
+  bottom: 6px;
+  right: 6px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.command-hud__inputbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.command-hud__prompt {
+  color: var(--holo-cyan);
+  font-size: 15px;
+  text-shadow: 0 0 10px var(--holo-cyan);
 }
 
 .command-hud__input {
-  width: 100%;
+  flex: 1;
   box-sizing: border-box;
-  padding: 12px 16px;
   border: none;
-  border-bottom: 1px solid var(--border);
   background: transparent;
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 15px;
+  letter-spacing: 1px;
   border-radius: 0;
   outline: none;
+  text-shadow: 0 0 6px rgba(0, 229, 255, 0.35);
 }
 
 .command-hud__input::placeholder {

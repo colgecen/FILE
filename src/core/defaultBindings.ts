@@ -21,6 +21,7 @@ const SEEDS: readonly BindingSeed[] = [
 
   // Komut paleti
   { commandId: 'palette.toggle', keys: ['Control+i'], label: 'Komut paletini aç/kapat' },
+  { commandId: 'palette.toggle', keys: ['Control+p'], label: 'Komut paletini aç/kapat' },
   { commandId: 'palette.confirm', keys: ['Enter'], label: 'Seçimi çalıştır', zone: 'palette' },
   { commandId: 'palette.up', keys: ['ArrowUp'], label: 'Sonuç: yukarı', zone: 'palette' },
   { commandId: 'palette.down', keys: ['ArrowDown'], label: 'Sonuç: aşağı', zone: 'palette' },

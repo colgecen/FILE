@@ -47,4 +47,10 @@ describe('registerDefaultBindings dosya ve terminal', () => {
     const keymap = createKeymap();
     expect(keymap.resolve(['Control+g'])?.commandId).toBe('view.sidebar.source');
   });
+
+  it('komut paleti ctrl+i ve ctrl+p ile açılır', () => {
+    const keymap = createKeymap();
+    expect(keymap.resolve(['Control+i'])?.commandId).toBe('palette.toggle');
+    expect(keymap.resolve(['Control+p'])?.commandId).toBe('palette.toggle');
+  });
 });
