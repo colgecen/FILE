@@ -118,6 +118,9 @@ export const menuTree: readonly MenuTopLevel[] = [
       command('view.zen', 'Zen Modu'),
       command('view.wordwrap', 'Kelime Sarmalama'),
       command('view.clock.toggle', 'Saat Göster/Gizle'),
+      separator('sep-view-perf'),
+      command('perf.fast.toggle', 'Hızlı Mod'),
+      command('perf.settings', 'Performans Ayarları'),
     ],
   },
   {
@@ -191,6 +194,7 @@ export const menuTree: readonly MenuTopLevel[] = [
       command('ai.explain', 'Kodu Açıkla'),
       separator('sep-ai-models'),
       command('ai.model.select', 'Model Seç'),
+      command('ai.models.refresh', 'Modelleri Yenile'),
       command('ai.model.status', 'Model Durumu'),
       command('ai.models.download', 'Model İndir'),
       command('ai.prefs', 'Yapay Zekâ Tercihleri'),

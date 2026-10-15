@@ -4,6 +4,7 @@ import type { ChatMessage } from './types';
 // Davranış Cherry Studio'dan ilhamlıdır; kod bu projeye özel sıfırdan yazıldı.
 
 export type ProviderId =
+  | 'builtin'
   | 'openai'
   | 'deepseek'
   | 'groq'
@@ -26,6 +27,14 @@ export type ProviderDef = {
 };
 
 export const PROVIDERS: readonly ProviderDef[] = [
+  {
+    id: 'builtin',
+    name: 'Yerleşik (cihaz içi)',
+    defaultBaseUrl: '',
+    keyEnv: null,
+    source: 'local',
+    defaultModels: ['Qwen/Qwen2.5-0.5B-Instruct', 'Qwen/Qwen2.5-1.5B-Instruct'],
+  },
   {
     id: 'openai',
     name: 'OpenAI',

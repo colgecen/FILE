@@ -3,6 +3,7 @@ import { aiEngine } from './engine';
 import { aiChatModel } from '../core/chatModel';
 import { focusManager } from '../core/focus';
 import { DEFAULT_MODEL } from './models';
+import { modelCatalog } from './catalog';
 import { registerAICommands } from './aiCommands';
 import type { CommandDef, CommandResult } from '../core/types';
 
@@ -24,6 +25,7 @@ function resetAI(): void {
   aiChatModel.reset();
   aiEngine.cancel();
   aiEngine.resetChat();
+  modelCatalog.reset();
   localStorage.clear();
 }
 
@@ -146,6 +148,68 @@ describe('aiCommands — model seçimi ve durum', () => {
     expect(result.ok).toBe(true);
     const messages = aiEngine.getState().chat.messages;
     expect(messages.some((message) => message.content.includes('Model: Qwen2.5 0.5B'))).toBe(true);
+  });
+});
+
+describe('aiCommands — birleşik katalog', () => {
+  let registry: ReturnType<typeof buildRegistry>;
+  let ensureSpy: MockInstance<typeof aiEngine.ensureModel>;
+  let generateSpy: MockInstance<typeof aiEngine.generate>;
+
+  beforeEach(() => {
+    registry = buildRegistry();
+    resetAI();
+    ensureSpy = vi.spyOn(aiEngine, 'ensureModel').mockResolvedValue(undefined);
+    generateSpy = vi.spyOn(aiEngine, 'generate').mockResolvedValue('Selam!');
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    resetAI();
+  });
+
+  it('ai.model.select yerleşik modelleri palete dizer', async () => {
+    modelCatalog.setScanned([
+      { id: 'llama3', name: 'llama3', provider: 'ollama', source: 'ollama' },
+    ]);
+    await registry.run('ai.model.select');
+    const { paletteModel } = await import('../core/palette');
+    const ids = paletteModel.getState().items.map((item) => item.modelId);
+    expect(ids).toContain('Qwen/Qwen2.5-0.5B-Instruct');
+    expect(ids).toContain('llama3');
+    focusManager.returnToPrevious();
+  });
+
+  it('uzak model seçimi kasaya yazılır, worker başlatılmaz', async () => {
+    const { selectModel } = await import('./aiCommands');
+    selectModel({ id: 'llama3', name: 'llama3', provider: 'ollama', source: 'ollama' });
+    expect(ensureSpy).not.toHaveBeenCalled();
+    expect(localStorage.getItem('ai.activeRef')).toBe(
+      JSON.stringify({ id: 'llama3', provider: 'ollama' }),
+    );
+    expect(
+      aiEngine.getState().chat.messages.some((message) => message.content.includes('llama3')),
+    ).toBe(true);
+  });
+
+  it('uzak modelde gönderim worker yerine bilgi verir', async () => {
+    const { selectModel } = await import('./aiCommands');
+    selectModel({ id: 'llama3', name: 'llama3', provider: 'ollama', source: 'ollama' });
+    aiChatModel.setDraft('selam');
+    const result = await registry.run('ai.chat.send');
+    expect(result.ok).toBe(true);
+    expect(ensureSpy).not.toHaveBeenCalled();
+    expect(generateSpy).not.toHaveBeenCalled();
+    expect(
+      aiEngine.getState().chat.messages.some((message) => message.content.includes('F8')),
+    ).toBe(true);
+  });
+
+  it('ai.models.refresh tarar, yerleşikler korunur', async () => {
+    vi.mocked(window.api.aiPing).mockResolvedValue({ ok: false, error: 'kapalı' });
+    const result = await registry.run('ai.models.refresh');
+    expect(result.ok).toBe(true);
+    expect(modelCatalog.all().some((entry) => entry.provider === 'builtin')).toBe(true);
   });
 });
 

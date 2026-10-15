@@ -69,6 +69,8 @@ const SEEDS: readonly CommandSeed[] = [
   { id: 'view.zen', title: 'Zen Modu', category: 'view' },
   { id: 'view.wordwrap', title: 'Kelime Sarmalama', category: 'view' },
   { id: 'view.clock.toggle', title: 'Saat Göster/Gizle', category: 'view', aliases: ['saat', 'clock'] },
+  { id: 'perf.fast.toggle', title: 'Hızlı Mod', category: 'view' },
+  { id: 'perf.settings', title: 'Performans Ayarları', category: 'view' },
   { id: 'view.layout.single', title: 'Tek Pencere', category: 'view' },
   { id: 'view.split.vertical', title: 'Dikey Böl', category: 'view' },
   { id: 'view.split.horizontal', title: 'Yatay Böl', category: 'view' },
@@ -119,6 +121,7 @@ const SEEDS: readonly CommandSeed[] = [
   { id: 'ai.explain', title: 'Kodu Açıkla', category: 'ai' },
   { id: 'ai.model.select', title: 'Model Seç', category: 'ai' },
   { id: 'ai.model.status', title: 'Model Durumu', category: 'ai' },
+  { id: 'ai.models.refresh', title: 'Modelleri Yenile', category: 'ai' },
   { id: 'ai.prefs', title: 'Yapay Zekâ Tercihleri', category: 'ai' },
   { id: 'ai.models.download', title: 'Model İndir', category: 'ai' },
 

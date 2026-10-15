@@ -152,7 +152,15 @@ export function registerNavCommands(registry: CommandRegistry): void {
       }
       if (item.modelId !== undefined) {
         const { selectModel } = await import('../ai/aiCommands');
-        selectModel(item.modelId as Parameters<typeof selectModel>[0]);
+        const { modelCatalog } = await import('../ai/catalog');
+        const { isModelId } = await import('../ai/modelStore');
+        const ref =
+          modelCatalog.findById(item.modelId) ??
+          (isModelId(item.modelId)
+            ? { id: item.modelId, name: item.modelId, provider: 'builtin' as const, source: 'builtin' as const }
+            : undefined);
+        if (ref === undefined) return { ok: false, error: 'Model bulunamadı' };
+        selectModel(ref);
         return { ok: true };
       }
       await registry.run(item.commandId);

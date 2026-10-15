@@ -6,7 +6,11 @@ import { paletteModel } from '../core/palette';
 import { buildPrompt } from './prompt';
 import { statusLabel } from './format';
 import { MODEL_LIST, modelName } from './models';
-import { loadActiveModel, saveActiveModel } from './modelStore';
+import { isModelId, loadActiveModel, loadActiveRef, refFromModel, saveActiveModel, saveActiveRef } from './modelStore';
+import { displayName } from './providers';
+import type { ModelRef } from './providers';
+import { modelCatalog } from './catalog';
+import { scanLocalModels } from './localScan';
 import type { CommandDef } from '../core/types';
 import type { ModelId } from './types';
 
@@ -25,9 +29,16 @@ function editorSourceText(): string | null {
 }
 
 async function runAssistant(instruction: string): Promise<void> {
-  const modelId = aiEngine.getState().modelId ?? loadActiveModel();
+  const ref = loadActiveRef();
   aiEngine.appendUserMessage(instruction);
   aiChatModel.open();
+  if (ref.provider !== 'builtin' || !isModelId(ref.id)) {
+    aiEngine.appendSystemMessage(
+      'Uzak model sohbete F8 fazında bağlanacak; şimdilik yerleşik model seçin.',
+    );
+    return;
+  }
+  const modelId: ModelId = ref.id;
   try {
     await aiEngine.ensureModel(modelId);
   } catch (error) {
@@ -52,12 +63,20 @@ export async function setActiveModel(modelId: ModelId): Promise<boolean> {
     return false;
   }
   saveActiveModel(modelId);
+  saveActiveRef({ id: modelId, provider: 'builtin' });
   aiEngine.appendSystemMessage(`Model: ${modelName(modelId)} (${statusLabel('idle')})`);
   return true;
 }
 
-export function selectModel(modelId: ModelId): void {
-  void setActiveModel(modelId);
+export function selectModel(ref: ModelRef): void {
+  if (ref.provider === 'builtin' && isModelId(ref.id)) {
+    void setActiveModel(ref.id);
+    return;
+  }
+  saveActiveRef(refFromModel(ref));
+  aiEngine.appendSystemMessage(
+    `Model: ${displayName(ref)} — uzak sohbet F8 fazında bağlanacak.`,
+  );
 }
 
 export function registerAICommands(register: (command: CommandDef) => void): void {
@@ -93,8 +112,26 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
     category: 'ai',
     title: 'Model Seç',
     run: () => {
-      paletteModel.showModels(MODEL_LIST);
+      paletteModel.showModels(modelCatalog.all());
       focusManager.set('palette');
+      return { ok: true };
+    },
+  });
+
+  register({
+    id: 'ai.models.refresh',
+    category: 'ai',
+    title: 'Modelleri Yenile',
+    run: async () => {
+      const result = await scanLocalModels(window.api);
+      modelCatalog.setScanned(result.models);
+      const failed = result.probed.filter((probe) => !probe.ok);
+      aiEngine.appendSystemMessage(
+        failed.length === 0
+          ? `${result.models.length} yerel model bulundu.`
+          : `${result.models.length} model bulundu; ${failed.length} kaynak yanıt vermiyor.`,
+      );
+      aiChatModel.open();
       return { ok: true };
     },
   });
@@ -104,12 +141,13 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
     category: 'ai',
     title: 'Model Durumu',
     run: () => {
+      const ref = loadActiveRef();
       const state = aiEngine.getState();
-      const model = state.modelId === null ? null : modelName(state.modelId);
+      const found = modelCatalog.find(ref.provider, ref.id);
       aiEngine.appendSystemMessage(
-        model === null
-          ? 'Model seçilmedi. "Yapay Zekâ → Model Seç" ile başlayın.'
-          : `Model: ${model} — ${statusLabel(state.status)}`,
+        found === undefined
+          ? `Model: ${ref.id} — katalogda yok, listeyi yenileyin.`
+          : `Model: ${displayName(found)} — ${statusLabel(state.status)}`,
       );
       aiChatModel.open();
       return { ok: true };

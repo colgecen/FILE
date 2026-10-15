@@ -36,16 +36,28 @@ function baseOf(provider: LocalProviderId, bases: LocalBases | undefined): strin
   return def.length > 0 ? def : DEFAULT_BASES[provider];
 }
 
+/** IPC mock'u eksik ya da çökmüşse tarama ölmesin, prob başarısız saysın. */
+async function safeCall<T>(call: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    const result = await call();
+    return result ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 async function probeOllama(api: ScanApi, origin: string): Promise<ProbeReport> {
-  const ping = await api
-    .aiPing(origin)
-    .catch((): AiPingResult => ({ ok: false, error: 'Ulaşılamadı' }));
+  const ping = await safeCall(
+    () => api.aiPing(origin),
+    { ok: false, error: 'API yok' } satisfies AiPingResult,
+  );
   if (!ping.ok) {
     return { provider: 'ollama', ok: false, models: [], error: 'Ollama yanıt vermiyor' };
   }
-  const tags = await api
-    .aiOllamaTags(origin)
-    .catch((): AiOllamaTagsResult => ({ ok: false, models: [], error: 'Ulaşılamadı' }));
+  const tags = await safeCall(
+    () => api.aiOllamaTags(origin),
+    { ok: false, models: [], error: 'API yok' } satisfies AiOllamaTagsResult,
+  );
   if (!tags.ok) {
     return { provider: 'ollama', ok: false, models: [], error: tags.error ?? 'Liste okunamadı' };
   }
@@ -67,15 +79,17 @@ async function probeOpenAICompat(
   baseUrl: string,
   label: string,
 ): Promise<ProbeReport> {
-  const ping = await api
-    .aiPing(baseUrl)
-    .catch((): AiPingResult => ({ ok: false, error: 'Ulaşılamadı' }));
+  const ping = await safeCall(
+    () => api.aiPing(baseUrl),
+    { ok: false, error: 'API yok' } satisfies AiPingResult,
+  );
   if (!ping.ok) {
     return { provider, ok: false, models: [], error: `${label} yanıt vermiyor` };
   }
-  const listed = await api
-    .aiModels(baseUrl, null)
-    .catch((): AiModelsResult => ({ ok: false, models: [], error: 'Ulaşılamadı' }));
+  const listed = await safeCall(
+    () => api.aiModels(baseUrl, null),
+    { ok: false, models: [], error: 'API yok' } satisfies AiModelsResult,
+  );
   if (!listed.ok) {
     return { provider, ok: false, models: [], error: listed.error ?? 'Liste okunamadı' };
   }
