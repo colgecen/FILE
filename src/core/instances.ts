@@ -20,6 +20,7 @@ import { registerMenuCommands } from './menuCommands';
 import { registerNavCommands } from './navCommands';
 import { registerTabCommands } from './tabCommands';
 import { registerEditCommands } from '../editor/editorCommands';
+import { registerEnvCommands } from './envCommands';
 import { registerPaneCommands } from './paneCommands';
 
 export type Core = {
@@ -41,6 +42,7 @@ export function createCore(): Core {
     },
   });
   registerMenuCommands(registry);
+  registerEnvCommands(registry);
   registerNavCommands(registry);
   registerFocusCommands(registry);
   registerExitCommands(registry);

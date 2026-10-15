@@ -4,6 +4,7 @@ import { useExplorerState, explorerModel } from '../core/explorer';
 import { focusManager } from '../core/focus';
 import { gitModel, useGitPanelState } from '../core/gitModel';
 import { useCore } from '../layout/AppShell';
+import { EnvironmentsBar } from './EnvironmentsBar';
 import { ModulesPanel } from './ModulesPanel';
 import { ChevronDownIcon, ChevronRightIcon, FileLogo, FolderIcon } from './icons';
 
@@ -43,6 +44,7 @@ export function ExplorerView(): React.JSX.Element | null {
 
   return (
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
+      <EnvironmentsBar />
       <header className="explorer-view__header">Sekmeler & Projeler</header>
       <div className="explorer-view__body" role="listbox" aria-label="Dosya listesi">
         {state.loading && (

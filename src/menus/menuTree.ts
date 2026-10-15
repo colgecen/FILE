@@ -100,6 +100,12 @@ export const menuTree: readonly MenuTopLevel[] = [
       command('view.sidebar.search', 'Arama Paneli'),
       command('view.sidebar.source', 'Kaynak Kontrolü'),
       command('view.sidebar.run', 'Çalıştır Paneli'),
+      submenu('view.sidebar.environments', 'Ortamlar', [
+        command('env.add', 'Ortam Ekle'),
+        command('env.next', 'Sonraki Ortam'),
+        command('env.prev', 'Önceki Ortam'),
+        command('env.remove', 'Ortamı Kapat'),
+      ]),
       separator('sep-view-layout'),
       command('view.layout.single', 'Tek Pencere'),
       command('view.split.vertical', 'Dikey Böl'),

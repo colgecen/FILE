@@ -1,0 +1,100 @@
+import { useEffect, useState } from 'react';
+import type { OpenFile } from './types';
+
+export type EnvironmentTabs = {
+  readonly files: readonly OpenFile[];
+  readonly activeId: string | null;
+};
+
+export type Environment = {
+  readonly id: string;
+  readonly name: string;
+  readonly rootPath: string;
+  readonly tabs: EnvironmentTabs;
+};
+
+export type EnvironmentsState = {
+  readonly environments: readonly Environment[];
+  readonly activeId: string | null;
+};
+
+const EMPTY_TABS: EnvironmentTabs = { files: [], activeId: null };
+
+export class EnvironmentsModel {
+  private state: EnvironmentsState = { environments: [], activeId: null };
+  private readonly listeners = new Set<() => void>();
+
+  getState(): EnvironmentsState {
+    return this.state;
+  }
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  active(): Environment | null {
+    return this.state.environments.find((env) => env.id === this.state.activeId) ?? null;
+  }
+
+  add(rootPath: string, name: string): string {
+    const existing = this.state.environments.find((env) => env.rootPath === rootPath);
+    if (existing !== undefined) {
+      this.state = { ...this.state, activeId: existing.id };
+      this.emit();
+      return existing.id;
+    }
+    const env: Environment = { id: rootPath, name, rootPath, tabs: EMPTY_TABS };
+    this.state = { environments: [...this.state.environments, env], activeId: env.id };
+    this.emit();
+    return env.id;
+  }
+
+  setActive(id: string): boolean {
+    const exists = this.state.environments.some((env) => env.id === id);
+    if (!exists || this.state.activeId === id) return exists;
+    this.state = { ...this.state, activeId: id };
+    this.emit();
+    return true;
+  }
+
+  storeTabs(id: string, tabs: EnvironmentTabs): void {
+    const environments = this.state.environments.map((env) =>
+      env.id === id ? { ...env, tabs } : env,
+    );
+    this.state = { ...this.state, environments };
+    this.emit();
+  }
+
+  remove(id: string): Environment | null {
+    const removed = this.state.environments.find((env) => env.id === id) ?? null;
+    if (removed === null) return null;
+    const environments = this.state.environments.filter((env) => env.id !== id);
+    let activeId = this.state.activeId;
+    if (activeId === id) {
+      activeId = environments.length === 0 ? null : environments[environments.length - 1]!.id;
+    }
+    this.state = { environments, activeId };
+    this.emit();
+    return removed;
+  }
+
+  reset(): void {
+    this.state = { environments: [], activeId: null };
+    this.emit();
+  }
+
+  private emit(): void {
+    this.listeners.forEach((listener) => listener());
+  }
+}
+
+export const environmentsModel = new EnvironmentsModel();
+
+export function useEnvironmentsState(): EnvironmentsState {
+  const [state, setState] = useState<EnvironmentsState>(() => environmentsModel.getState());
+  useEffect(() => environmentsModel.subscribe(() => setState(environmentsModel.getState())), []);
+  return state;
+}

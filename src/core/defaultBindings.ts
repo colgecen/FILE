@@ -41,6 +41,10 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'tab.next', keys: ['Control+Tab'], label: 'Sonraki sekme' },
   { commandId: 'tab.prev', keys: ['Control+Shift+Tab'], label: 'Önceki sekme' },
 
+  // Ortamlar
+  { commandId: 'env.next', keys: ['Control+Alt+ArrowRight'], label: 'Sonraki ortam' },
+  { commandId: 'env.prev', keys: ['Control+Alt+ArrowLeft'], label: 'Önceki ortam' },
+
   // Çoklu imleç
   { commandId: 'cursor.up', keys: ['Control+Alt+ArrowUp'], label: 'İmleci yukarı ekle', zone: 'editor' },
   { commandId: 'cursor.down', keys: ['Control+Alt+ArrowDown'], label: 'İmleci aşağı ekle', zone: 'editor' },
