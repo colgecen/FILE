@@ -49,6 +49,9 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'terminal.new', keys: ['Control+"'], label: 'Terminal aç (Ctrl+")' },
   { commandId: 'terminal.new', keys: ['Control+Shift+"'], label: 'Terminal aç (Ctrl+")' },
 
+  // Git paneli
+  { commandId: 'view.sidebar.source', keys: ['Control+g'], label: 'Git paneli aç/kapat' },
+
   // Ortamlar
   { commandId: 'env.next', keys: ['Control+Alt+ArrowRight'], label: 'Sonraki ortam' },
   { commandId: 'env.prev', keys: ['Control+Alt+ArrowLeft'], label: 'Önceki ortam' },

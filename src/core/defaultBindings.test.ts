@@ -42,4 +42,9 @@ describe('registerDefaultBindings dosya ve terminal', () => {
     expect(keymap.resolve(['Control+"'])?.commandId).toBe('terminal.new');
     expect(keymap.resolve(['Control+Shift+"'])?.commandId).toBe('terminal.new');
   });
+
+  it('git paneli açma genel bağlıdır', () => {
+    const keymap = createKeymap();
+    expect(keymap.resolve(['Control+g'])?.commandId).toBe('view.sidebar.source');
+  });
 });
