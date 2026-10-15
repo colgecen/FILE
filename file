@@ -5,8 +5,8 @@
 # Kullanım:
 #   ./file                      -> etkileşimli menü (OS seç -> format seç -> derle)
 #   ./file --list               -> tüm derleme seçeneklerini listele
-#   ./file linux appimage       -> direkt derle (argümanlı, menüsüz)
-#   ./file --fast linux appimage -> hızlı derle (doğrulama atlanır)
+#   ./file linux appimage       -> hızlı derle (argümanlı, menüsüz)
+#   ./file --tam linux appimage  -> tam derle (doğrulama zincirli)
 #   ./file windows portable
 #   ./file macos dmg
 #   ./file --install            -> ~/.local/bin'e sembolik bağ kur,
@@ -38,11 +38,13 @@ export PATH="$HOME/node/bin:$PATH"
 
 VERSION="$(node -p "require('$ROOT/package.json').version" 2>/dev/null || echo bilinmiyor)"
 
-# Hızlı mod: --fast / -f verilirse doğrulama zinciri atlanır.
-FAST=0
+# Hızlı mod varsayılandır: doğrulama zinciri atlanır.
+# --tam verilirse typecheck + lint + test de çalışır.
+FAST=1
 ARGS=()
 for a in "$@"; do
   case "$a" in
+    --tam) FAST=0 ;;
     --fast|-f) FAST=1 ;;
     *) ARGS+=("$a") ;;
   esac
@@ -63,9 +65,9 @@ usage() {
   banner
   echo
   echo "Kullanım:"
-  echo "  ./file                      Etkileşimli menü"
-  echo "  ./file <os> <format>        Direkt derle"
-  echo "  ./file --fast <os> <format> Hızlı derle (doğrulama atlanır)"
+  echo "  ./file                      Etkileşimli menü (hızlı)"
+  echo "  ./file <os> <format>        Direkt hızlı derle"
+  echo "  ./file --tam <os> <format>  Tam derle (doğrulama zincirli)"
   echo "  ./file --list               Seçenekleri listele"
   echo "  ./file --install            Komutu sisteme kur (her yerden 'file')"
   echo "  ./file --help               Bu yardım"
@@ -77,11 +79,12 @@ usage() {
   echo
   echo "Örnekler:"
   echo "  ./file linux appimage"
-  echo "  ./file --fast linux appimage"
+  echo "  ./file --tam linux appimage"
   echo "  ./file windows portable"
   echo
-  echo "Not: normalde paketleme öncesi typecheck + lint + test + build zinciri"
-  echo "çalışır. --fast ile doğrulama atlanır, sadece build + paketleme yapılır."
+  echo "Not: varsayılan hızlıdır (doğrulama atlanır). --tam ile typecheck"
+  echo "+ lint + test zinciri de çalışır. Çıktı kısa tutulur; hata olursa"
+  echo "tam log ekrana dökülür."
   echo "Windows/macOS paketleri Linux üstünde ek araç isteyebilir (wine vb.)."
 }
 
@@ -121,24 +124,17 @@ verify() {
 
 build_target() {
   local os="$1" fmt="$2"
-  banner
-  if [ "$FAST" = "1" ]; then
-    echo "Hedef: OS=$os  Format=$fmt  Sürüm=$VERSION  Mod=HIZLI"
-  else
-    echo "Hedef: OS=$os  Format=$fmt  Sürüm=$VERSION  Mod=TAM"
-  fi
-  echo
-  verify
-  echo "==> Renderer/main derleniyor..."
-  (cd "$ROOT" && npm run build)
-  echo "==> Paketleniyor (çıktı: dist/)..."
+  local log="/tmp/file-derleme.log"
+  : > "$log"
+  # Önce hedefi doğrula; boşa derleme çalışmasın.
+  local args=()
   case "$os" in
     linux)
       case "$fmt" in
-        appimage) (cd "$ROOT" && npx electron-builder --linux AppImage) ;;
-        deb) (cd "$ROOT" && npx electron-builder --linux deb) ;;
-        rpm) (cd "$ROOT" && npx electron-builder --linux rpm) ;;
-        targz) (cd "$ROOT" && npx electron-builder --linux tar.gz) ;;
+        appimage) args=(--linux AppImage) ;;
+        deb) args=(--linux deb) ;;
+        rpm) args=(--linux rpm) ;;
+        targz) args=(--linux tar.gz) ;;
         *)
           echo "Bilinmeyen linux formatı: $fmt (geçerli: appimage | deb | rpm | targz)"
           exit 1
@@ -147,9 +143,9 @@ build_target() {
       ;;
     windows)
       case "$fmt" in
-        nsis) (cd "$ROOT" && npx electron-builder --win nsis) ;;
-        portable) (cd "$ROOT" && npx electron-builder --win portable) ;;
-        zip) (cd "$ROOT" && npx electron-builder --win zip) ;;
+        nsis) args=(--win nsis) ;;
+        portable) args=(--win portable) ;;
+        zip) args=(--win zip) ;;
         *)
           echo "Bilinmeyen windows formatı: $fmt (geçerli: nsis | portable | zip)"
           exit 1
@@ -158,8 +154,8 @@ build_target() {
       ;;
     macos|darwin)
       case "$fmt" in
-        dmg) (cd "$ROOT" && npx electron-builder --mac dmg) ;;
-        zip) (cd "$ROOT" && npx electron-builder --mac zip) ;;
+        dmg) args=(--mac dmg) ;;
+        zip) args=(--mac zip) ;;
         *)
           echo "Bilinmeyen macos formatı: $fmt (geçerli: dmg | zip)"
           exit 1
@@ -171,8 +167,29 @@ build_target() {
       exit 1
       ;;
   esac
+  banner
+  if [ "$FAST" = "1" ]; then
+    echo "Hedef: OS=$os  Format=$fmt  Sürüm=$VERSION  Mod=HIZLI"
+  else
+    echo "Hedef: OS=$os  Format=$fmt  Sürüm=$VERSION  Mod=TAM"
+  fi
   echo
-  echo "Bitti. Paketler: $ROOT/dist/"
+  verify
+  echo "==> Derleniyor..."
+  local start=$SECONDS
+  if ! (cd "$ROOT" && npm --silent run build) >>"$log" 2>&1; then
+    echo "HATA: derleme başarısız. Tam çıktı:"
+    cat "$log"
+    exit 1
+  fi
+  echo "==> Derlendi ($((SECONDS - start))sn). Paketleniyor..."
+  start=$SECONDS
+  if ! (cd "$ROOT" && npx electron-builder "${args[@]}") >>"$log" 2>&1; then
+    echo "HATA: paketleme başarısız. Son 80 satır:"
+    tail -n 80 "$log"
+    exit 1
+  fi
+  echo "==> Bitti ($((SECONDS - start))sn). Paketler: $ROOT/dist/"
 }
 
 interactive() {
@@ -228,15 +245,6 @@ interactive() {
       done
       ;;
   esac
-
-  if [ "$FAST" = "0" ]; then
-    echo
-    read -r -p "Hızlı derleme (doğrulama atlanır)? [E/h] " fast_choice
-    case "$fast_choice" in
-      [Hh]) FAST=0 ;;
-      *) FAST=1 ;;
-    esac
-  fi
 
   build_target "$OS" "$FMT"
 }
