@@ -3,6 +3,7 @@ import { perfModel } from '../core/perfModel';
 import { useExplorerState, explorerModel } from '../core/explorer';
 import { gitModel, useGitPanelState } from '../core/gitModel';
 import { ModulesPanel } from './ModulesPanel';
+import { ChevronDownIcon, ChevronRightIcon, FolderIcon, fileBadge } from './icons';
 
 function badgeClass(status: string): string {
   if (status === 'M') return 'explorer-row__badge explorer-row__badge--modified';
@@ -51,6 +52,7 @@ export function ExplorerView(): React.JSX.Element | null {
           const className = ['explorer-row', `explorer-row--depth-${row.depth}`]
             .concat(active ? ['explorer-row--active'] : [])
             .join(' ');
+          const badge = row.kind === 'file' ? fileBadge(row.name) : null;
           return (
             <div
               key={row.path}
@@ -59,16 +61,28 @@ export function ExplorerView(): React.JSX.Element | null {
               className={className}
             >
               <span className="explorer-row__state" aria-hidden="true">
-                {row.kind === 'directory' ? (row.expanded ? '▾' : '▸') : ''}
+                {row.kind === 'directory' ? (
+                  row.expanded ? (
+                    <ChevronDownIcon />
+                  ) : (
+                    <ChevronRightIcon />
+                  )
+                ) : null}
               </span>
-              <span
-                className={[
-                  'explorer-row__icon',
-                  row.kind === 'directory' ? 'explorer-row__icon--dir' : 'explorer-row__icon--file',
-                ].join(' ')}
-              >
-                {row.kind === 'directory' ? '▣' : '◦'}
-              </span>
+              {row.kind === 'directory' ? (
+                <span className="explorer-row__icon explorer-row__icon--dir" aria-hidden="true">
+                  <FolderIcon open={row.expanded} />
+                </span>
+              ) : (
+                <span
+                  className={['explorer-row__icon', 'explorer-row__lang', badge?.variant ?? '']
+                    .filter(Boolean)
+                    .join(' ')}
+                  aria-hidden="true"
+                >
+                  {badge?.label}
+                </span>
+              )}
               <span className="explorer-row__name">{row.name}</span>
               {badges.get(row.path) !== undefined && (
                 <span className={badgeClass(badges.get(row.path) as string)} aria-label={`Git durumu ${badges.get(row.path)}`}>

@@ -2,21 +2,12 @@ import { useEffect, useRef } from 'react';
 import { useDirtyPaths } from '../core/dirty';
 import { closeOpenedTab } from '../core/tabCommands';
 import { tabsModel, useTabsState } from '../core/tabs';
-
-function iconForFile(name: string): { label: string; variant: string } {
-  const dot = name.lastIndexOf('.');
-  const ext = dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
-  if (ext === 'ts' || ext === 'tsx') return { label: 'TS', variant: 'tab-bar__icon--accent' };
-  if (ext === 'js' || ext === 'jsx' || ext === 'mjs' || ext === 'cjs')
-    return { label: 'JS', variant: 'tab-bar__icon--warm' };
-  if (ext === 'py') return { label: 'PY', variant: 'tab-bar__icon--warm' };
-  if (ext === 'json') return { label: 'JSON', variant: 'tab-bar__icon--soft' };
-  if (ext === 'css') return { label: 'CSS', variant: 'tab-bar__icon--soft' };
-  if (ext === 'html') return { label: 'HTML', variant: 'tab-bar__icon--soft' };
-  if (ext === 'md' || ext === 'markdown') return { label: 'MD', variant: '' };
-  if (ext.length <= 4 && ext.length > 0) return { label: ext.toUpperCase(), variant: '' };
-  return { label: 'TXT', variant: '' };
-}
+import { runPaneClose, runPaneSplit } from '../core/paneCommands';
+import {
+  SplitHorizontalIcon,
+  SplitVerticalIcon,
+  fileBadge,
+} from './icons';
 
 export function TabBar(): React.JSX.Element {
   const { tabs, activeId } = useTabsState();
@@ -39,14 +30,8 @@ export function TabBar(): React.JSX.Element {
   if (tabs.length === 0) {
     return (
       <div ref={barRef} className="tab-bar" role="tablist" aria-label="Açık sekmeler">
-        <div className="tab-bar__item tab-bar__item--active" role="tab" aria-label="Karşılama">
-          <span className="tab-bar__icon tab-bar__icon--accent" aria-hidden="true">
-            MD
-          </span>
-          <span className="tab-bar__select" title="Karşılama — dosya açın veya görünüme geçin">
-            Karşılama
-          </span>
-        </div>
+        <span className="tab-bar__hint">Açık sekme yok</span>
+        <TabBarActions />
       </div>
     );
   }
@@ -56,7 +41,7 @@ export function TabBar(): React.JSX.Element {
       {tabs.map((tab) => {
         const isDirty = dirty.has(tab.file.path);
         const tooltip = isDirty ? `${tab.file.path} • Kaydedilmedi` : tab.file.path;
-        const icon = iconForFile(tab.file.name);
+        const icon = fileBadge(tab.file.name);
         return (
           <div
             key={tab.id}
@@ -104,6 +89,41 @@ export function TabBar(): React.JSX.Element {
           </div>
         );
       })}
+      <TabBarActions />
+    </div>
+  );
+}
+
+function TabBarActions(): React.JSX.Element {
+  return (
+    <div className="tab-bar__actions" role="toolbar" aria-label="Panel işlemleri">
+      <button
+        type="button"
+        className="tab-bar__action"
+        title="Dikey Böl"
+        aria-label="Dikey Böl"
+        onClick={() => runPaneSplit('vertical')}
+      >
+        <SplitVerticalIcon />
+      </button>
+      <button
+        type="button"
+        className="tab-bar__action"
+        title="Yatay Böl"
+        aria-label="Yatay Böl"
+        onClick={() => runPaneSplit('horizontal')}
+      >
+        <SplitHorizontalIcon />
+      </button>
+      <button
+        type="button"
+        className="tab-bar__action"
+        title="Panel Kapat"
+        aria-label="Panel Kapat"
+        onClick={() => runPaneClose()}
+      >
+        ×
+      </button>
     </div>
   );
 }

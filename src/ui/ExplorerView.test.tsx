@@ -96,12 +96,12 @@ describe('ExplorerView', () => {
       '.explorer-row__icon',
     );
     expect(dirIcon).toHaveClass('explorer-row__icon--dir');
-    expect(fileIcon).toHaveClass('explorer-row__icon--file');
-    expect(dirIcon?.textContent).toBe('▣');
-    expect(fileIcon?.textContent).toBe('◦');
+    expect(dirIcon?.querySelector('svg')).not.toBeNull();
+    expect(fileIcon).toHaveClass('explorer-row__lang');
+    expect(fileIcon?.textContent).toBe('TS');
   });
 
-  it('genişletilmiş klasör aşağı, daraltılmış sağa oku gösterir', () => {
+  it('genişletilmiş ve daraltılmış klasör ok ikonu gösterir', () => {
     render(<AppShell />);
     act(() => {
       explorerModel.open();
@@ -110,14 +110,14 @@ describe('ExplorerView', () => {
     const rootState = screen.getByText('proje').closest('.explorer-row')!.querySelector(
       '.explorer-row__state',
     );
-    expect(rootState?.textContent).toBe('▾');
+    expect(rootState?.querySelector('svg')).not.toBeNull();
     act(() => {
       explorerModel.toggleExpanded('/proje');
     });
     const collapsedState = screen.getByText('proje').closest('.explorer-row')!.querySelector(
       '.explorer-row__state',
     );
-    expect(collapsedState?.textContent).toBe('▸');
+    expect(collapsedState?.querySelector('svg')).not.toBeNull();
   });
 
   it('dosya satırında durum göstergesi boştur', () => {

@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { dirtyTracker } from '../core/dirty';
 import { tabsModel } from '../core/tabs';
+import { panesModel } from '../core/panes';
 import type { OpenFile } from '../core/types';
 import { TabBar } from './TabBar';
 
@@ -85,5 +86,21 @@ describe('TabBar', () => {
     render(<TabBar />);
     expect(document.body.textContent).toContain('TS');
     expect(document.body.textContent).toContain('CSS');
+  });
+
+  it('sekme yokken karşılama sekmesi göstermez', () => {
+    render(<TabBar />);
+    expect(screen.queryByRole('tab')).toBeNull();
+    expect(screen.getByText('Açık sekme yok')).not.toBeNull();
+  });
+
+  it('sağ kutuda panel işlemleri vardır ve dikey böler', () => {
+    panesModel.reset();
+    render(<TabBar />);
+    const toolbar = screen.getByRole('toolbar', { name: 'Panel işlemleri' });
+    expect(toolbar).not.toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Dikey Böl' }));
+    expect(panesModel.getState().layout.direction).toBe('vertical');
+    panesModel.reset();
   });
 });
