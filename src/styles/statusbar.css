@@ -51,11 +51,15 @@
 .status-bar__badge--error {
   border: 1px solid var(--error);
   color: var(--error);
-  background: rgba(255, 82, 82, 0.1);
+  background: transparent;
   padding: 1px 8px;
   cursor: pointer;
   font: inherit;
   letter-spacing: inherit;
+}
+
+.status-bar__version {
+  color: var(--accent-dim);
 }
 
 .status-bar__file {

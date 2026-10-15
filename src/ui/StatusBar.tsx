@@ -63,6 +63,9 @@ export function StatusBar(): React.JSX.Element {
             {errors.length} hata
           </button>
         )}
+        <span className="status-bar__cell status-bar__version" data-testid="status-version">
+          {window.api.version}
+        </span>
       </div>
     </footer>
   );

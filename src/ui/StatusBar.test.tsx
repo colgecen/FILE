@@ -13,4 +13,9 @@ describe('StatusBar', () => {
     expect(bar).toBeInTheDocument();
     expect(bar.className).toContain('status-bar');
   });
+
+  it('sürüm gösterir', () => {
+    render(<AppShell />);
+    expect(screen.getByTestId('status-version')).toHaveTextContent(window.api.version);
+  });
 });
