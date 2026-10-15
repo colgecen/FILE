@@ -27,6 +27,7 @@ export function FolderIcon({ open = false }: { readonly open?: boolean }): React
     return (
       <Svg>
         <path d="M1.5 4.5a1 1 0 0 1 1-1h3l1.2 1.5H13a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V4.5Z" />
+        <path d="M2.5 6h11" opacity={0.6} />
       </Svg>
     );
   }
@@ -80,19 +81,57 @@ export function SplitHorizontalIcon(): React.JSX.Element {
   );
 }
 
-export type FileBadge = { readonly label: string; readonly variant: string };
+type LogoSpec = { readonly bg: string; readonly fg: string; readonly text: string };
 
-export function fileBadge(name: string): FileBadge {
+function logoSpec(name: string): LogoSpec | null {
   const dot = name.lastIndexOf('.');
   const ext = dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
-  if (ext === 'ts' || ext === 'tsx') return { label: 'TS', variant: 'tab-bar__icon--accent' };
+  if (ext === 'ts' || ext === 'tsx') return { bg: '#3178c6', fg: '#ffffff', text: 'TS' };
   if (ext === 'js' || ext === 'jsx' || ext === 'mjs' || ext === 'cjs')
-    return { label: 'JS', variant: 'tab-bar__icon--warm' };
-  if (ext === 'py') return { label: 'PY', variant: 'tab-bar__icon--warm' };
-  if (ext === 'json') return { label: 'JSON', variant: 'tab-bar__icon--soft' };
-  if (ext === 'css') return { label: 'CSS', variant: 'tab-bar__icon--soft' };
-  if (ext === 'html') return { label: 'HTML', variant: 'tab-bar__icon--soft' };
-  if (ext === 'md' || ext === 'markdown') return { label: 'MD', variant: '' };
-  if (ext.length <= 4 && ext.length > 0) return { label: ext.toUpperCase(), variant: '' };
-  return { label: 'TXT', variant: '' };
+    return { bg: '#f7df1e', fg: '#000000', text: 'JS' };
+  if (ext === 'py') return { bg: '#3776ab', fg: '#ffd43b', text: 'Py' };
+  if (ext === 'json') return { bg: '#555555', fg: '#ffffff', text: '{}' };
+  if (ext === 'css') return { bg: '#2965f1', fg: '#ffffff', text: 'CSS' };
+  if (ext === 'html') return { bg: '#e34f26', fg: '#ffffff', text: '5' };
+  if (ext === 'md' || ext === 'markdown') return { bg: '#6b7280', fg: '#ffffff', text: 'Md' };
+  return null;
+}
+
+export function FileLogo({ name }: { readonly name: string }): React.JSX.Element {
+  const dot = name.lastIndexOf('.');
+  const ext = dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
+  const spec = logoSpec(name);
+  if (spec === null) {
+    return (
+      <span className="file-logo file-logo--generic" data-logo={ext === '' ? 'file' : ext}>
+        <FileIcon />
+      </span>
+    );
+  }
+  const size = 15;
+  const fontSize = spec.text.length > 2 ? 5 : 6.5;
+  return (
+    <svg
+      className="file-logo"
+      data-logo={ext}
+      width={size}
+      height={size}
+      viewBox="0 0 15 15"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect x={0.5} y={0.5} width={14} height={14} fill={spec.bg} />
+      <text
+        x={7.5}
+        y={spec.text.length > 2 ? 10.5 : 11}
+        textAnchor="middle"
+        fontFamily="monospace"
+        fontWeight="bold"
+        fontSize={fontSize}
+        fill={spec.fg}
+      >
+        {spec.text}
+      </text>
+    </svg>
+  );
 }

@@ -3,7 +3,7 @@ import { perfModel } from '../core/perfModel';
 import { useExplorerState, explorerModel } from '../core/explorer';
 import { gitModel, useGitPanelState } from '../core/gitModel';
 import { ModulesPanel } from './ModulesPanel';
-import { ChevronDownIcon, ChevronRightIcon, FolderIcon, fileBadge } from './icons';
+import { ChevronDownIcon, ChevronRightIcon, FileLogo, FolderIcon } from './icons';
 
 function badgeClass(status: string): string {
   if (status === 'M') return 'explorer-row__badge explorer-row__badge--modified';
@@ -52,7 +52,6 @@ export function ExplorerView(): React.JSX.Element | null {
           const className = ['explorer-row', `explorer-row--depth-${row.depth}`]
             .concat(active ? ['explorer-row--active'] : [])
             .join(' ');
-          const badge = row.kind === 'file' ? fileBadge(row.name) : null;
           return (
             <div
               key={row.path}
@@ -74,13 +73,8 @@ export function ExplorerView(): React.JSX.Element | null {
                   <FolderIcon open={row.expanded} />
                 </span>
               ) : (
-                <span
-                  className={['explorer-row__icon', 'explorer-row__lang', badge?.variant ?? '']
-                    .filter(Boolean)
-                    .join(' ')}
-                  aria-hidden="true"
-                >
-                  {badge?.label}
+                <span className="explorer-row__icon explorer-row__logo" aria-hidden="true">
+                  <FileLogo name={row.name} />
                 </span>
               )}
               <span className="explorer-row__name">{row.name}</span>

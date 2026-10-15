@@ -92,13 +92,12 @@ describe('ExplorerView', () => {
     const dirIcon = screen.getByText('proje').closest('.explorer-row')!.querySelector(
       '.explorer-row__icon',
     );
-    const fileIcon = screen.getByText('main.ts', { selector: '.explorer-row__name' }).closest('.explorer-row')!.querySelector(
-      '.explorer-row__icon',
-    );
     expect(dirIcon).toHaveClass('explorer-row__icon--dir');
     expect(dirIcon?.querySelector('svg')).not.toBeNull();
-    expect(fileIcon).toHaveClass('explorer-row__lang');
-    expect(fileIcon?.textContent).toBe('TS');
+    const fileLogo = screen.getByText('main.ts', { selector: '.explorer-row__name' }).closest('.explorer-row')!.querySelector(
+      '[data-logo="ts"]',
+    );
+    expect(fileLogo).not.toBeNull();
   });
 
   it('genişletilmiş ve daraltılmış klasör ok ikonu gösterir', () => {

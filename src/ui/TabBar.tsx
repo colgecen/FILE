@@ -4,9 +4,9 @@ import { closeOpenedTab } from '../core/tabCommands';
 import { tabsModel, useTabsState } from '../core/tabs';
 import { runPaneClose, runPaneSplit } from '../core/paneCommands';
 import {
+  FileLogo,
   SplitHorizontalIcon,
   SplitVerticalIcon,
-  fileBadge,
 } from './icons';
 
 export function TabBar(): React.JSX.Element {
@@ -41,7 +41,6 @@ export function TabBar(): React.JSX.Element {
       {tabs.map((tab) => {
         const isDirty = dirty.has(tab.file.path);
         const tooltip = isDirty ? `${tab.file.path} • Kaydedilmedi` : tab.file.path;
-        const icon = fileBadge(tab.file.name);
         return (
           <div
             key={tab.id}
@@ -62,8 +61,8 @@ export function TabBar(): React.JSX.Element {
               event.preventDefault();
             }}
           >
-            <span className={`tab-bar__icon ${icon.variant}`.trim()} aria-hidden="true">
-              {icon.label}
+            <span className="tab-bar__logo" aria-hidden="true">
+              <FileLogo name={tab.file.name} />
             </span>
             <button
               className="tab-bar__select"

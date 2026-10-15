@@ -80,12 +80,12 @@ describe('TabBar', () => {
     expect(tabsModel.getState().tabs).toHaveLength(0);
   });
 
-  it('uzantıya göre ikon etiketi gösterir', () => {
+  it('uzantıya göre dil logosu gösterir', () => {
     tabsModel.open(file('/app.ts', 'app.ts'));
     tabsModel.open(file('/style.css', 'style.css'));
     render(<TabBar />);
-    expect(document.body.textContent).toContain('TS');
-    expect(document.body.textContent).toContain('CSS');
+    expect(document.querySelector('[data-logo="ts"]')).not.toBeNull();
+    expect(document.querySelector('[data-logo="css"]')).not.toBeNull();
   });
 
   it('sekme yokken karşılama sekmesi göstermez', () => {
