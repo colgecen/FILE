@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { perfModel } from '../core/perfModel';
 import { useExplorerState, explorerModel } from '../core/explorer';
 import { gitModel, useGitPanelState } from '../core/gitModel';
+import { ModulesPanel } from './ModulesPanel';
 
 function badgeClass(status: string): string {
   if (status === 'M') return 'explorer-row__badge explorer-row__badge--modified';
@@ -83,6 +84,7 @@ export function ExplorerView(): React.JSX.Element | null {
           </div>
         )}
       </div>
+      <ModulesPanel />
     </aside>
   );
 }

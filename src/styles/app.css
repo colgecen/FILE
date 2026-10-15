@@ -409,6 +409,53 @@ body,
   color: var(--error);
 }
 
+.modules-panel {
+  flex: none;
+  border-top: 1px solid var(--border);
+  background: var(--bg-deep);
+}
+
+.modules-panel__header {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-dim);
+  color: var(--holo-ice);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
+}
+
+.modules-panel__list {
+  margin: 0;
+  padding: 6px 0 8px;
+  list-style: none;
+}
+
+.modules-panel__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.modules-panel__label {
+  color: var(--text-primary);
+}
+
+.modules-panel__value {
+  color: var(--accent-dim);
+  white-space: nowrap;
+}
+
+.modules-panel__value--live {
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
+  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
+}
+
 .explorer-view__loading {
   padding: 12px;
   color: var(--holo-ice);
