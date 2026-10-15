@@ -1,22 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { AiEnvEntry } from '../../electron/shared/api-types';
 import { useCore } from '../layout/AppShell';
+import { useAIEngine } from '../ai/engine';
 import { selectModel } from '../ai/aiCommands';
 import { useModelCatalog } from '../ai/catalog';
 import { loadActiveRef } from '../ai/modelStore';
-import { displayName, PROVIDERS, type ModelRef, type ProviderId } from '../ai/providers';
+import { displayName, getProvider, PROVIDERS, type ModelRef, type ProviderId } from '../ai/providers';
 import { useSessions } from '../ai/sessions';
 
-function groupLabel(source: string): string {
-  if (source === 'builtin') return 'Yerleşik';
-  if (source === 'cloud') return 'Bulut';
-  return 'Yerel sunucu';
-}
+
 
 export function AIModelToolbar(): React.JSX.Element {
   const { registry } = useCore();
   const catalog = useModelCatalog();
   const sessions = useSessions();
+  const ai = useAIEngine();
   const [, setTick] = useState(0);
   const ref = loadActiveRef();
   const activeSession = sessions.sessions.find((session) => session.id === sessions.activeId) ?? null;
@@ -26,14 +24,45 @@ export function AIModelToolbar(): React.JSX.Element {
 
   const groups = new Map<string, ModelRef[]>();
   for (const entry of catalog.entries) {
-    const label = groupLabel(entry.source);
+    const label = getProvider(entry.provider)?.name ?? entry.provider;
     const list = groups.get(label) ?? [];
     list.push(entry);
     groups.set(label, list);
   }
 
+  function toggleMode(): void {
+    void registry.run(mode === 'plan' ? 'ai.mode.build' : 'ai.mode.plan');
+  }
+
   return (
     <div className="ai-chat__toolbar">
+      <div className="ai-chat__modeseg" role="group" aria-label="Kip">
+        <button
+          type="button"
+          aria-pressed={mode === 'plan'}
+          className={mode === 'plan' ? 'ai-chat__modebtn ai-chat__modebtn--plan' : 'ai-chat__modebtn'}
+          onClick={() => registry.run('ai.mode.plan')}
+        >
+          Plan
+        </button>
+        <button
+          type="button"
+          aria-pressed={mode === 'build'}
+          className={mode === 'build' ? 'ai-chat__modebtn ai-chat__modebtn--build' : 'ai-chat__modebtn'}
+          onClick={() => registry.run('ai.mode.build')}
+        >
+          Yapım
+        </button>
+      </div>
+      <button
+        type="button"
+        className="ai-chat__iconbtn"
+        aria-label="Kip değiştir"
+        title="Kip değiştir (Tab)"
+        onClick={toggleMode}
+      >
+        ⇆
+      </button>
       <select
         className="ai-chat__modelsel"
         aria-label="Model seç"
@@ -69,24 +98,6 @@ export function AIModelToolbar(): React.JSX.Element {
       >
         ⟳
       </button>
-      <div className="ai-chat__modeseg" role="group" aria-label="Kip">
-        <button
-          type="button"
-          aria-pressed={mode === 'plan'}
-          className={mode === 'plan' ? 'ai-chat__modebtn ai-chat__modebtn--on' : 'ai-chat__modebtn'}
-          onClick={() => registry.run('ai.mode.plan')}
-        >
-          Plan
-        </button>
-        <button
-          type="button"
-          aria-pressed={mode === 'build'}
-          className={mode === 'build' ? 'ai-chat__modebtn ai-chat__modebtn--on' : 'ai-chat__modebtn'}
-          onClick={() => registry.run('ai.mode.build')}
-        >
-          Yapım
-        </button>
-      </div>
       <select
         className="ai-chat__effortsel"
         aria-label="Efor"
@@ -103,6 +114,14 @@ export function AIModelToolbar(): React.JSX.Element {
         <option value="medium">Orta</option>
         <option value="ultra">Ultra</option>
       </select>
+      <button
+        type="button"
+        className="ai-chat__stop"
+        disabled={!(ai.status === 'loading' || ai.status === 'computing')}
+        onClick={() => registry.run('ai.models.cancel')}
+      >
+        Durdur
+      </button>
     </div>
   );
 }
@@ -149,28 +168,64 @@ export const AI_ACTION_GROUPS: readonly ActionGroup[] = [
   },
 ];
 
-export function AIActionsMenu(): React.JSX.Element {
+export const AI_QUICK_COMMANDS: readonly { readonly label: string; readonly command: string }[] =
+  AI_ACTION_GROUPS.flatMap((group) => group.items).filter(
+    (item) =>
+      item.command !== 'ai.session.new' &&
+      item.command !== 'ai.session.close' &&
+      item.command !== 'ai.model.status' &&
+      item.command !== 'ai.models.download' &&
+      item.command !== 'ai.prefs',
+  );
+
+export const AI_SETTINGS_COMMANDS: readonly { readonly label: string; readonly command: string }[] =
+  AI_ACTION_GROUPS.flatMap((group) => group.items).filter(
+    (item) =>
+      item.command === 'ai.session.new' ||
+      item.command === 'ai.session.close' ||
+      item.command === 'ai.model.status' ||
+      item.command === 'ai.models.download' ||
+      item.command === 'ai.prefs',
+  );
+
+export function AIQuickActions(): React.JSX.Element {
   const { registry } = useCore();
   return (
-    <details className="ai-chat__ops">
-      <summary className="ai-chat__ops-title">İşlemler</summary>
-      {AI_ACTION_GROUPS.map((group) => (
-        <div key={group.label} className="ai-chat__ops-group">
-          <div className="ai-chat__ops-label">{group.label}</div>
-          {group.items.map((item) => (
-            <button
-              key={item.command}
-              type="button"
-              className="ai-chat__ops-btn"
-              onClick={() => registry.run(item.command)}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+    <div className="ai-chat__quick-actions" aria-label="Hızlı komutlar">
+      {AI_QUICK_COMMANDS.map((item) => (
+        <button
+          key={item.command}
+          type="button"
+          className="ai-chat__quick-btn"
+          onClick={() => registry.run(item.command)}
+        >
+          {item.label}
+        </button>
       ))}
-    </details>
+    </div>
   );
+}
+
+export function AISettingsCommands(): React.JSX.Element {
+  const { registry } = useCore();
+  return (
+    <div className="ai-chat__settings-list" aria-label="Ayarlar komutları">
+      {AI_SETTINGS_COMMANDS.map((item) => (
+        <button
+          key={item.command}
+          type="button"
+          className="ai-chat__ops-btn"
+          onClick={() => registry.run(item.command)}
+        >
+          {item.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function AIActionsMenu(): React.JSX.Element {
+  return <AIQuickActions />;
 }
 
 const KEY_PROVIDERS = PROVIDERS.filter((provider) => provider.keyEnv !== null);
@@ -213,8 +268,8 @@ export function AIKeyVault(): React.JSX.Element {
   };
 
   return (
-    <details className="ai-chat__keys">
-      <summary className="ai-chat__keys-title">Anahtarlar</summary>
+    <div className="ai-chat__keys">
+      <div className="ai-chat__keys-title">Anahtarlar</div>
       <ul className="ai-chat__keylist">
         {rows.map((row) => (
           <li key={row.provider} className="ai-chat__keyrow">
@@ -256,6 +311,6 @@ export function AIKeyVault(): React.JSX.Element {
           Sil
         </button>
       </div>
-    </details>
+    </div>
   );
 }

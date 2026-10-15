@@ -1,14 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAIEngine } from '../ai/engine';
-import { displayName } from '../ai/providers';
-import { refreshCatalog, useModelCatalog } from '../ai/catalog';
-import { loadActiveRef } from '../ai/modelStore';import { closeSession, newSession, switchSession } from '../ai/aiCommands';
-import { useSessions } from '../ai/sessions';
+import { refreshCatalog } from '../ai/catalog';
+import { loadActiveRef } from '../ai/modelStore';
+import { closeSession, newSession, switchSession } from '../ai/aiCommands';
+import { sessionStore, useSessions } from '../ai/sessions';
 import { aiChatModel, useAIChat } from '../core/chatModel';
 import { useFocusZone } from '../core/focus';
 import { useCore } from '../layout/AppShell';
 import { phaseLabel, statusLabel } from '../ai/format';
-import { AIActionsMenu, AIKeyVault, AIModelToolbar } from './AIControls';
+import { AIKeyVault, AIModelToolbar } from './AIControls';
 
 function roleLabel(role: string): string {
   if (role === 'user') return 'SEN';
@@ -22,9 +22,9 @@ export function AIChatPanel(): React.JSX.Element | null {
   const ai = useAIEngine();
   const chat = useAIChat();
   const sessions = useSessions();
-  const catalog = useModelCatalog();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const busy = ai.status === 'loading' || ai.status === 'computing';
 
   useEffect(() => {
@@ -46,19 +46,14 @@ export function AIChatPanel(): React.JSX.Element | null {
 
   useEffect(() => {
     if (chat.open) {
+      sessionStore.ensure(false);
       void refreshCatalog(window.api);
     }
   }, [chat.open]);
 
   if (!chat.open) return null;
 
-  const draftEmpty = chat.draft.trim().length === 0;
   const activeRef = loadActiveRef();
-  const activeEntry = catalog.entries.find(
-    (entry) => entry.provider === activeRef.provider && entry.id === activeRef.id,
-  );
-  const activeName = activeEntry ? displayName(activeEntry) : activeRef.id;
-
   return (
     <aside className="ai-chat" aria-label="Yapay zekâ sohbeti">
       {sessions.sessions.length > 0 && (
@@ -119,6 +114,15 @@ export function AIChatPanel(): React.JSX.Element | null {
           <button
             type="button"
             className="ai-chat__iconbtn"
+            aria-label="Ayarlar"
+            title="Ayarlar"
+            onClick={() => setSettingsOpen(true)}
+          >
+            ⚙
+          </button>
+          <button
+            type="button"
+            className="ai-chat__iconbtn"
             aria-label="Kapat"
             title="Kapat (Esc)"
             onClick={() => registry.run('ai.chat.close')}
@@ -130,11 +134,29 @@ export function AIChatPanel(): React.JSX.Element | null {
 
       <div className="ai-chat__modelbar">
         <span className="ai-chat__modellabel">MODEL</span>
-        <span className="ai-chat__modelname">{activeName}</span>
+        <span className="ai-chat__modelname">{activeRef.id}</span>
       </div>
       <AIModelToolbar />
-      <AIKeyVault />
-      <AIActionsMenu />
+      {settingsOpen && (
+        <div
+          className="ai-chat__settings-modal"
+          role="dialog"
+          aria-label="Ayarlar"
+          onClick={() => setSettingsOpen(false)}
+        >
+          <div className="ai-chat__settings-panel" onClick={(event) => event.stopPropagation()}>
+            <div className="ai-chat__settings-title">AYARLAR</div>
+            <AIKeyVault />
+            <button
+              type="button"
+              className="ai-chat__settings-close"
+              onClick={() => setSettingsOpen(false)}
+            >
+              Kapat
+            </button>
+          </div>
+        </div>
+      )}
 
       {ai.status === 'loading' && ai.progress !== null && (
         <div className="ai-chat__progress" aria-label="Model indirme ilerlemesi">
@@ -143,15 +165,6 @@ export function AIChatPanel(): React.JSX.Element | null {
             %{ai.progress.percent} · {phaseLabel(ai.progress.phase)}
           </span>
         </div>
-      )}
-      {(ai.status === 'loading' || ai.status === 'computing') && (
-        <button
-          type="button"
-          className="ai-chat__stop"
-          onClick={() => registry.run('ai.models.cancel')}
-        >
-          Durdur
-        </button>
       )}
 
       <div className="ai-chat__messages" ref={messagesRef} aria-live="polite">
@@ -195,7 +208,13 @@ export function AIChatPanel(): React.JSX.Element | null {
         </div>
       )}
 
-      <footer className="ai-chat__footer">
+      <footer className="ai-chat__footer" onKeyDown={(event) => {
+        if (event.key === 'Tab') {
+          event.preventDefault();
+          const activeSession = sessions.sessions.find((session) => session.id === sessions.activeId) ?? null;
+          void registry.run(activeSession?.mode === 'plan' ? 'ai.mode.build' : 'ai.mode.plan');
+        }
+      }}>
         <textarea
           ref={inputRef}
           className="ai-chat__input"
@@ -217,16 +236,8 @@ export function AIChatPanel(): React.JSX.Element | null {
         />
         <div className="ai-chat__actions">
           <span className="ai-chat__keyhint" aria-hidden="true">
-            Enter gönder · Shift+Enter satır
+            Enter gönder · Shift+Enter satır · Tab kip değiştir
           </span>
-          <button
-            type="button"
-            className="ai-chat__send"
-            disabled={draftEmpty}
-            onClick={() => registry.run('ai.chat.send')}
-          >
-            Gönder ❯
-          </button>
         </div>
       </footer>
     </aside>

@@ -75,26 +75,6 @@ describe('AIChatPanel', () => {
     expect(mockCore.registry.run).toHaveBeenCalledWith('ai.chat.close');
   });
 
-  it('Gönder butonu taslağı gönderir', () => {
-    aiChatModel.open();
-    render(<AIChatPanel />);
-    const input = screen.getByPlaceholderText('Mesajınızı yazın…');
-    fireEvent.change(input, { target: { value: 'Selam' } });
-    fireEvent.click(screen.getByRole('button', { name: /Gönder/ }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.chat.send');
-  });
-
-  it('işlem menüsündeki kısayollar komutları çalıştırır', () => {
-    aiChatModel.open();
-    render(<AIChatPanel />);
-    fireEvent.click(screen.getByRole('button', { name: 'Kodu Açıkla' }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.explain');
-    fireEvent.click(screen.getByRole('button', { name: 'Model Seç' }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.model.select');
-    fireEvent.click(screen.getByRole('button', { name: 'Model Durumu' }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.model.status');
-  });
-
   it('sekme çubuğu geçişte mesajları değiştirir', async () => {
     const { newSession } = await import('../ai/aiCommands');
     aiChatModel.open();
@@ -146,6 +126,7 @@ describe('AIChatPanel', () => {
   it('anahtar kaydetme kasaya yazar', async () => {
     aiChatModel.open();
     render(<AIChatPanel />);
+    fireEvent.click(screen.getByRole('button', { name: 'Ayarlar' }));
     fireEvent.change(screen.getByLabelText('API anahtarı'), { target: { value: 'sk-test' } });
     fireEvent.click(screen.getByRole('button', { name: 'Kaydet' }));
     await vi.waitFor(() => {
@@ -153,18 +134,6 @@ describe('AIChatPanel', () => {
     });
   });
 
-  it('işlemler menüsü komutları koşar', () => {
-    aiChatModel.open();
-    render(<AIChatPanel />);
-    const menu = screen.getByText('İşlemler').closest('details');
-    expect(menu).not.toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Satır İçi Tamamlama' }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.inline.complete');
-    fireEvent.click(screen.getByRole('button', { name: 'Öneriyi Uygula' }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.apply');
-    fireEvent.click(screen.getByRole('button', { name: 'Modelleri Yenile' }));
-    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.models.refresh');
-  });
 });
 
 describe('AIChatPanel indirme akışı', () => {
