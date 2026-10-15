@@ -113,11 +113,11 @@ describe('EditorCore', () => {
     expect(options.fontFamily).toContain('JetBrains Mono');
   });
 
-  it('içi boş blok imleç ve yumuşak hareket ayarlarını uygular', () => {
+  it('ince çizgi imleç ve sade hareket ayarlarını uygular', () => {
     render(<EditorCore file={null} />);
     const options = api.create.mock.calls[0]?.[1] as Record<string, unknown>;
-    expect(options.cursorStyle).toBe('block-outline');
-    expect(options.cursorSmoothCaretAnimation).toBe('on');
+    expect(options.cursorStyle).toBe('line');
+    expect(options.cursorSmoothCaretAnimation).toBe('off');
   });
 
   it('dosya yokken yer tutucu gösterir ve modeli boşaltır', () => {
@@ -155,7 +155,7 @@ describe('EditorCore', () => {
     expect(api.dispose).toHaveBeenCalledTimes(1);
   });
 
-  it('imleç konumu değişince sönümlenen iz işareti çizer', () => {
+  it('imleç konumu değişince iz işareti çizmez', () => {
     const cursor = {
       current: null as ((event: unknown) => void) | null,
     };
@@ -167,7 +167,8 @@ describe('EditorCore', () => {
     api.editorGetModel.mockReturnValue({ uri: { path: file.path } });
     const { container } = render(<EditorCore file={file} />);
     cursor.current?.({ position: {} });
-    expect(container.querySelectorAll('.editor-trail__mark')).toHaveLength(1);
+    expect(container.querySelectorAll('.editor-trail__mark')).toHaveLength(0);
+    expect(container.querySelector('.editor-core__trail')).toBeNull();
   });
 
   it('görünür konum yoksa iz işareti çizmez', () => {
