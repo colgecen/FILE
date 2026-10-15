@@ -20,7 +20,7 @@ export function CommandHUD(): React.JSX.Element | null {
 
   return (
     <div className="command-hud" role="dialog" aria-label="Komut paleti">
-      <div className="command-hud__panel">
+      <div className="command-hud__panel holo-scan">
         <input
           ref={inputRef}
           className="command-hud__input"
