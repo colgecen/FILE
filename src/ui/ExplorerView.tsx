@@ -4,7 +4,6 @@ import { useExplorerState, explorerModel } from '../core/explorer';
 import { focusManager } from '../core/focus';
 import { gitModel, useGitPanelState } from '../core/gitModel';
 import { useCore } from '../layout/AppShell';
-import { ModulesPanel } from './ModulesPanel';
 import { ChevronDownIcon, ChevronRightIcon, FileLogo, FolderIcon } from './icons';
 
 function badgeClass(status: string): string {
@@ -43,7 +42,6 @@ export function ExplorerView(): React.JSX.Element | null {
 
   return (
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
-      <header className="explorer-view__header">Sekmeler & Projeler</header>
       <div className="explorer-view__body" role="listbox" aria-label="Dosya listesi">
         {state.loading && (
           <div className="explorer-view__loading" role="status">
@@ -103,7 +101,6 @@ export function ExplorerView(): React.JSX.Element | null {
           </div>
         )}
       </div>
-      <ModulesPanel />
     </aside>
   );
 }

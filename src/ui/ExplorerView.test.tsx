@@ -51,7 +51,7 @@ describe('ExplorerView', () => {
     expect(screen.queryByRole('region', { name: 'Dosya gezgini' })).toBeNull();
   });
 
-  it('açıkken sol panel başlığıyla görünür', () => {
+  it('açıkken başlıksız ağaç paneli görünür', () => {
     render(<AppShell />);
     act(() => {
       explorerModel.open();
@@ -59,7 +59,7 @@ describe('ExplorerView', () => {
     const pane = screen.getByRole('region', { name: 'Dosya gezgini' });
     expect(pane).toBeInTheDocument();
     expect(pane).toHaveClass('explorer-view');
-    expect(screen.getByText('Sekmeler & Projeler')).toBeInTheDocument();
+    expect(pane.querySelector('header')).toBeNull();
   });
 
   it('ağaç satırları girinti sınıflarıyla çizilir', () => {
