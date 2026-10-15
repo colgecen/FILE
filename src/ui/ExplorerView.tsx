@@ -62,9 +62,6 @@ export function ExplorerView(): React.JSX.Element | null {
               onClick={() => {
                 explorerModel.select(row.path);
                 focusManager.set('explorer');
-              }}
-              onDoubleClick={() => {
-                explorerModel.select(row.path);
                 void registry.run('explorer.activate');
               }}
             >

@@ -92,7 +92,6 @@ export class GitModel {
     this.emit();
   }
 
-  private lastLoad = 0;
   private cache: { cwd: string; at: number; branch: GitState['branch']; files: GitState['files']; log: GitState['log'] } | null =
     null;
 
@@ -104,10 +103,6 @@ export class GitModel {
       this.setLog(this.cache.log);
       return;
     }
-    if (now - this.lastLoad < 500) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
-    this.lastLoad = Date.now();
     this.setLoading(true);
     this.setRoot(cwd);
     try {
