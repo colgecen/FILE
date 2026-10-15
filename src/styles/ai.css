@@ -45,6 +45,15 @@
   color: var(--error);
 }
 
+.ai-chat__wave {
+  display: block;
+  width: calc(100% - 28px);
+  height: 44px;
+  margin: 10px 14px 0;
+  border: 1px solid var(--border-dim);
+  background: var(--bg-deep);
+}
+
 .ai-chat__progress {
   position: relative;
   height: 22px;
@@ -113,7 +122,7 @@
 
 .ai-chat__message--assistant {
   align-self: flex-start;
-  color: var(--accent-dim);
+  color: var(--holo-ice);
 }
 
 .ai-chat__message--system {
@@ -124,6 +133,13 @@
 .ai-chat__empty {
   color: var(--accent-dim);
   font-size: 12px;
+  line-height: 1.6;
+}
+
+.ai-chat__suggest-label {
+  color: var(--holo-ice);
+  font-family: var(--font-display);
+  letter-spacing: 1px;
 }
 
 .ai-chat__error {

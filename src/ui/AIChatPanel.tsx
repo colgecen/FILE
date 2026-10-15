@@ -4,6 +4,7 @@ import { aiChatModel, useAIChat } from '../core/chatModel';
 import { useFocusZone } from '../core/focus';
 import { useCore } from '../layout/AppShell';
 import { phaseLabel, statusLabel } from '../ai/format';
+import { Waveform } from './Waveform';
 
 export function AIChatPanel(): React.JSX.Element | null {
   const zone = useFocusZone();
@@ -29,13 +30,14 @@ export function AIChatPanel(): React.JSX.Element | null {
   return (
     <aside className="ai-chat" aria-label="Yapay zekâ sohbeti">
       <header className="ai-chat__header">
-        <span className="ai-chat__title">Yapay Zekâ</span>
+        <span className="ai-chat__title">Asistan & YZ</span>
         <span className="ai-chat__status" data-status={ai.status}>
           {ai.status === 'loading' && ai.progress !== null
             ? `${statusLabel(ai.status)} %${ai.progress.percent}`
             : statusLabel(ai.status)}
         </span>
       </header>
+      <Waveform active={ai.status === 'computing' || ai.status === 'loading'} />
       {ai.status === 'loading' && ai.progress !== null && (
         <div className="ai-chat__progress" aria-label="Model indirme ilerlemesi">
           <div className="ai-chat__progress-bar" style={{ width: `${ai.progress.percent}%` }} />
@@ -60,7 +62,10 @@ export function AIChatPanel(): React.JSX.Element | null {
           </div>
         ))}
         {ai.chat.messages.length === 0 && (
-          <div className="ai-chat__empty">Model seçilip yazdığınızda sohbet burada başlar.</div>
+          <div className="ai-chat__empty">
+            <span className="ai-chat__suggest-label">Öneri:</span> dosya seçip &quot;Kodu Açıkla&quot;
+            komutunu çalıştırın ya da modele doğrudan sorun.
+          </div>
         )}
       </div>
       {ai.error !== null && (
