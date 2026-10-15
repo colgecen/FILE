@@ -67,7 +67,7 @@ body,
   );
 }
 
-.app-shell--zen .app-shell__tabbar,
+.app-shell--zen .app-shell__envbar,
 .app-shell--zen .explorer-view,
 .app-shell--zen .status-bar {
   display: none;
@@ -88,12 +88,12 @@ body,
   }
 }
 
-.app-shell__tabbar {
+.app-shell__envbar {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  min-height: 32px;
+  min-height: 30px;
   border-bottom: 1px solid var(--border);
   background: var(--glass-bg);
   backdrop-filter: blur(18px);
@@ -281,6 +281,16 @@ body,
   min-height: 0;
 }
 
+.app-shell__editor {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
 .explorer-view {
   flex: 0 0 calc(100% / 7);
   min-width: 180px;
@@ -448,7 +458,6 @@ body,
   display: flex;
   align-items: stretch;
   min-height: 30px;
-  border-bottom: 1px solid var(--border);
   background: var(--bg-deep);
 }
 

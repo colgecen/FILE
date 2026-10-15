@@ -14,6 +14,7 @@ import { AIChatPanel } from '../ui/AIChatPanel';
 import { Breadcrumb } from '../ui/Breadcrumb';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
+import { EnvironmentsBar } from '../ui/EnvironmentsBar';
 import { ErrorIndicator } from '../ui/ErrorIndicator';
 import { ExplorerView } from '../ui/ExplorerView';
 import { GitPanel } from '../ui/GitPanel';
@@ -78,14 +79,17 @@ export function AppShell({
             onCancel={() => exitController.cancel()}
           />
         )}
-        <div className="app-shell__tabbar">
-          <TabBar />
-          <Breadcrumb />
+        <div className="app-shell__envbar">
+          <EnvironmentsBar />
         </div>
         <div className="app-shell__workspace">
           <ExplorerView />
           {gitState.isOpen && <GitPanel />}
-          <PaneManager file={activeFile} />
+          <div className="app-shell__editor">
+            <TabBar />
+            <Breadcrumb />
+            <PaneManager file={activeFile} />
+          </div>
           {terminalOpen && <TerminalView />}
           {children}
         </div>

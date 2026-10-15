@@ -3,6 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { reportError } from '../core/appErrors';
 import { onFocusZoneChange } from '../core/focus';
 import { errorStore } from '../core/errorStore';
+import { environmentsModel } from '../core/environments';
+import { explorerModel } from '../core/explorer';
+import { tabsModel } from '../core/tabs';
+import type { OpenFile } from '../core/types';
 import { AppShell } from './AppShell';
 
 vi.mock('../editor/EditorCore', () => ({
@@ -36,5 +40,25 @@ describe('AppShell', () => {
     fireEvent.keyDown(window, { key: 'q' });
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
+  });
+
+  it('proje sekmelerini üst şeritte, dosya sekmelerini editör üstünde çizer', () => {
+    const file: OpenFile = { path: '/p/a.ts', name: 'a.ts', content: '', language: 'typescript' };
+    act(() => {
+      environmentsModel.add('/p', 'p');
+      tabsModel.open(file);
+      explorerModel.close();
+    });
+    const { container } = render(<AppShell />);
+    const envbar = container.querySelector('.app-shell__envbar')!;
+    expect(envbar.querySelector('.env-bar__chip')).not.toBeNull();
+    const editor = container.querySelector('.app-shell__editor')!;
+    expect(editor.querySelector('.tab-bar')).not.toBeNull();
+    expect(editor.querySelector('.breadcrumb')).not.toBeNull();
+    expect(container.querySelector('.explorer-view')).toBeNull();
+    act(() => {
+      tabsModel.reset();
+      environmentsModel.reset();
+    });
   });
 });
