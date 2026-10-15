@@ -12,7 +12,6 @@
   -webkit-backdrop-filter: blur(18px);
   box-shadow: -1px 0 12px rgba(0, 229, 255, 0.25);
   z-index: 40;
-  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
 }
 
 .ai-chat__header {

@@ -22,9 +22,7 @@
   box-shadow:
     0 0 0 1px rgba(124, 77, 255, 0.25),
     var(--glow-soft);
-  animation:
-    holo-fade-in 180ms ease-out,
-    holo-pulse var(--sync-speed) ease-in-out infinite;
+  animation: holo-fade-in 180ms ease-out;
 }
 
 .help-overlay__title {

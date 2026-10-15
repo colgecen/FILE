@@ -18,7 +18,6 @@
   font-size: 11px;
   letter-spacing: 0.08em;
   box-shadow: 0 -1px 12px rgba(0, 229, 255, 0.25);
-  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
 }
 
 .status-bar__group {

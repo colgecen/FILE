@@ -128,7 +128,7 @@ body,
   box-shadow:
     inset 0 1px 0 var(--holo-cyan),
     0 0 12px rgba(0, 229, 255, 0.35);
-  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
+
 }
 
 .tab-bar__select {
@@ -271,7 +271,7 @@ body,
   font-size: 11px;
   letter-spacing: 2px;
   text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
-  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
+
 }
 
 .explorer-view__body {
@@ -453,7 +453,7 @@ body,
 .modules-panel__value--live {
   color: var(--accent);
   text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
-  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
+
 }
 
 .explorer-view__loading {
@@ -462,7 +462,7 @@ body,
   font-family: var(--font-display);
   font-size: 11px;
   letter-spacing: 2px;
-  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
+
 }
 
 .explorer-view__error {
@@ -534,9 +534,7 @@ body,
   box-shadow:
     0 0 0 1px rgba(124, 77, 255, 0.25),
     var(--glow-soft);
-  animation:
-    holo-fade-in 180ms ease-out,
-    holo-pulse var(--sync-speed) ease-in-out infinite;
+  animation: holo-fade-in 180ms ease-out;
 }
 
 .confirm-overlay__message {
@@ -575,9 +573,7 @@ body,
     0 0 0 1px rgba(124, 77, 255, 0.25),
     0 6px 24px rgba(0, 0, 0, 0.7),
     var(--glow-soft);
-  animation:
-    holo-fade-in 180ms ease-out,
-    holo-pulse var(--sync-speed) ease-in-out infinite;
+  animation: holo-fade-in 180ms ease-out;
 }
 
 .command-hud__input {
@@ -653,7 +649,7 @@ body,
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   box-shadow: 0 1px 12px rgba(0, 229, 255, 0.18);
-  animation: holo-pulse var(--sync-speed) ease-in-out infinite;
+
 }
 
 .menubar__cell {
@@ -719,9 +715,7 @@ body,
   box-shadow:
     0 6px 18px rgba(0, 0, 0, 0.6),
     var(--glow-soft);
-  animation:
-    holo-fade-in 180ms ease-out,
-    holo-pulse var(--sync-speed) ease-in-out infinite;
+  animation: holo-fade-in 180ms ease-out;
 }
 
 .menu-panel__row {
