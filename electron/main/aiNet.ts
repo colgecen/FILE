@@ -2,6 +2,7 @@ import { ipcMain, type IpcMainInvokeEvent } from 'electron';
 import type {
   AiChatAbortArgs,
   AiChatStartArgs,
+  AiModelsArgs,
   AiModelsResult,
   AiOllamaTagsResult,
   AiPingResult,
@@ -262,11 +263,11 @@ export function registerAiNetHandlers(
   const inflight = new Map<string, () => void>();
 
   ipcMain.handle('ai:ping', async (_event: IpcMainInvokeEvent, baseUrl: string) => aiNet.ping(baseUrl));
-  ipcMain.handle(
-    'ai:models',
-    async (_event: IpcMainInvokeEvent, baseUrl: string, apiKey: string | null) =>
-      aiNet.listOpenAIModels(baseUrl, apiKey),
-  );
+  ipcMain.handle('ai:models', async (_event: IpcMainInvokeEvent, args: AiModelsArgs) => {
+    // Anahtar main içinde çözülür; renderer'a ve loglara inmez.
+    const key = await resolveKey(args.provider, args.keyEnv, args.apiKey);
+    return aiNet.listOpenAIModels(args.baseUrl, key);
+  });
   ipcMain.handle('ai:ollama:tags', async (_event: IpcMainInvokeEvent, origin: string) =>
     aiNet.listOllamaTags(origin),
   );

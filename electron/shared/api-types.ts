@@ -103,6 +103,14 @@ export type AiModelsResult = {
   readonly error?: string;
 };
 
+export type AiModelsArgs = {
+  readonly baseUrl: string;
+  readonly provider: string;
+  readonly keyEnv: string | null;
+  /** Açık override (özel giriş); boşsa kasa + env denenir. */
+  readonly apiKey: string | null;
+};
+
 export type AiOllamaTagsResult = {
   readonly ok: boolean;
   readonly models: readonly string[];
@@ -177,7 +185,7 @@ export type Api = {
   onPtyData(listener: (id: string, data: string) => void): () => void;
   onPtyExit(listener: (id: string, exitCode: number) => void): () => void;
   aiPing(baseUrl: string): Promise<AiPingResult>;
-  aiModels(baseUrl: string, apiKey: string | null): Promise<AiModelsResult>;
+  aiModels(args: AiModelsArgs): Promise<AiModelsResult>;
   aiOllamaTags(origin: string): Promise<AiOllamaTagsResult>;
   aiChatStart(args: AiChatStartArgs): Promise<AiChatStartResult>;
   aiChatAbort(requestId: string): Promise<void>;

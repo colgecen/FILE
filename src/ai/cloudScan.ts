@@ -1,0 +1,57 @@
+import type { AiEnvEntry, AiModelsResult, Api } from '../../electron/shared/api-types';
+import { PROVIDERS, type ModelRef, type ProviderId } from './providers';
+import { safeCall } from './localScan';
+
+type CloudApi = Pick<Api, 'aiModels' | 'aiKeyHas' | 'aiEnvScan'>;
+
+export type CloudProbe = {
+  readonly provider: ProviderId;
+  readonly ok: boolean;
+  readonly models: readonly ModelRef[];
+  readonly error?: string;
+};
+
+export async function scanCloudModels(
+  api: CloudApi,
+  customUrl: string | null,
+): Promise<{ probed: readonly CloudProbe[]; models: readonly ModelRef[] }> {
+  const targets = PROVIDERS.filter(
+    (provider) =>
+      provider.source === 'cloud' &&
+      (provider.id !== 'custom' || (customUrl !== null && customUrl.length > 0)),
+  );
+  const env: readonly AiEnvEntry[] = await safeCall(
+    () =>
+      api.aiEnvScan(targets.map((target) => ({ provider: target.id, envVar: target.keyEnv }))),
+    [],
+  );
+  const probed: CloudProbe[] = [];
+  for (const target of targets) {
+    const baseUrl = target.id === 'custom' && customUrl !== null ? customUrl : target.defaultBaseUrl;
+    const keyed = await safeCall(() => api.aiKeyHas(target.id), { present: false });
+    const envPresent = env.find((entry) => entry.provider === target.id)?.present ?? false;
+    if (!keyed.present && !envPresent) {
+      probed.push({ provider: target.id, ok: false, models: [], error: 'Anahtar yok' });
+      continue;
+    }
+    const listed = await safeCall(
+      () => api.aiModels({ baseUrl, provider: target.id, keyEnv: target.keyEnv, apiKey: null }),
+      { ok: false, models: [], error: 'API yok' } satisfies AiModelsResult,
+    );
+    if (!listed.ok) {
+      probed.push({ provider: target.id, ok: false, models: [], error: listed.error ?? 'Liste okunamadı' });
+      continue;
+    }
+    probed.push({
+      provider: target.id,
+      ok: true,
+      models: listed.models.map((id) => ({
+        id,
+        name: id,
+        provider: target.id,
+        source: 'cloud' as const,
+      })),
+    });
+  }
+  return { probed, models: probed.flatMap((probe) => probe.models) };
+}

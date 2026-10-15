@@ -9,8 +9,7 @@ import { MODEL_LIST, modelName } from './models';
 import { isModelId, loadActiveModel, loadActiveRef, refFromModel, saveActiveModel, saveActiveRef } from './modelStore';
 import { displayName } from './providers';
 import type { ModelRef } from './providers';
-import { modelCatalog } from './catalog';
-import { scanLocalModels } from './localScan';
+import { modelCatalog, refreshCatalog } from './catalog';
 import { sessionStore } from './sessions';
 import { DEFAULT_EFFORT, DEFAULT_MODE, EFFORT_PRESETS, effortLabel, modeLabel, type EffortLevel, type EffortPreset, type PlanMode } from './modes';
 import type { ActiveRef } from './modelStore';
@@ -277,13 +276,12 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
     category: 'ai',
     title: 'Modelleri Yenile',
     run: async () => {
-      const result = await scanLocalModels(window.api);
-      modelCatalog.setScanned(result.models);
-      const failed = result.probed.filter((probe) => !probe.ok);
+      const counts = await refreshCatalog(window.api);
+      const total = counts.local + counts.cloud;
       aiEngine.appendSystemMessage(
-        failed.length === 0
-          ? `${result.models.length} yerel model bulundu.`
-          : `${result.models.length} model bulundu; ${failed.length} kaynak yanıt vermiyor.`,
+        total === 0
+          ? 'Model bulunamadı — yerel sunucu ya da anahtar ekleyin.'
+          : `${total} model listelendi (yerel ${counts.local}, bulut ${counts.cloud}).`,
       );
       aiChatModel.open();
       return { ok: true };

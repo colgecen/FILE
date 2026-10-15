@@ -37,7 +37,7 @@ function baseOf(provider: LocalProviderId, bases: LocalBases | undefined): strin
 }
 
 /** IPC mock'u eksik ya da çökmüşse tarama ölmesin, prob başarısız saysın. */
-async function safeCall<T>(call: () => Promise<T>, fallback: T): Promise<T> {
+export async function safeCall<T>(call: () => Promise<T>, fallback: T): Promise<T> {
   try {
     const result = await call();
     return result ?? fallback;
@@ -87,7 +87,7 @@ async function probeOpenAICompat(
     return { provider, ok: false, models: [], error: `${label} yanıt vermiyor` };
   }
   const listed = await safeCall(
-    () => api.aiModels(baseUrl, null),
+    () => api.aiModels({ baseUrl, provider, keyEnv: null, apiKey: null }),
     { ok: false, models: [], error: 'API yok' } satisfies AiModelsResult,
   );
   if (!listed.ok) {

@@ -14,8 +14,10 @@ describe('scanLocalModels', () => {
   it('üç probu birleştirir', async () => {
     const api = fakeApi({
       aiOllamaTags: vi.fn(async () => ({ ok: true, models: ['llama3:latest'] })),
-      aiModels: vi.fn(async (baseUrl: string) =>
-        baseUrl.includes('1234') ? { ok: true, models: ['yerel-mistral'] } : { ok: true, models: [] },
+      aiModels: vi.fn(async (args: { baseUrl: string }) =>
+        args.baseUrl.includes('1234')
+          ? { ok: true, models: ['yerel-mistral'] }
+          : { ok: true, models: [] },
       ),
     });
     const result = await scanLocalModels(api);

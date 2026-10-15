@@ -5,7 +5,7 @@ import { focusManager } from '../core/focus';
 import { DEFAULT_MODEL } from './models';
 import { modelCatalog } from './catalog';
 import { sessionStore } from './sessions';
-import type { AiChatDoneEvent, AiChatTokenEvent } from '../../electron/shared/api-types';
+import type { AiChatDoneEvent, AiChatTokenEvent, AiModelsArgs } from '../../electron/shared/api-types';
 import { registerAICommands } from './aiCommands';
 import type { CommandDef, CommandResult } from '../core/types';
 
@@ -260,6 +260,21 @@ describe('aiCommands — birleşik katalog', () => {
     const result = await registry.run('ai.models.refresh');
     expect(result.ok).toBe(true);
     expect(modelCatalog.all().some((entry) => entry.provider === 'builtin')).toBe(true);
+  });
+
+  it('anahtarlı bulut modelleri kataloğa girer', async () => {
+    vi.mocked(window.api.aiPing).mockResolvedValue({ ok: false, error: 'kapalı' });
+    vi.mocked(window.api.aiKeyHas).mockImplementation(async (provider: string) => ({
+      present: provider === 'groq',
+    }));
+    vi.mocked(window.api.aiEnvScan).mockResolvedValue([]);
+    vi.mocked(window.api.aiModels).mockImplementation(async (args: AiModelsArgs) =>
+      args.baseUrl.includes('groq')
+        ? { ok: true, models: ['llama-3.3-70b-versatile'] }
+        : { ok: false, models: [], error: 'yok' },
+    );
+    await registry.run('ai.models.refresh');
+    expect(modelCatalog.find('groq', 'llama-3.3-70b-versatile')?.source).toBe('cloud');
   });
 
   it('sekmeler mesajları izole eder', async () => {

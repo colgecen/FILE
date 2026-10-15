@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
+import type { Api } from '../../electron/shared/api-types';
 import { MODEL_LIST } from './models';
+import { loadCustomUrl } from './endpoints';
+import { scanCloudModels } from './cloudScan';
+import { scanLocalModels } from './localScan';
 import type { ModelRef } from './providers';
 
 function builtins(): ModelRef[] {
@@ -77,4 +81,24 @@ export function useModelCatalog(): CatalogSnapshot {
   const [snapshot, setSnapshot] = useState<CatalogSnapshot>(() => modelCatalog.getSnapshot());
   useEffect(() => modelCatalog.subscribe(() => setSnapshot(modelCatalog.getSnapshot())), []);
   return snapshot;
+}
+
+type RefreshApi = Pick<Api, 'aiPing' | 'aiModels' | 'aiOllamaTags' | 'aiKeyHas' | 'aiEnvScan'>;
+
+let refreshing = false;
+
+/** Yerel + bulut taramasını birleştirip kataloğa yazar. */
+export async function refreshCatalog(api: RefreshApi): Promise<{ local: number; cloud: number }> {
+  if (refreshing) return { local: 0, cloud: 0 };
+  refreshing = true;
+  try {
+    const [local, cloud] = await Promise.all([
+      scanLocalModels(api),
+      scanCloudModels(api, loadCustomUrl()),
+    ]);
+    modelCatalog.setScanned([...local.models, ...cloud.models]);
+    return { local: local.models.length, cloud: cloud.models.length };
+  } finally {
+    refreshing = false;
+  }
 }

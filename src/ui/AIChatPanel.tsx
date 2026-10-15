@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useAIEngine } from '../ai/engine';
 import { displayName } from '../ai/providers';
-import { useModelCatalog } from '../ai/catalog';
-import { loadActiveRef } from '../ai/modelStore';
-import { closeSession, newSession, switchSession } from '../ai/aiCommands';
+import { refreshCatalog, useModelCatalog } from '../ai/catalog';
+import { loadActiveRef } from '../ai/modelStore';import { closeSession, newSession, switchSession } from '../ai/aiCommands';
 import { useSessions } from '../ai/sessions';
 import { aiChatModel, useAIChat } from '../core/chatModel';
 import { useFocusZone } from '../core/focus';
@@ -45,6 +44,12 @@ export function AIChatPanel(): React.JSX.Element | null {
     const list = messagesRef.current;
     if (list !== null) list.scrollTop = list.scrollHeight;
   }, [ai.chat.messages.length, ai.status]);
+
+  useEffect(() => {
+    if (chat.open) {
+      void refreshCatalog(window.api);
+    }
+  }, [chat.open]);
 
   if (!chat.open) return null;
 
