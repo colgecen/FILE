@@ -1,6 +1,8 @@
 :root {
   --bg-base: #000000;
-  --bg-editor: #03050a;
+  --bg-deep: #0a141f;
+  --bg-panel: #0d1b2a;
+  --bg-editor: #0a141f;
   --bg-overlay: rgba(0, 0, 0, 0.9);
   --glass-bg: rgba(3, 8, 18, 0.72);
   --text-primary: #ffffff;
@@ -18,6 +20,7 @@
   --line-active: rgba(0, 210, 255, 0.05);
   --error: #ff5252;
   --border: #00d2ff;
+  --border-dim: rgba(0, 210, 255, 0.35);
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
   --font-display: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
 }

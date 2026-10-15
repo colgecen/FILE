@@ -1,6 +1,8 @@
 export const themeColors = {
   bgBase: '#000000',
-  bgEditor: '#03050a',
+  bgDeep: '#0a141f',
+  bgPanel: '#0d1b2a',
+  bgEditor: '#0a141f',
   bgOverlay: 'rgba(0, 0, 0, 0.9)',
   glassBg: 'rgba(3, 8, 18, 0.72)',
   textPrimary: '#ffffff',
@@ -18,6 +20,7 @@ export const themeColors = {
   lineActive: 'rgba(0, 210, 255, 0.05)',
   error: '#ff5252',
   border: '#00d2ff',
+  borderDim: 'rgba(0, 210, 255, 0.35)',
 } as const;
 
 export const themeFonts = {
