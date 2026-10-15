@@ -142,4 +142,21 @@ describe('envCommands', () => {
     adoptFolderAsEnvironment('/proj/a', 'a');
     expect(tabsModel.getState().activeId).toBe('/proj/a/a.ts');
   });
+
+  it('ensure kipi sekmelere dokunmadan ortamı hazırlar', () => {
+    environmentsModel.add('/proj/a', 'a');
+    tabsModel.open(fileA());
+    adoptFolderAsEnvironment('/proj/b', 'b', 'ensure');
+    expect(environmentsModel.getState().activeId).toBe('/proj/b');
+    expect(tabsModel.getState().tabs).toHaveLength(1);
+    expect(tabsModel.getState().activeId).toBe('/proj/a/a.ts');
+  });
+
+  it('aynı ortamda ensure sekmeleri saklar', () => {
+    environmentsModel.add('/proj/a', 'a');
+    tabsModel.open(fileA());
+    adoptFolderAsEnvironment('/proj/a', 'a', 'ensure');
+    expect(tabsModel.getState().tabs).toHaveLength(1);
+    expect(environmentsModel.active()?.tabs.files).toHaveLength(1);
+  });
 });

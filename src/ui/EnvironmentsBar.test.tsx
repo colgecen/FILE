@@ -51,4 +51,17 @@ describe('EnvironmentsBar', () => {
     expect(environmentsModel.getState().activeId).toBe('/proj/c');
     expect(screen.getByRole('button', { name: 'Ortam: c' })).not.toBeNull();
   });
+
+  it('çip üzerindeki çarpı ortamı kapatır', async () => {
+    act(() => {
+      environmentsModel.add('/proj/a', 'a');
+      environmentsModel.add('/proj/b', 'b');
+    });
+    render(<EnvironmentsBar />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Ortamı kapat: b' }));
+    });
+    expect(environmentsModel.getState().environments).toHaveLength(1);
+    expect(environmentsModel.getState().activeId).toBe('/proj/a');
+  });
 });

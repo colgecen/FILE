@@ -1,4 +1,8 @@
-import { addEnvironmentViaDialog, switchToEnvironment } from '../core/envCommands';
+import {
+  addEnvironmentViaDialog,
+  removeEnvironment,
+  switchToEnvironment,
+} from '../core/envCommands';
 import { useEnvironmentsState } from '../core/environments';
 
 export function EnvironmentsBar(): React.JSX.Element {
@@ -11,19 +15,32 @@ export function EnvironmentsBar(): React.JSX.Element {
           <span className="env-bar__hint">Ortam yok</span>
         )}
         {environments.map((env) => (
-          <button
+          <span
             key={env.id}
-            type="button"
-            title={env.rootPath}
-            aria-label={`Ortam: ${env.name}`}
-            aria-pressed={env.id === activeId}
             className={
               env.id === activeId ? 'env-bar__chip env-bar__chip--active' : 'env-bar__chip'
             }
-            onClick={() => void switchToEnvironment(env.id)}
           >
-            {env.name}
-          </button>
+            <button
+              type="button"
+              title={env.rootPath}
+              aria-label={`Ortam: ${env.name}`}
+              aria-pressed={env.id === activeId}
+              className="env-bar__name"
+              onClick={() => void switchToEnvironment(env.id)}
+            >
+              {env.name}
+            </button>
+            <button
+              type="button"
+              title="Ortamı Kapat"
+              aria-label={`Ortamı kapat: ${env.name}`}
+              className="env-bar__close"
+              onClick={() => void removeEnvironment(env.id)}
+            >
+              ×
+            </button>
+          </span>
         ))}
       </div>
       <button

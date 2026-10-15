@@ -93,4 +93,24 @@ describe('dosya açma akışı', () => {
     environmentsModel.reset();
     explorerModel.settle([], null);
   });
+
+  it('dosya açınca üst dizin proje alanına eklenir, sekme korunur', async () => {
+    environmentsModel.reset();
+    const api = {
+      openFile: vi.fn().mockResolvedValue({
+        path: '/projeler/uygulama/main.ts',
+        name: 'main.ts',
+        content: 'x',
+        language: 'typescript',
+      }),
+    } satisfies Pick<Api, 'openFile'>;
+
+    const result = await runOpenFile(api);
+
+    expect(result).toEqual({ ok: true });
+    expect(environmentsModel.getState().activeId).toBe('/projeler/uygulama');
+    expect(tabsModel.getState().tabs).toHaveLength(1);
+    environmentsModel.reset();
+    tabsModel.reset();
+  });
 });

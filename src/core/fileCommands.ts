@@ -14,6 +14,11 @@ export async function runOpenFile(api: Pick<Api, 'openFile'>): Promise<CommandRe
   const result = await api.openFile();
   if (result === null) return { ok: true };
   adoptFile(result);
+  const { dirOf } = await import('./gitInfo');
+  const { baseNameOf } = await import('./environments');
+  const { adoptFolderAsEnvironment } = await import('./envCommands');
+  const parent = dirOf(result.path);
+  adoptFolderAsEnvironment(parent, baseNameOf(parent), 'ensure');
   return { ok: true };
 }
 

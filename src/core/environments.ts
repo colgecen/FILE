@@ -20,6 +20,11 @@ export type EnvironmentsState = {
 
 const EMPTY_TABS: EnvironmentTabs = { files: [], activeId: null };
 
+export function baseNameOf(path: string): string {
+  const parts = path.split(/[\\/]/).filter((part) => part.length > 0);
+  return parts[parts.length - 1] ?? path;
+}
+
 export class EnvironmentsModel {
   private state: EnvironmentsState = { environments: [], activeId: null };
   private readonly listeners = new Set<() => void>();
@@ -46,7 +51,8 @@ export class EnvironmentsModel {
       this.emit();
       return existing.id;
     }
-    const env: Environment = { id: rootPath, name, rootPath, tabs: EMPTY_TABS };
+    const label = name.trim().length === 0 ? baseNameOf(rootPath) : name;
+    const env: Environment = { id: rootPath, name: label, rootPath, tabs: EMPTY_TABS };
     this.state = { environments: [...this.state.environments, env], activeId: env.id };
     this.emit();
     return env.id;

@@ -23,7 +23,11 @@ export async function switchToEnvironment(id: string): Promise<CommandResult> {
   const target = environmentsModel.getState().environments.find((env) => env.id === id);
   if (target === undefined) return { ok: false, error: 'Ortam bulunamadı' };
   const current = environmentsModel.active();
-  if (current !== null && current.id !== id) {
+  if (current !== null && current.id === id) {
+    environmentsModel.storeTabs(id, snapshotTabs());
+    return { ok: true };
+  }
+  if (current !== null) {
     environmentsModel.storeTabs(current.id, snapshotTabs());
   }
   applyTabs(target.tabs);
@@ -37,22 +41,32 @@ export async function switchToEnvironment(id: string): Promise<CommandResult> {
   return { ok: true };
 }
 
-export function adoptFolderAsEnvironment(rootPath: string, name: string): void {
+export function adoptFolderAsEnvironment(
+  rootPath: string,
+  name: string,
+  mode: 'switch' | 'ensure' = 'switch',
+): void {
   const current = environmentsModel.active();
-  if (current !== null && current.rootPath !== rootPath) {
+  if (current !== null && current.rootPath === rootPath) {
+    environmentsModel.storeTabs(current.id, snapshotTabs());
+    return;
+  }
+  if (current !== null) {
     environmentsModel.storeTabs(current.id, snapshotTabs());
   }
   const existing = environmentsModel
     .getState()
     .environments.find((env) => env.rootPath === rootPath);
   if (existing !== undefined) {
-    applyTabs(existing.tabs);
+    if (mode === 'switch') applyTabs(existing.tabs);
     environmentsModel.setActive(existing.id);
     return;
   }
   environmentsModel.add(rootPath, name);
-  tabsModel.reset();
-  openFilesModel.set([]);
+  if (mode === 'switch') {
+    tabsModel.reset();
+    openFilesModel.set([]);
+  }
 }
 
 export async function addEnvironmentViaDialog(): Promise<CommandResult> {
@@ -92,7 +106,14 @@ export async function removeEnvironment(id?: string): Promise<CommandResult> {
     explorerModel.settle([], null);
     return { ok: true };
   }
-  if (wasActive) return switchToEnvironment(next.id);
+  if (!wasActive) return { ok: true };
+  applyTabs(next.tabs);
+  const loaded = await explorerModel.loadRoot(next.rootPath, window.api.readDir);
+  if (!loaded) {
+    const message = 'Ortam kökü okunamadı';
+    reportError(message);
+    return { ok: false, error: message };
+  }
   return { ok: true };
 }
 

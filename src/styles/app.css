@@ -193,7 +193,8 @@ body,
 .tab-bar__close:hover,
 .tab-bar__close:focus-visible {
   outline: none;
-  color: var(--error);
+  color: var(--holo-ice);
+  background: var(--selection);
 }
 
 .tab-bar__hint {
@@ -301,17 +302,6 @@ body,
   background: var(--glass-bg);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-}
-
-.explorer-view__header {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border);
-  color: var(--holo-ice);
-  font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
-
 }
 
 .explorer-view__body {
@@ -484,13 +474,30 @@ body,
 .env-bar__chip {
   appearance: none;
   flex: none;
-  max-width: 140px;
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 170px;
+  border: 1px solid var(--border-dim);
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  overflow: hidden;
+}
+
+.env-bar__chip:hover,
+.env-bar__chip:focus-within {
+  border-color: var(--accent);
+}
+
+.env-bar__name {
+  appearance: none;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 0 10px;
-  border: 1px solid var(--border-dim);
-  border-radius: 0;
+  padding: 0 4px 0 10px;
+  border: none;
   background: transparent;
   color: var(--accent-dim);
   font-family: var(--font-mono);
@@ -498,19 +505,40 @@ body,
   cursor: pointer;
 }
 
-.env-bar__chip:hover,
-.env-bar__chip:focus-visible {
+.env-bar__name:hover,
+.env-bar__name:focus-visible {
   outline: none;
   color: var(--holo-ice);
-  border-color: var(--accent);
+}
+
+.env-bar__close {
+  appearance: none;
+  flex: none;
+  width: 22px;
+  border: none;
+  background: transparent;
+  color: var(--accent-dim);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.env-bar__close:hover,
+.env-bar__close:focus-visible {
+  outline: none;
+  color: var(--holo-ice);
+  background: var(--selection);
 }
 
 .env-bar__chip--active {
   background: var(--selection);
   border-color: var(--holo-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+}
+
+.env-bar__chip--active .env-bar__name {
   color: var(--holo-ice);
   text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
 }
 
 .env-bar__add {
@@ -538,53 +566,6 @@ body,
 .explorer-row,
 .command-hud__item {
   cursor: pointer;
-}
-
-.modules-panel {
-  flex: none;
-  border-top: 1px solid var(--border);
-  background: var(--bg-deep);
-}
-
-.modules-panel__header {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border-dim);
-  color: var(--holo-ice);
-  font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
-}
-
-.modules-panel__list {
-  margin: 0;
-  padding: 6px 0 8px;
-  list-style: none;
-}
-
-.modules-panel__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 3px 12px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-}
-
-.modules-panel__label {
-  color: var(--text-primary);
-}
-
-.modules-panel__value {
-  color: var(--accent-dim);
-  white-space: nowrap;
-}
-
-.modules-panel__value--live {
-  color: var(--accent);
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
-
 }
 
 .explorer-view__loading {
