@@ -39,6 +39,6 @@ describe('registerDefaultBindings dosya ve terminal', () => {
 
   it('terminal açma genel bağlıdır', () => {
     const keymap = createKeymap();
-    expect(keymap.resolve(['Control+g'])?.commandId).toBe('terminal.new');
+    expect(keymap.resolve(['Control+Shift+"'])?.commandId).toBe('terminal.new');
   });
 });

@@ -85,12 +85,14 @@ export function AppShell({
         <div className="app-shell__workspace">
           <ExplorerView />
           {gitState.isOpen && <GitPanel />}
-          <div className="app-shell__editor">
-            <TabBar />
-            <Breadcrumb />
-            <PaneManager file={activeFile} />
+          <div className="app-shell__main">
+            <div className="app-shell__editor">
+              <TabBar />
+              <Breadcrumb />
+              <PaneManager file={activeFile} />
+            </div>
+            {terminalOpen && <TerminalView />}
           </div>
-          {terminalOpen && <TerminalView />}
           {children}
         </div>
         <StatusBar />

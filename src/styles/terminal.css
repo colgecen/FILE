@@ -1,6 +1,6 @@
 .terminal-view__host {
-  flex: none;
-  height: 200px;
+  flex: 0 0 40%;
+  min-height: 120px;
   box-sizing: border-box;
   border-top: 1px solid var(--holo-cyan);
   background: var(--glass-bg);

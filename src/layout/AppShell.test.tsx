@@ -6,11 +6,16 @@ import { errorStore } from '../core/errorStore';
 import { environmentsModel } from '../core/environments';
 import { explorerModel } from '../core/explorer';
 import { tabsModel } from '../core/tabs';
+import { terminalModel } from '../core/terminalModel';
 import type { OpenFile } from '../core/types';
 import { AppShell } from './AppShell';
 
 vi.mock('../editor/EditorCore', () => ({
   EditorCore: () => <div data-testid="editor-core-mock" />,
+}));
+
+vi.mock('../terminal/TerminalView', () => ({
+  TerminalView: () => <div data-testid="terminal-view" />,
 }));
 
 describe('AppShell', () => {
@@ -40,6 +45,23 @@ describe('AppShell', () => {
     fireEvent.keyDown(window, { key: 'q' });
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
+  });
+
+  it('terminal açıkken editör altında çizilir', () => {
+    act(() => {
+      terminalModel.open();
+    });
+    const { container } = render(<AppShell />);
+    const main = container.querySelector('.app-shell__main')!;
+    expect(main.querySelector('.app-shell__editor')).not.toBeNull();
+    const terminal = main.querySelector('[data-testid="terminal-view"]')!;
+    expect(terminal).not.toBeNull();
+    expect(terminal.compareDocumentPosition(main.querySelector('.app-shell__editor')!)).toBe(
+      Node.DOCUMENT_POSITION_PRECEDING,
+    );
+    act(() => {
+      terminalModel.close();
+    });
   });
 
   it('proje sekmelerini üst şeritte, dosya sekmelerini editör üstünde çizer', () => {

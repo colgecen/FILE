@@ -41,7 +41,8 @@ export function TerminalView(): React.JSX.Element {
       theme: THEME,
       fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
       fontSize: 13,
-      cursorBlink: true,
+      cursorBlink: false,
+      cursorStyle: 'block',
       cols: colsRef.current,
       rows: rowsRef.current,
     });
