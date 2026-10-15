@@ -136,7 +136,6 @@ export function AIChatPanel(): React.JSX.Element | null {
         <span className="ai-chat__modellabel">MODEL</span>
         <span className="ai-chat__modelname">{activeRef.id}</span>
       </div>
-      <AIModelToolbar />
       {settingsOpen && (
         <div
           className="ai-chat__settings-modal"
@@ -234,6 +233,7 @@ export function AIChatPanel(): React.JSX.Element | null {
             }
           }}
         />
+        <AIModelToolbar />
         <div className="ai-chat__actions">
           <span className="ai-chat__keyhint" aria-hidden="true">
             Enter gönder · Shift+Enter satır · Tab kip değiştir
