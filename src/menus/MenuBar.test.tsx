@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppShell } from '../layout/AppShell';
 
@@ -27,7 +27,8 @@ describe('MenuBar', () => {
 
   it('dokuz üst başlığı çizer', () => {
     renderShell();
-    expect(screen.getAllByRole('button')).toHaveLength(9);
+    const menubar = screen.getByRole('menubar');
+    expect(within(menubar).getAllByRole('button')).toHaveLength(9);
     expect(screen.getByText('Dosya')).toBeInTheDocument();
     expect(screen.getByText('Yapay Zekâ')).toBeInTheDocument();
   });
