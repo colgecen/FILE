@@ -33,7 +33,7 @@
   display: flex;
   align-items: stretch;
   gap: 4px;
-  padding: 8px 10px 0;
+  padding: 10px 10px 6px;
   overflow-x: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border-dim) transparent;
@@ -98,6 +98,8 @@
   appearance: none;
   flex: none;
   align-self: center;
+  position: sticky;
+  right: 0;
   width: 24px;
   height: 24px;
   border: 1px solid var(--border-dim);
@@ -125,7 +127,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 12px 14px;
+  padding: 18px 14px 12px;
   border-bottom: 1px solid var(--border-dim);
   background: linear-gradient(90deg, rgba(0, 234, 255, 0.12), transparent 65%);
 }
@@ -1042,4 +1044,61 @@
 
 .ai-chat__send:focus-visible {
   outline: 1px solid var(--accent);
+}
+
+/* ---------- terminal komutları ---------- */
+.ai-chat__termblock {
+  margin-top: 6px;
+  border: 1px solid var(--border-dim);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.ai-chat__termcode {
+  margin: 0;
+  padding: 8px 10px;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--holo-ice);
+}
+
+.ai-chat__termactions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 8px;
+}
+
+.ai-chat__termhint {
+  font-size: 11px;
+  color: var(--accent-dim);
+}
+
+.ai-chat__termbtn {
+  appearance: none;
+  border: 1px solid var(--border-dim);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.ai-chat__termbtn--allow {
+  color: var(--holo-ice);
+  border-color: var(--holo-cyan);
+}
+
+.ai-chat__termbtn--deny {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.ai-chat__termstatus {
+  display: block;
+  padding: 4px 10px 8px;
+  font-size: 11px;
+  color: var(--accent-dim);
 }

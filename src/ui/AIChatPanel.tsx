@@ -3,6 +3,8 @@ import { useAIEngine } from '../ai/engine';
 import { refreshCatalog } from '../ai/catalog';
 import { loadActiveRef } from '../ai/modelStore';
 import { closeSession, newSession, switchSession } from '../ai/aiCommands';
+import { terminalModel } from '../core/terminalModel';
+import { writeToActiveTerminal } from '../core/terminalRegistry';
 import { sessionStore, useSessions } from '../ai/sessions';
 import { aiChatModel, useAIChat } from '../core/chatModel';
 import { useFocusZone } from '../core/focus';
@@ -16,6 +18,25 @@ function roleLabel(role: string): string {
   return 'SİS';
 }
 
+
+function shellBlocks(text: string): { language: string; code: string }[] {
+  const blocks: { language: string; code: string }[] = [];
+  const pattern = /```([\w+-]*)\s*\n([\s\S]*?)```/g;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(text)) !== null) {
+    const language = (match[1] ?? '').toLowerCase();
+    const code = (match[2] ?? '').trim();
+    if (language.includes('sh') || language.includes('bash') || language.includes('shell') || language.includes('zsh') || language.includes('fish')) {
+      blocks.push({ language, code });
+    }
+  }
+  return blocks;
+}
+
+function needsTerminalPermission(code: string): boolean {
+  return /(^|\s)\bsudo\b/.test(code);
+}
+
 export function AIChatPanel(): React.JSX.Element | null {
   const zone = useFocusZone();
   const { registry } = useCore();
@@ -25,7 +46,17 @@ export function AIChatPanel(): React.JSX.Element | null {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [terminalDecisions, setTerminalDecisions] = useState<Record<string, 'pending' | 'allowed' | 'denied' | 'done'>>({});
   const busy = ai.status === 'loading' || ai.status === 'computing';
+
+  function runTerminalCommand(key: string, code: string): void {
+    setTerminalDecisions((current) => ({ ...current, [key]: 'allowed' }));
+    terminalModel.open();
+    window.setTimeout(() => {
+      const ok = writeToActiveTerminal(code.endsWith('\n') ? code : `${code}\n`);
+      setTerminalDecisions((current) => ({ ...current, [key]: ok ? 'done' : 'denied' }));
+    }, 400);
+  }
 
   useEffect(() => {
     if (zone === 'ai') {
@@ -43,6 +74,11 @@ export function AIChatPanel(): React.JSX.Element | null {
     const list = messagesRef.current;
     if (list !== null) list.scrollTop = list.scrollHeight;
   }, [ai.chat.messages.length, ai.status]);
+
+  useEffect(() => {
+    const list = messagesRef.current;
+    if (list !== null) list.scrollTop = list.scrollHeight;
+  }, [ai.chat.messages]);
 
   useEffect(() => {
     if (chat.open) {
@@ -173,6 +209,57 @@ export function AIChatPanel(): React.JSX.Element | null {
               {roleLabel(message.role)}
             </span>
             <span className="ai-chat__bubble">{message.content}</span>
+            {message.role === 'assistant' &&
+              shellBlocks(message.content).map((block, blockIndex) => {
+                const blockKey = `${index}:${blockIndex}`;
+                const needsPermission = needsTerminalPermission(block.code);
+                const decision = terminalDecisions[blockKey] ?? (needsPermission ? 'pending' : 'idle');
+                return (
+                  <div key={blockKey} className="ai-chat__termblock">
+                    <pre className="ai-chat__termcode">{block.code}</pre>
+                    {needsPermission &&
+                      (decision === 'pending' ? (
+                        <div className="ai-chat__termactions">
+                          <span className="ai-chat__termhint">Bu komut sudo yetkisi istiyor.</span>
+                          <button
+                            type="button"
+                            className="ai-chat__termbtn ai-chat__termbtn--allow"
+                            onClick={() =>
+                              runTerminalCommand(blockKey, block.code)
+                            }
+                          >
+                            İzin ver
+                          </button>
+                          <button
+                            type="button"
+                            className="ai-chat__termbtn ai-chat__termbtn--deny"
+                            onClick={() =>
+                              setTerminalDecisions((current) => ({
+                                ...current,
+                                [blockKey]: 'denied',
+                              }))
+                            }
+                          >
+                            Reddet
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="ai-chat__termstatus">
+                          {decision === 'done' ? 'Çalıştırıldı' : decision === 'denied' ? 'Reddedildi' : 'Çalıştırılıyor'}
+                        </span>
+                      ))}
+                    {!needsPermission && (
+                      <button
+                        type="button"
+                        className="ai-chat__termbtn"
+                        onClick={() => runTerminalCommand(blockKey, block.code)}
+                      >
+                        {terminalDecisions[blockKey] === 'done' ? 'Çalıştı' : 'Çalıştır'}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         ))}
         {ai.status === 'computing' && (
