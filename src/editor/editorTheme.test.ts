@@ -49,9 +49,9 @@ describe('defineEditorTheme', () => {
     expect(colorOf('comment')).toBe('#4a6b8c');
   });
 
-  it('teşhis hatası rengini kırmızı tanımlar', () => {
+  it('teşhis işaretlerini mavi tanımlar', () => {
     defineEditorTheme();
     const { colors } = themeOfLastCall();
-    expect(colors['editorError.foreground']).toBe('#FF5252');
+    expect(colors['editorError.foreground']).toBe('#00E5FF');
   });
 });

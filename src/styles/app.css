@@ -115,6 +115,8 @@ body,
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: none;
+  width: 150px;
   height: 34px;
   padding: 0 4px 0 12px;
   border-right: 1px solid var(--border-dim);
@@ -133,6 +135,11 @@ body,
 
 .tab-bar__select {
   appearance: none;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   border: none;
   background: transparent;
   padding: 0;
@@ -141,6 +148,7 @@ body,
   font-size: 12px;
   border-radius: 0;
   cursor: pointer;
+  text-align: left;
 }
 
 .tab-bar__item--active .tab-bar__select {
@@ -476,7 +484,7 @@ body,
   flex: none;
   display: inline-flex;
   align-items: stretch;
-  max-width: 170px;
+  width: 150px;
   border: 1px solid var(--border-dim);
   border-radius: 0;
   background: transparent;
@@ -580,23 +588,24 @@ body,
   align-items: center;
   gap: 6px;
   padding: 2px 8px;
-  border: 1px solid var(--error);
+  border: 1px solid var(--holo-cyan);
   border-radius: 0;
-  background: rgba(255, 82, 82, 0.1);
+  background: rgba(0, 229, 255, 0.1);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   font-family: var(--font-display);
   font-size: 11px;
   letter-spacing: 1px;
-  color: var(--error);
-  box-shadow: 0 0 12px rgba(255, 82, 82, 0.35);
+  color: var(--holo-ice);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
 }
 
 .error-indicator__dot {
   width: 6px;
   height: 6px;
   border-radius: 0;
-  background: var(--error);
+  background: var(--holo-cyan);
 }
 
 .error-indicator__count {

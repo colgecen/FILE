@@ -31,8 +31,9 @@ export function defineEditorTheme(): void {
       'minimap.background': '#0A141F',
       'minimapSlider.background': 'rgba(0,210,255,0.15)',
       'minimapSlider.hoverBackground': 'rgba(0,210,255,0.25)',
-      'editorError.foreground': '#FF5252',
-      'editorError.border': '#FF5252',
+      'editorError.foreground': '#00E5FF',
+      'editorError.border': '#00E5FF',
+      'editorOverviewRuler.errorForeground': 'rgba(0,229,255,0.7)',
     },
   });
 }
