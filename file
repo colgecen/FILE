@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 #
-# derle — etkileşimli üretim/paket derleme aracı
+# file — etkileşimli üretim/paket derleme aracı
 #
 # Kullanım:
-#   ./derle                      -> etkileşimli menü (OS seç -> format seç -> derle)
-#   ./derle --list               -> tüm derleme seçeneklerini listele
-#   ./derle linux appimage       -> direkt derle (argümanlı, menüsüz)
-#   ./derle windows portable
-#   ./derle macos dmg
-#   ./derle --install            -> ~/.local/bin'e sembolik bağ kur,
-#                                  sonra her klasörden `derle` yazman yeterli
-#   ./derle --help               -> yardım
+#   ./file                      -> etkileşimli menü (OS seç -> format seç -> derle)
+#   ./file --list               -> tüm derleme seçeneklerini listele
+#   ./file linux appimage       -> direkt derle (argümanlı, menüsüz)
+#   ./file windows portable
+#   ./file macos dmg
+#   ./file --install            -> ~/.local/bin'e sembolik bağ kur,
+#                                  sonra her klasörden `file` yazman yeterli
+#   ./file --help               -> yardım
 #
 # Geçerli hedefler (package.json > build alanıyla birebir):
 #   linux   : appimage | deb | rpm | targz
@@ -47,11 +47,11 @@ usage() {
   banner
   echo
   echo "Kullanım:"
-  echo "  ./derle                      Etkileşimli menü"
-  echo "  ./derle <os> <format>        Direkt derle"
-  echo "  ./derle --list               Seçenekleri listele"
-  echo "  ./derle --install            Komutu sisteme kur (her yerden 'derle')"
-  echo "  ./derle --help               Bu yardım"
+  echo "  ./file                      Etkileşimli menü"
+  echo "  ./file <os> <format>        Direkt derle"
+  echo "  ./file --list               Seçenekleri listele"
+  echo "  ./file --install            Komutu sisteme kur (her yerden 'file')"
+  echo "  ./file --help               Bu yardım"
   echo
   echo "Hedefler:"
   echo "  linux   : appimage | deb | rpm | targz"
@@ -59,8 +59,8 @@ usage() {
   echo "  macos   : dmg | zip"
   echo
   echo "Örnekler:"
-  echo "  ./derle linux appimage"
-  echo "  ./derle windows portable"
+  echo "  ./file linux appimage"
+  echo "  ./file windows portable"
   echo
   echo "Not: paketleme öncesi typecheck + lint + test + build zinciri çalışır."
   echo "Windows/macOS paketleri Linux üstünde ek araç isteyebilir (wine vb.)."
@@ -75,10 +75,10 @@ list_targets() {
 do_install() {
   local bindir="$HOME/.local/bin"
   mkdir -p "$bindir"
-  ln -sf "$ROOT/derle" "$bindir/derle"
-  echo "Kuruldu: $bindir/derle -> $ROOT/derle"
+  ln -sf "$ROOT/file" "$bindir/file"
+  echo "Kuruldu: $bindir/file -> $ROOT/file"
   case ":$PATH:" in
-    *":$bindir:"*) echo "PATH zaten '$bindir' içeriyor. Artık her klasörden 'derle' yazabilirsin." ;;
+    *":$bindir:"*) echo "PATH zaten '$bindir' içeriyor. Artık her klasörden 'file' yazabilirsin." ;;
     *)
       echo "NOT: '$bindir' PATH'te yok. Şu satırı ~/.bashrc'ye ekle:"
       echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
@@ -222,11 +222,11 @@ case "${1:-}" in
     do_install
     ;;
   --version|-v)
-    echo "derle $VERSION"
+    echo "file $VERSION"
     ;;
   linux|windows|macos|darwin)
     if [ $# -lt 2 ]; then
-      echo "Format eksik. Örnek: ./derle $1 <format>"
+      echo "Format eksik. Örnek: ./file $1 <format>"
       list_targets
       exit 1
     fi
