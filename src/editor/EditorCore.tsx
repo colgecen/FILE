@@ -12,21 +12,6 @@ import { defineEditorTheme, EDITOR_THEME_NAME } from './editorTheme';
 import { resolveModel, touchModel } from './editorModel';
 import { installMonacoEnvironment, monaco } from './monacoSetup';
 
-type TrailBox = { readonly left: number; readonly top: number; readonly height: number };
-
-const TRAIL_MS = 350;
-
-function spawnTrail(host: HTMLDivElement, box: TrailBox): void {
-  const mark = document.createElement('div');
-  mark.className = 'editor-trail__mark';
-  mark.style.setProperty('--trail-x', `${box.left}px`);
-  mark.style.setProperty('--trail-y', `${box.top}px`);
-  mark.style.setProperty('--trail-h', `${box.height}px`);
-  host.appendChild(mark);
-  requestAnimationFrame(() => mark.classList.add('editor-trail__mark--fade'));
-  window.setTimeout(() => mark.remove(), TRAIL_MS);
-}
-
 const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
   minimap: { enabled: false },
@@ -35,14 +20,14 @@ const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   fontLigatures: true,
   fontSize: 13,
   lineHeight: 20,
-  cursorStyle: 'block-outline',
-  cursorSmoothCaretAnimation: 'on',
+  cursorStyle: 'line',
+  cursorBlinking: 'smooth',
+  cursorSmoothCaretAnimation: 'off',
   glyphMargin: true,
 };
 
 export function EditorCore({ file }: { readonly file: OpenFile | null }): React.JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null);
-  const trailHostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   useEffect(() => {
@@ -54,17 +39,10 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     const editor = monaco.editor.create(host, BASE_OPTIONS);
     editorRef.current = editor;
     setActiveEditor(editor);
-    const trailHost = trailHostRef.current;
     const cursorDisposable = editor.onDidChangeCursorPosition((event) => {
       const model = editor.getModel();
       if (model === null) return;
       cursorModel.update(model.uri.path, event.position.lineNumber, event.position.column);
-      if (trailHost !== null) {
-        const box = editor.getScrolledVisiblePosition(event.position);
-        if (box !== null) {
-          spawnTrail(trailHost, box);
-        }
-      }
     });
     const contentDisposable = editor.onDidChangeModelContent(() => {
       const model = editor.getModel();
@@ -132,7 +110,6 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     <div className="editor-core">
       {file === null && <div className="editor-core__placeholder">Dosya seçin</div>}
       <div ref={hostRef} className="editor-core__host" />
-      <div ref={trailHostRef} className="editor-core__trail" aria-hidden="true" />
     </div>
   );
 }
