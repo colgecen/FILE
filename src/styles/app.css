@@ -717,6 +717,55 @@ body,
   }
 }
 
+.command-hud--closing .command-hud__panel {
+  animation: crt-off 0.24s cubic-bezier(0.55, 0, 0.85, 0.4) forwards;
+}
+
+@keyframes crt-off {
+  0% {
+    transform: scale(1, 1);
+    filter: brightness(1);
+  }
+  35% {
+    transform: scale(1, 0.92);
+    filter: brightness(2.5) blur(1px);
+  }
+  70% {
+    transform: scale(1, 0.006);
+    filter: brightness(8) blur(3px);
+  }
+  100% {
+    transform: scale(0.001, 0.004);
+    filter: brightness(14) blur(6px);
+  }
+}
+
+.command-hud__sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(210, 255, 255, 0.35) 48%, rgba(255, 255, 255, 0.6) 50%, rgba(210, 255, 255, 0.35) 52%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+  animation: sweep-down 0.3s 0.05s ease-out forwards;
+}
+
+@keyframes sweep-down {
+  0% {
+    opacity: 1;
+    transform: scaleY(0.06);
+    transform-origin: top;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}
+
 .command-hud__corner {
   position: absolute;
   width: 22px;

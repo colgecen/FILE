@@ -1,26 +1,48 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCore } from '../layout/AppShell';
 import { useFocusZone } from '../core/focus';
 import { paletteModel, usePaletteState } from '../core/palette';
+
+const CLOSE_MS = 240;
 
 export function CommandHUD(): React.JSX.Element | null {
   const zone = useFocusZone();
   const state = usePaletteState();
   const { registry } = useCore();
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevZone = useRef(zone);
+  const [visible, setVisible] = useState(zone === 'palette');
+  const [closing, setClosing] = useState(false);
 
   useEffect(() => {
+    const was = prevZone.current;
+    prevZone.current = zone;
     if (zone === 'palette') {
+      setVisible(true);
+      setClosing(false);
+      return;
+    }
+    if (was !== 'palette') return;
+    setClosing(true);
+    const timer = window.setTimeout(() => {
+      setVisible(false);
+      setClosing(false);
+    }, CLOSE_MS);
+    return () => window.clearTimeout(timer);
+  }, [zone]);
+
+  useEffect(() => {
+    if (visible && !closing) {
       inputRef.current?.focus();
       inputRef.current?.select();
     }
-  }, [zone]);
+  }, [visible, closing]);
 
-  if (zone !== 'palette') return null;
+  if (!visible) return null;
 
   return (
     <div
-      className="command-hud"
+      className={closing ? 'command-hud command-hud--closing' : 'command-hud'}
       role="dialog"
       aria-label="Komut paleti"
       onMouseDown={(event) => {
@@ -28,6 +50,7 @@ export function CommandHUD(): React.JSX.Element | null {
       }}
     >
       <div className="command-hud__panel holo-scan">
+        <span className="command-hud__sweep" aria-hidden="true" />
         <span className="command-hud__corner command-hud__corner--tl" aria-hidden="true" />
         <span className="command-hud__corner command-hud__corner--tr" aria-hidden="true" />
         <span className="command-hud__corner command-hud__corner--bl" aria-hidden="true" />

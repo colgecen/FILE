@@ -26,6 +26,12 @@ describe('komut paleti uçtan uca akışlar', () => {
     });
   });
 
+  async function waitForClose(): Promise<void> {
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 320));
+    });
+  }
+
   it('Ctrl+I, tree akışıyla gezgini açar ve odaklar', async () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
@@ -52,12 +58,13 @@ describe('komut paleti uçtan uca akışlar', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(focusManager.get()).toBe('explorer');
+    await waitForClose();
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(explorerModel.getState().isOpen).toBe(true);
     expect(screen.getByRole('region', { name: 'Dosya gezgini' })).toBeInTheDocument();
   });
 
-  it('açık dosya adı aranınca Enter o sekmeye geçirir', () => {
+  it('açık dosya adı aranınca Enter o sekmeye geçirir', async () => {
     const a: OpenFile = { path: '/p/a.txt', name: 'a.txt', content: '', language: 'text' };
     const b: OpenFile = { path: '/p/b.txt', name: 'b.txt', content: '', language: 'text' };
     render(<AppShell />);
@@ -75,10 +82,11 @@ describe('komut paleti uçtan uca akışlar', () => {
       fireEvent.keyDown(window, { key: 'Enter' });
     });
     expect(tabsModel.getState().activeId).toBe('/p/a.txt');
+    await waitForClose();
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('yön tuşları seçimi taşır, Enter seçilen ikinci komutu çalıştırır', () => {
+  it('yön tuşları seçimi taşır, Enter seçilen ikinci komutu çalıştırır', async () => {
     const core = createCore();
     let executed: string | null = null;
     core.registry.register({
@@ -115,6 +123,7 @@ describe('komut paleti uçtan uca akışlar', () => {
     });
     expect(executed).toBe('second');
     expect(focusManager.get()).toBe('editor');
+    await waitForClose();
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 });

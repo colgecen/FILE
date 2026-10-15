@@ -84,6 +84,12 @@ describe('palet klavye akışı', () => {
     });
   });
 
+  async function waitForClose(): Promise<void> {
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 320));
+    });
+  }
+
   it('Ctrl+I paleti açar, yön tuşu seçimi kaydırır', () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
@@ -96,7 +102,7 @@ describe('palet klavye akışı', () => {
     expect(paletteModel.getState().activeIndex).toBe(1);
   });
 
-  it('Enter seçili komutu çalıştırır ve paleti kapatır', () => {
+  it('Enter seçili komutu çalıştırır ve paleti kapatır', async () => {
     const core = createCore();
     let executed = false;
     core.registry.register({
@@ -116,6 +122,8 @@ describe('palet klavye akışı', () => {
     fireEvent.keyDown(window, { key: 'Enter' });
     expect(executed).toBe(true);
     expect(focusManager.get()).toBe('editor');
+    expect(document.querySelector('.command-hud--closing')).not.toBeNull();
+    await waitForClose();
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(paletteModel.getState().query).toBe('');
   });
@@ -142,16 +150,19 @@ describe('palet klavye akışı', () => {
     });
     expect(executed).toBe(true);
     expect(focusManager.get()).toBe('editor');
+    expect(document.querySelector('.command-hud--closing')).not.toBeNull();
+    await waitForClose();
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('Esc paleti kapatır ve sorguyu temizler', () => {
+  it('Esc paleti kapatır ve sorguyu temizler', async () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
     const input = screen.getByPlaceholderText('Komut yaz…');
     fireEvent.change(input, { target: { value: 'kaydet' } });
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(focusManager.get()).toBe('editor');
+    await waitForClose();
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(paletteModel.getState().query).toBe('');
   });
@@ -171,12 +182,13 @@ describe('palet klavye akışı', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
-  it('Esc ile önceki odak bölgesine dönülür', () => {
+  it('Esc ile önceki odak bölgesine dönülür', async () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'F1' });
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(focusManager.get()).toBe('menubar');
+    await waitForClose();
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
@@ -230,12 +242,13 @@ describe('palet klavye akışı', () => {
     expect(items[0]!.className).toContain('command-hud__item--active');
   });
 
-  it('zemine tıklama paleti kapatır', () => {
+  it('zemine tıklama paleti kapatır', async () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'p', ctrlKey: true });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     const backdrop = document.querySelector('.command-hud')!;
     fireEvent.mouseDown(backdrop);
+    await waitForClose();
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(focusManager.get()).toBe('editor');
   });
