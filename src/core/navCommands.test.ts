@@ -155,4 +155,18 @@ describe('navCommands · menubar', () => {
     await registry.run('menubar.activate');
     expect(menuModel.getState().feedback).toBeNull();
   });
+
+  it('Enter başarılı komutta menüyü kapatıp odağı döndürür', async () => {
+    const registry = setup();
+    registry.register({
+      id: 'file.new.file',
+      title: 'Yeni Dosya',
+      category: 'file',
+      run: () => ({ ok: true }),
+    });
+    await registry.run('menubar.toggle');
+    await registry.run('menubar.activate');
+    expect(menuModel.getState().openTop).toBeNull();
+    expect(focusManager.get()).toBe('editor');
+  });
 });

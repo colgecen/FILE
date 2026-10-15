@@ -51,6 +51,10 @@ export function MenuPanel({ level = 0 }: { level?: number }): React.JSX.Element 
             menuModel.moveRight();
           }
         }}
+        onClick={() => {
+          menuModel.setActiveItem(selectable);
+          void registry.run('menubar.activate');
+        }}
       >
         <span className="menu-panel__label">{item.label}</span>
         {item.commandId !== undefined && registry.get(item.commandId)?.placeholder === true && (

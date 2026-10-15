@@ -90,7 +90,8 @@ export function registerNavCommands(registry: CommandRegistry): void {
         const def = registry.get(result.commandId);
         const cmdResult = await registry.run(result.commandId);
         if (cmdResult.ok) {
-          menuModel.setFeedback(null);
+          menuModel.close();
+          focusManager.returnToPrevious();
         } else if (def?.placeholder === true) {
           menuModel.setFeedback(`Yakında: ${def.title}`);
         } else {

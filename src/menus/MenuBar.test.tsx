@@ -65,6 +65,15 @@ describe('MenuBar', () => {
     expect(screen.getAllByRole('menu')).toHaveLength(2);
   });
 
+  it('fare tıklaması alt menüyü açar', () => {
+    renderShell();
+    act(() => {
+      menuModel.openAt(0);
+    });
+    fireEvent.click(screen.getByText('Son Kullanılanlar'));
+    expect(menuModel.getState().path).toHaveLength(1);
+  });
+
   it('yer tutucu komutlar Yakında rozeti taşır', () => {
     renderShell();
     for (let index = 0; index < 9; index += 1) {
