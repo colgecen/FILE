@@ -129,6 +129,27 @@ Format: **Durum** — Bağlam — Karar — Sonuçlar.
 - **Karar:** Sol panel `GitPanel` (`src/ui/GitPanel.tsx:1-*`, `src/styles/git.css`, genişlik %20, `1px var(--border)`, `border-radius:0`) `AppShell`'e `ExplorerView` yanına koşullu (`gitModel.isOpen`) eklenir; IPC 9 kanal (`git:status/diff/log/commit/push/pull/checkout/add/restore`, `electron/main/gitHandlers.ts:1-*`, `electron/shared/api-types.ts:1-*`, `electron/preload/index.ts:12-49`, `ARCHITECTURE.md §3`) Main'de `execFile('git', …)` ile, yol doğrulama ve boyut limiti ile; model `src/core/gitModel.ts:1-*` (`branch/files/staged/log/isOpen/selected`); komutlar `src/core/gitCommands.ts:1-*` + `Keymap` `git` zone (`src/core/defaultBindings.ts:1-*`, `src/core/types.ts:84`, `src/core/focus.ts:7-43`); tümü `window.api` ve `CommandRegistry` üzerinden, çakışma `UU` → `!` `var(--error)` yalnızca çakışma satırında (`ARCHITECTURE.md §7.1` istisnası).
 - **Sonuçlar:** `Görünüm → Kaynak Kontrolü` veya `Ctrl+I` → `git` ile panel açılır, `Tab/yön/Enter` `Ctrl+Enter` `Push`/`Pull` tamamen klavye ile, `StatusBar` branch `IDLE`, hata yalnızca gerçek git hatasında kırmızı; `ExplorerView` (1/7) ile yan yana çakışmaz.
 
+## D-019 Özel imleç ve iz efektinin kaldırılması
+
+- **Durum:** Kabul edildi
+- **Bağlam:** `ReticleCursor` (global `cursor:none` + nişangah + `reticle-lock--active` odak çerçevesi) ve `EditorCore` mavi iz (`spawnTrail`, `block-outline` imleç) kullanıcı geri bildirimiyle yorucu bulundu; fare imleci görünmezliği erişilebilirliği düşürüyor, iz efekti her imleç hareketinde DOM üretiyor.
+- **Karar:** Üç katman da kaldırılır: (a) `cursor:none` → native `auto`, `ReticleCursor.tsx` silinir, `AppShell` mount ve `app.css` `.reticle*` stilleri temizlenir; (b) `spawnTrail/trailHost/trail` DOM'u silinir; (c) Monaco `cursorStyle:'line'`, `cursorBlinking:'smooth'`, `cursorSmoothCaretAnimation:'off'` olur. Mantıksal `cursor.ts` (`Ln:Col` besleme) korunur.
+- **Sonuçlar:** `ARCHITECTURE §7.4` güncellenir; `EditorCore.test.tsx` imleç/iz beklentileri sadeleşir; klavye modeli etkilenmez.
+
+## D-020 Holografik token genişlemesi
+
+- **Durum:** Kabul edildi
+- **Bağlam:** D-007 yalnızca mavi tonlarına izin veriyordu; holografik derinlik (cam, ızgara, tarama, ışıma) tek vurgu rengiyle verilemiyor, `ai.css/help.css` tarafında tanımsız `var(--bg-panel/--fg)` borcu var.
+- **Karar:** Mavi ailede kalınarak palet genişletilir (kırmızı yine yalnızca hata): `--holo-cyan #00E5FF` (birincil ışıma), `--holo-violet #7C4DFF` (ikincil derinlik), `--holo-ice #B8E6FF` (buz vurgu), `--glass-bg rgba(3,8,18,.72)` (cam zemin), `--grid-line rgba(124,77,255,.12)` (ızgara), `--scan rgba(0,210,255,.06)` (tarama), `--glow-soft 0 0 12px rgba(0,229,255,.35)` (senkron ışıma), `--sync-speed 2.4s` (tek nabız süresi). `tokens.css` ve `theme.ts` birebir senkron tutulur.
+- **Sonuçlar:** `ARCHITECTURE §7.1` tablosu genişler; yeni renk için ayrıca ADR gerekmez; `border-radius:0` ve 1px kuralı korunur.
+
+## D-021 Senkron nabız sistemi (kütüphanesiz)
+
+- **Durum:** Kabul edildi
+- **Bağlam:** Aşırı senkron holografik his için tüm panellerin aynı fazda atması isteniyor; `framer-motion/react-spring` ~100KB yük + ek render maliyeti + IPC/Monaco ile etkileşim riski getirir.
+- **Karar:** Saf CSS: tek `@keyframes holo-pulse` + `:root --sync-speed`, tüm çerçeveler/aktif durumlar aynı animasyonu paylaşır; şiddeti bileşen belirler (kaydetme cyan glow, hata kırmızı pulse). `prefers-reduced-motion` tümünü sıfırlar. Yeni dosyalar: `src/styles/holo.css` (cam/tarama/ızgara/ışıma yardımcıları).
+- **Sonuçlar:** Ek bağımlılık yok (AGENTS §8 korunur); 60fps için yalnızca GPU-dostu `opacity/box-shadow` canlandırılır; klavye akışları etkilenmez.
+
 ## D-015 Doküman ve iletişim dili
 
 - **Durum:** Kabul edildi

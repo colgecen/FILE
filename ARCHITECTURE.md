@@ -195,10 +195,18 @@ Yalnızca aşağıdaki tokenlar kullanılabilir. Salı bir renk, en az bir belir
 | `--bg-base`        | `#000000`                   | Uygulama geneli arka plan |
 | `--bg-editor`      | `#03050A`                   | Monaco arka planı |
 | `--bg-overlay`     | `rgba(0,0,0,0.9)`           | Komut paleti / paneller |
+| `--glass-bg`       | `rgba(3,8,18,0.72)`         | Holografik cam zemin |
 | `--text-primary`   | `#FFFFFF`                   | Düz kod, ana metin |
 | `--accent`         | `#00D2FF`                   | Vurgu mavisi: kenarlıklar, anahtar kelimeler, imleç, durum vurguları |
+| `--holo-cyan`      | `#00E5FF`                   | Birincil holografik ışıma |
+| `--holo-violet`    | `#7C4DFF`                   | İkincil derinlik / ızgara |
+| `--holo-ice`       | `#B8E6FF`                   | Buz vurgu (aktif metin) |
 | `--accent-soft`    | `#82AAFF`                   | String ifadeleri |
 | `--accent-dim`     | `#4A6B8C`                   | Yorumlar, ikincil bilgi |
+| `--grid-line`      | `rgba(124,77,255,0.12)`     | Holografik ızgara çizgisi |
+| `--scan`           | `rgba(0,210,255,0.06)`      | Tarama çizgisi dolgusu |
+| `--glow-soft`      | `0 0 12px rgba(0,229,255,0.35)` | Senkron ışıma gölgesi |
+| `--sync-speed`     | `2.4s`                      | Tek nabız süresi (D-021) |
 | `--selection`      | `rgba(0,85,255,0.4)`        | Metin seçimi arka planı |
 | `--line-active`    | `rgba(0,210,255,0.05)`      | Aktif satır vurgusu |
 | `--error`          | `#FF5252`                   | **Yalnızca hata**: teşhis kıvrımları, hata pencere/paneller |
@@ -215,13 +223,16 @@ Yalnızca aşağıdaki tokenlar kullanılabilir. Salı bir renk, en az bir belir
 
 - Pencereleri ve bölmeleri ayıran çizgiler **1px** kalınlığında vurgu mavisidir.
 - Köşeler asla yuvarlatılmaz (`border-radius: 0`).
-- Tek pencereli uygulama; Linux kompositor'ü destekliyorsa saydam pencere + `backdrop-filter` ile hafif cam/hologram etkisi; desteklemiyorsa mat siyah zemin (fallback).
+- Tek pencereli uygulama; Linux kompositor'ü destekliyorsa saydam pencere + `backdrop-filter` ile cam/hologram etkisi (`--glass-bg`, `--grid-line` ızgarası, `--scan` taraması); desteklemiyorsa mat siyah zemin (fallback).
+- Holografik yardımcılar `src/styles/holo.css` içindedir (`.holo-glass`, `.holo-scan`, `.holo-grid`, `.holo-glow`); tümü tema tokenlarına bağlıdır, inline style yasaktır.
 
 ### 7.4 Animasyon ve Geri Bildirim
 
-- **Kaydetme:** Dosya kaydedilince pencere/sınır çizgileri kısa süreli mavi "glow" ile parlar.
+- **Senkron nabız (D-021):** Tek `@keyframes holo-pulse` + `--sync-speed: 2.4s`; menü alt çizgisi, palet çerçevesi, sekme ışığı, durum çubuğu ve pane ayraçları aynı fazda atar. Şiddeti bileşen belirler.
+- **Kaydetme:** Dosya kaydedilince pencere/sınır çizgileri kısa süreli cyan "glow" ile parlar (`--glow-soft`).
 - **Hata:** Kırmızı renk yalnızca buradadır. Hata oluşursa ilgili panelin çerçevesi kırmızı yanıp söner; editör teşhisleri kırmızı kıvrımlarla gösterilir; durum çubuğunda kırmızı HATA göstergesi belirir.
-- **İmleç:** İçi boş (block-outline) vurgu mavisi kutu; hareket sonrası saliselik sönümlenen mavi iz dokusu editör overlay katmanında çizilir.
+- **İmleç (D-019):** Özel nişangah ve iz efekti kaldırıldı. Monaco native `line` imleç + `smooth` yanıp sönme kullanılır; fare imleci native `auto` davranır.
+- `prefers-reduced-motion` tüm animasyonları sıfırlar.
 
 ## 8. Bellek ve Çizim Stratejisi
 
