@@ -5,7 +5,7 @@ function fakeApi(overrides: Record<string, unknown> = {}): Parameters<typeof sca
   return {
     aiModels: vi.fn(async () => ({ ok: true, models: [] })),
     aiLocalModels: vi.fn(async () => ({ ok: false, models: [], error: 'yok' })),
-    aiOpencodeModels: vi.fn(async () => ({ ok: false, models: [], error: 'yok' })),
+    aiOpencodeModels: vi.fn(async () => ({ ok: false, models: [], error: 'opencode CLI bulunamadı' })),
     aiKeyHas: vi.fn(async () => ({ present: false })),
     aiEnvScan: vi.fn(async () => []),
     ...overrides,
@@ -81,35 +81,47 @@ describe('scanCloudModels', () => {
   });
 
   it('opencode modellerini anahtarsız yerel CLI listesinden alır', async () => {
+    const local = vi.fn(async () => ({ ok: true, models: ['katalog-modeli'] }));
     const api = fakeApi({
       aiOpencodeModels: vi.fn(async () => ({ ok: true, models: ['big-pickle', 'cat-jam-free'] })),
-      aiLocalModels: vi.fn(async () => ({ ok: true, models: ['katalog-modeli'] })),
+      aiLocalModels: local,
     });
     const result = await scanCloudModels(api, null);
     const opencode = result.probed.find((probe) => probe.provider === 'opencode');
     expect(opencode?.ok).toBe(true);
     expect(result.models.map((model) => model.id)).toEqual(['big-pickle', 'cat-jam-free']);
-    expect(api.aiLocalModels).not.toHaveBeenCalled();
+    expect(local).not.toHaveBeenCalled();
     expect(api.aiModels).not.toHaveBeenCalledWith(
       expect.objectContaining({ provider: 'opencode' }),
     );
   });
 
-  it('CLI yoksa opencode yerel katalogdan listelenir', async () => {
+  it('CLI yoksa yerel katalog kullanılmaz, prob hata verir', async () => {
+    const local = vi.fn(async () => ({ ok: true, models: ['gpt-5.4', 'big-pickle'] }));
+    const api = fakeApi({ aiLocalModels: local });
+    const result = await scanCloudModels(api, null);
+    const opencode = result.probed.find((probe) => probe.provider === 'opencode');
+    expect(opencode?.ok).toBe(false);
+    expect(opencode?.error).toBe('opencode CLI bulunamadı');
+    expect(local).not.toHaveBeenCalled();
+    expect(result.models.map((model) => model.id)).not.toContain('gpt-5.4');
+  });
+
+  it('CLI hatası proba taşınır', async () => {
     const api = fakeApi({
-      aiLocalModels: vi.fn(async (provider: string) =>
-        provider === 'opencode'
-          ? { ok: true, models: ['gpt-5.4', 'big-pickle'] }
-          : { ok: false, models: [], error: 'yok' },
-      ),
+      aiOpencodeModels: vi.fn(async () => ({
+        ok: false,
+        models: [],
+        error: 'opencode model listesi alınamadı',
+      })),
     });
     const result = await scanCloudModels(api, null);
     const opencode = result.probed.find((probe) => probe.provider === 'opencode');
-    expect(opencode?.ok).toBe(true);
-    expect(result.models.map((model) => model.id)).toEqual(['gpt-5.4', 'big-pickle']);
+    expect(opencode?.ok).toBe(false);
+    expect(opencode?.error).toBe('opencode model listesi alınamadı');
   });
 
-  it('CLI ve katalog yoksa opencode probu hata verir, uzak liste denenmez', async () => {
+  it('CLI yoksa opencode probu hata verir, uzak liste denenmez', async () => {
     const api = fakeApi({
       aiModels: vi.fn(async () => ({ ok: true, models: ['uzak-model'] })),
     });

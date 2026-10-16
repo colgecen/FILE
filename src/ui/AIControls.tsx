@@ -3,7 +3,7 @@ import type { AiEnvEntry } from '../../electron/shared/api-types';
 import { useCore } from '../layout/AppShell';
 import { useAIEngine } from '../ai/engine';
 import { selectModel } from '../ai/aiCommands';
-import { useModelCatalog } from '../ai/catalog';
+import { refreshCatalogIfStale, useModelCatalog } from '../ai/catalog';
 import { loadActiveRef } from '../ai/modelStore';
 import { displayName, getProvider, PROVIDERS, type ModelRef, type ProviderId } from '../ai/providers';
 import { useSessions } from '../ai/sessions';
@@ -27,6 +27,7 @@ export function AIModelToolbar(): React.JSX.Element {
     if (open) {
       setQuery('');
       requestAnimationFrame(() => searchRef.current?.focus());
+      void refreshCatalogIfStale(window.api);
     }
   }, [open]);
 

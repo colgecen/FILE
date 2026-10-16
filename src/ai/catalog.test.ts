@@ -1,6 +1,21 @@
-import { afterEach, describe, expect, it } from 'vitest';
-import { modelCatalog } from './catalog';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { modelCatalog, refreshCatalogIfStale } from './catalog';
 import { DEFAULT_MODEL } from './models';
+
+function fakeRefreshApi(): Parameters<typeof refreshCatalogIfStale>[0] & {
+  readonly aiOpencodeModels: ReturnType<typeof vi.fn>;
+} {
+  return {
+    aiPing: vi.fn(async () => ({ ok: false, error: 'yok' })),
+    aiModels: vi.fn(async () => ({ ok: false, models: [], error: 'yok' })),
+    aiOllamaTags: vi.fn(async () => ({ ok: false, models: [], error: 'yok' })),
+    aiKeyHas: vi.fn(async () => ({ present: false })),
+    aiEnvScan: vi.fn(async () => []),
+    aiOpencodeModels: vi.fn(async () => ({ ok: false, models: [], error: 'yok' })),
+  } as unknown as Parameters<typeof refreshCatalogIfStale>[0] & {
+    readonly aiOpencodeModels: ReturnType<typeof vi.fn>;
+  };
+}
 
 describe('ModelCatalog', () => {
   afterEach(() => {
@@ -53,5 +68,28 @@ describe('ModelCatalog', () => {
     ]);
     modelCatalog.reset();
     expect(modelCatalog.all().every((entry) => entry.provider === 'builtin')).toBe(true);
+  });
+});
+
+describe('refreshCatalogIfStale', () => {
+  afterEach(() => {
+    modelCatalog.reset();
+    localStorage.clear();
+  });
+
+  it('bayat katalogu yeniler, taze katalogda tekrar taramaz', async () => {
+    const api = fakeRefreshApi();
+    await expect(refreshCatalogIfStale(api)).resolves.toBe(true);
+    expect(api.aiOpencodeModels).toHaveBeenCalledTimes(1);
+
+    await expect(refreshCatalogIfStale(api)).resolves.toBe(false);
+    expect(api.aiOpencodeModels).toHaveBeenCalledTimes(1);
+  });
+
+  it('yaş sınırı geçilince yeniden tarar', async () => {
+    const api = fakeRefreshApi();
+    await expect(refreshCatalogIfStale(api)).resolves.toBe(true);
+    await expect(refreshCatalogIfStale(api, -1)).resolves.toBe(true);
+    expect(api.aiOpencodeModels).toHaveBeenCalledTimes(2);
   });
 });

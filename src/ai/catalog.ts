@@ -85,7 +85,7 @@ export function useModelCatalog(): CatalogSnapshot {
 
 type RefreshApi = Pick<
   Api,
-  'aiPing' | 'aiModels' | 'aiLocalModels' | 'aiOpencodeModels' | 'aiOllamaTags' | 'aiKeyHas' | 'aiEnvScan'
+  'aiPing' | 'aiModels' | 'aiOpencodeModels' | 'aiOllamaTags' | 'aiKeyHas' | 'aiEnvScan'
 >;
 
 let refreshing = false;
@@ -104,4 +104,15 @@ export async function refreshCatalog(api: RefreshApi): Promise<{ local: number; 
   } finally {
     refreshing = false;
   }
+}
+
+/** Katalog bayatsa yeniler; tazeyse ağa hiç çıkmaz. Model seçici açılışında çağrılır. */
+export async function refreshCatalogIfStale(
+  api: RefreshApi,
+  maxAgeMs = 60_000,
+): Promise<boolean> {
+  const { updatedAt } = modelCatalog.getSnapshot();
+  if (updatedAt > 0 && Date.now() - updatedAt <= maxAgeMs) return false;
+  await refreshCatalog(api);
+  return true;
 }

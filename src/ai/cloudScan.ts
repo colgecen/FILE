@@ -2,10 +2,7 @@ import type { AiEnvEntry, AiModelsResult, Api } from '../../electron/shared/api-
 import { PROVIDERS, type ModelRef, type ProviderId } from './providers';
 import { safeCall } from './localScan';
 
-type CloudApi = Pick<
-  Api,
-  'aiModels' | 'aiKeyHas' | 'aiEnvScan' | 'aiLocalModels' | 'aiOpencodeModels'
->;
+type CloudApi = Pick<Api, 'aiModels' | 'aiKeyHas' | 'aiEnvScan' | 'aiOpencodeModels'>;
 
 export type CloudProbe = {
   readonly provider: ProviderId;
@@ -32,19 +29,18 @@ export async function scanCloudModels(
   for (const target of targets) {
     const baseUrl = target.id === 'custom' && customUrl !== null ? customUrl : target.defaultBaseUrl;
     if (target.id === 'opencode') {
-      // OpenCode Zen'in uzak /models ucu yok; liste yerel opencode CLI'sinden
-      // (auth-farkında) ya da yerel katalogdan okunur — anahtar gerekmez.
-      const missing: AiModelsResult = { ok: false, models: [], error: 'API yok' };
+      // OpenCode Zen'in uzak /models ucu yok; liste yalnızca yerel opencode
+      // CLI'sinden (auth-farkında) okunur — anahtar gerekmez. Yerel katalog
+      // yedeği bilinçli olarak kullanılmaz: oradaki eski listeler onlarca
+      // kullanılamaz model gösteriyordu.
+      const fallbackError = 'opencode CLI bulunamadı';
+      const missing: AiModelsResult = { ok: false, models: [], error: fallbackError };
       const cli = await safeCall(() => api.aiOpencodeModels(), missing);
-      const local =
-        cli.ok && cli.models.length > 0
-          ? cli
-          : await safeCall(() => api.aiLocalModels('opencode'), missing);
-      if (local.ok && local.models.length > 0) {
+      if (cli.ok && cli.models.length > 0) {
         probed.push({
           provider: target.id,
           ok: true,
-          models: local.models.map((id) => ({
+          models: cli.models.map((id) => ({
             id,
             name: id,
             provider: target.id,
@@ -52,11 +48,15 @@ export async function scanCloudModels(
           })),
         });
       } else {
+        const detail = cli.error;
         probed.push({
           provider: target.id,
           ok: false,
           models: [],
-          error: 'opencode CLI bulunamadı',
+          error:
+            detail !== undefined && detail.length > 0 && detail !== 'API yok'
+              ? detail
+              : fallbackError,
         });
       }
       continue;
