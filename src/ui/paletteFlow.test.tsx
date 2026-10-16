@@ -36,7 +36,7 @@ describe('komut paleti uçtan uca akışlar', () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
     expect(focusManager.get()).toBe('palette');
-    fireEvent.change(screen.getByPlaceholderText('Komut yaz…'), { target: { value: 'tree' } });
+    fireEvent.change(screen.getByLabelText('Komut yaz'), { target: { value: 'tree' } });
     await act(async () => {
       fireEvent.keyDown(window, { key: 'Enter' });
     });
@@ -48,7 +48,7 @@ describe('komut paleti uçtan uca akışlar', () => {
   it('gezgindeyken açılan palet Esc ile gezgine döner, panel açık kalır', async () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
-    fireEvent.change(screen.getByPlaceholderText('Komut yaz…'), { target: { value: 'tree' } });
+    fireEvent.change(screen.getByLabelText('Komut yaz'), { target: { value: 'tree' } });
     await act(async () => {
       fireEvent.keyDown(window, { key: 'Enter' });
     });
@@ -77,7 +77,7 @@ describe('komut paleti uçtan uca akışlar', () => {
       ]);
     });
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
-    fireEvent.change(screen.getByPlaceholderText('Komut yaz…'), { target: { value: 'a.tx' } });
+    fireEvent.change(screen.getByLabelText('Komut yaz'), { target: { value: 'a.tx' } });
     act(() => {
       fireEvent.keyDown(window, { key: 'Enter' });
     });

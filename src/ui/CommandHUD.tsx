@@ -69,7 +69,7 @@ export function CommandHUD(): React.JSX.Element | null {
             ref={inputRef}
             className="command-hud__input"
             type="text"
-            placeholder="Komut yaz…"
+            aria-label="Komut yaz"
             spellCheck={false}
             autoComplete="off"
             value={state.query}

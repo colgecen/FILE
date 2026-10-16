@@ -886,19 +886,8 @@ textarea {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 14px 14px 12px;
-  padding: 10px 13px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.22);
-  transition:
-    border-color 140ms ease,
-    box-shadow 140ms ease;
-}
-
-.command-hud__inputbar:focus-within {
-  border-color: rgba(10, 132, 255, 0.55);
-  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.12);
+  padding: 16px 18px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .command-hud__prompt {
@@ -926,11 +915,6 @@ textarea {
   letter-spacing: 0.005em;
   caret-color: var(--accent);
   outline: none;
-}
-
-.command-hud__input::placeholder {
-  color: var(--text-muted);
-  font-weight: 400;
 }
 
 .command-hud__list {

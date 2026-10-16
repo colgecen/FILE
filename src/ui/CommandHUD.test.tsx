@@ -34,7 +34,7 @@ describe('CommandHUD', () => {
       focusManager.set('palette');
     });
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Komut yaz…')).toBeInTheDocument();
+    expect(screen.getByLabelText('Komut yaz')).toBeInTheDocument();
   });
 
   it('yazılan sorgu listeyi filtreler', () => {
@@ -46,7 +46,7 @@ describe('CommandHUD', () => {
         { id: 'b.save', title: 'Kaydet', category: 'file', run: () => ({ ok: true }) },
       ]);
     });
-    const input = screen.getByPlaceholderText('Komut yaz…');
+    const input = screen.getByLabelText('Komut yaz');
     fireEvent.change(input, { target: { value: 'aç' } });
     expect(screen.getByText('Dosya Aç')).toBeInTheDocument();
     expect(screen.queryByText('Kaydet')).toBeNull();
@@ -158,7 +158,7 @@ describe('palet klavye akışı', () => {
   it('Esc paleti kapatır ve sorguyu temizler', async () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
-    const input = screen.getByPlaceholderText('Komut yaz…');
+    const input = screen.getByLabelText('Komut yaz');
     fireEvent.change(input, { target: { value: 'kaydet' } });
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(focusManager.get()).toBe('editor');
@@ -170,7 +170,7 @@ describe('palet klavye akışı', () => {
   it('açıldığında giriş kutusu DOM odağını alır', () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
-    expect(screen.getByPlaceholderText('Komut yaz…')).toHaveFocus();
+    expect(screen.getByLabelText('Komut yaz')).toHaveFocus();
   });
 
   it('menü çubuğundayken de Ctrl+I paleti açar', () => {
@@ -195,7 +195,7 @@ describe('palet klavye akışı', () => {
   it('giriş kutusundaki Tab odağı kilitlemek için engellenir', () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
-    const input = screen.getByPlaceholderText('Komut yaz…');
+    const input = screen.getByLabelText('Komut yaz');
     const withTab = fireEvent.keyDown(input, { key: 'Tab' });
     expect(withTab).toBe(false);
     expect(focusManager.get()).toBe('palette');
