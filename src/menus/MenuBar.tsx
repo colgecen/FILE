@@ -12,17 +12,17 @@ export function TrafficLights(): React.JSX.Element | null {
     <div className="traffic-lights" data-testid="traffic-lights">
       <button
         type="button"
-        className="traffic traffic--max"
-        title="Ekranı Doldur"
-        aria-label="Ekranı Doldur"
-        onClick={() => void window.api.winToggleMaximize()}
-      />
-      <button
-        type="button"
         className="traffic traffic--min"
         title="Küçült"
         aria-label="Küçült"
         onClick={() => void window.api.winMinimize()}
+      />
+      <button
+        type="button"
+        className="traffic traffic--max"
+        title="Ekranı Doldur"
+        aria-label="Ekranı Doldur"
+        onClick={() => void window.api.winToggleMaximize()}
       />
       <button
         type="button"
