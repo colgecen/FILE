@@ -1,20 +1,29 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { AiChatDoneEvent, AiChatErrorEvent, AiChatTokenEvent } from '../../electron/shared/api-types';
+import type {
+  AiChatDoneEvent,
+  AiChatErrorEvent,
+  AiChatTokenEvent,
+  AiCliSessionEvent,
+} from '../../electron/shared/api-types';
 import { RemoteChatClient, resetRemoteClient } from './remoteClient';
 
 function fakeApi(): {
   api: ConstructorParameters<typeof RemoteChatClient>[0];
   start: ReturnType<typeof vi.fn>;
+  cliStart: ReturnType<typeof vi.fn>;
   abort: ReturnType<typeof vi.fn>;
   emitToken: (event: AiChatTokenEvent) => void;
   emitDone: (event: AiChatDoneEvent) => void;
   emitError: (event: AiChatErrorEvent) => void;
+  emitSession: (event: AiCliSessionEvent) => void;
 } {
   const start = vi.fn(async () => ({ started: true }));
+  const cliStart = vi.fn(async () => ({ started: true }));
   const abort = vi.fn(async () => undefined);
   let tokenFn: ((event: AiChatTokenEvent) => void) | null = null;
   let doneFn: ((event: AiChatDoneEvent) => void) | null = null;
   let errorFn: ((event: AiChatErrorEvent) => void) | null = null;
+  let sessionFn: ((event: AiCliSessionEvent) => void) | null = null;
   const api = {
     aiChatStart: start,
     aiChatAbort: abort,
@@ -30,14 +39,21 @@ function fakeApi(): {
       errorFn = fn;
       return () => undefined;
     }),
+    aiOpencodeChat: cliStart,
+    onAiCliSession: vi.fn((fn: (event: AiCliSessionEvent) => void) => {
+      sessionFn = fn;
+      return () => undefined;
+    }),
   };
   return {
     api,
     start,
+    cliStart,
     abort,
     emitToken: (event) => tokenFn?.(event),
     emitDone: (event) => doneFn?.(event),
     emitError: (event) => errorFn?.(event),
+    emitSession: (event) => sessionFn?.(event),
   };
 }
 
@@ -115,6 +131,58 @@ describe('RemoteChatClient', () => {
       });
     });
     await expect(done).resolves.toBe('API anahtarı yok');
+  });
+
+  it('CLI isteğini oturum bilgisiyle iletir', async () => {
+    const fake = fakeApi();
+    const client = new RemoteChatClient(fake.api);
+    client.attach();
+    const tokens: string[] = [];
+    let session: string | null = null;
+    const done = new Promise<string>((resolve) => {
+      client.sendCli(
+        { model: 'big-pickle', prompt: 'selam', sessionId: null },
+        {
+          onToken: (text) => tokens.push(text),
+          onDone: (text) => resolve(text),
+          onError: () => resolve('hata'),
+          onSession: (id) => {
+            session = id;
+          },
+        },
+      );
+    });
+    await vi.waitFor(() => {
+      expect(fake.cliStart).toHaveBeenCalledWith(
+        expect.objectContaining({ model: 'big-pickle', prompt: 'selam', sessionId: null }),
+      );
+    });
+    const requestId = fake.cliStart.mock.calls[0]?.[0].requestId as string;
+    fake.emitSession({ requestId, sessionId: 'ses-1' });
+    expect(session).toBe('ses-1');
+    fake.emitToken({ requestId, text: 'Me' });
+    fake.emitToken({ requestId, text: 'Merhaba' });
+    fake.emitDone({ requestId, text: 'Merhaba' });
+    await expect(done).resolves.toBe('Merhaba');
+    expect(tokens).toEqual(['Me', 'Merhaba']);
+  });
+
+  it('CLI başlatılamazsa hatayı iletir', async () => {
+    const fake = fakeApi();
+    fake.cliStart.mockResolvedValue({ started: false, error: 'opencode CLI bulunamadı' });
+    const client = new RemoteChatClient(fake.api);
+    client.attach();
+    const done = new Promise<string>((resolve) => {
+      client.sendCli(
+        { model: 'big-pickle', prompt: 'selam', sessionId: null },
+        {
+          onToken: () => undefined,
+          onDone: () => resolve('bitti'),
+          onError: (message) => resolve(message),
+        },
+      );
+    });
+    await expect(done).resolves.toBe('opencode CLI bulunamadı');
   });
 
   it('iptal köprüye iletilir, sonrası yoksayılır', async () => {

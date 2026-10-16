@@ -91,6 +91,18 @@ export type AiChatErrorEvent = {
   readonly message: string;
 };
 
+export type AiOpencodeChatArgs = {
+  readonly requestId: string;
+  readonly model: string;
+  readonly prompt: string;
+  readonly sessionId: string | null;
+};
+
+export type AiCliSessionEvent = {
+  readonly requestId: string;
+  readonly sessionId: string;
+};
+
 export type AiPingResult = {
   readonly ok: boolean;
   readonly status?: number;
@@ -194,6 +206,10 @@ export type Api = {
   onAiChatToken(listener: (event: AiChatTokenEvent) => void): () => void;
   onAiChatDone(listener: (event: AiChatDoneEvent) => void): () => void;
   onAiChatError(listener: (event: AiChatErrorEvent) => void): () => void;
+  /** Yerel opencode CLI'sinden auth-farkında model listesi (anahtar gerekmez). */
+  aiOpencodeModels(): Promise<AiModelsResult>;
+  aiOpencodeChat(args: AiOpencodeChatArgs): Promise<AiChatStartResult>;
+  onAiCliSession(listener: (event: AiCliSessionEvent) => void): () => void;
   aiKeyHas(provider: string): Promise<AiKeyHasResult>;
   aiKeySet(args: AiKeySetArgs): Promise<{ ok: boolean; error?: string }>;
   aiKeyDelete(args: AiKeyDeleteArgs): Promise<{ ok: boolean }>;

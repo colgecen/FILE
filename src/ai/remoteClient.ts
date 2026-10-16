@@ -3,13 +3,20 @@ import type {
   AiChatDoneEvent,
   AiChatErrorEvent,
   AiChatTokenEvent,
+  AiCliSessionEvent,
   Api,
 } from '../../electron/shared/api-types';
 import type { ProviderId } from './providers';
 
 type RemoteApi = Pick<
   Api,
-  'aiChatStart' | 'aiChatAbort' | 'onAiChatToken' | 'onAiChatDone' | 'onAiChatError'
+  | 'aiChatStart'
+  | 'aiChatAbort'
+  | 'onAiChatToken'
+  | 'onAiChatDone'
+  | 'onAiChatError'
+  | 'aiOpencodeChat'
+  | 'onAiCliSession'
 >;
 
 export type RemoteSendArgs = {
@@ -30,6 +37,19 @@ export type RemoteCallbacks = {
   readonly onError: (message: string) => void;
 };
 
+export type CliSendArgs = {
+  readonly model: string;
+  readonly prompt: string;
+  readonly sessionId: string | null;
+};
+
+type PendingEntry = {
+  onToken: (text: string) => void;
+  onDone: (text: string) => void;
+  onError: (message: string) => void;
+  onSession?: (sessionId: string) => void;
+};
+
 let counter = 0;
 
 function nextRequestId(): string {
@@ -39,10 +59,7 @@ function nextRequestId(): string {
 
 export class RemoteChatClient {
   private readonly api: RemoteApi;
-  private readonly pending = new Map<
-    string,
-    { onToken: (text: string) => void; onDone: (text: string) => void; onError: (message: string) => void }
-  >();
+  private readonly pending = new Map<string, PendingEntry>();
   private attached = false;
 
   constructor(api: RemoteApi) {
@@ -65,10 +82,14 @@ export class RemoteChatClient {
       this.pending.delete(event.requestId);
       entry?.onError(event.message);
     });
+    const offSession = this.api.onAiCliSession((event: AiCliSessionEvent) => {
+      this.pending.get(event.requestId)?.onSession?.(event.sessionId);
+    });
     return () => {
       offToken();
       offDone();
       offError();
+      offSession();
       this.attached = false;
     };
   }
@@ -99,6 +120,46 @@ export class RemoteChatClient {
           messages: args.messages,
           ...(args.temperature !== undefined ? { temperature: args.temperature } : {}),
           ...(args.maxTokens !== undefined ? { maxTokens: args.maxTokens } : {}),
+        });
+        if (aborted) return;
+        if (!result.started) {
+          this.pending.delete(requestId);
+          callbacks.onError(result.error ?? 'Sohbet başlatılamadı');
+        }
+      } catch (error) {
+        if (aborted) return;
+        this.pending.delete(requestId);
+        const message = error instanceof Error ? error.message : String(error);
+        callbacks.onError(message.slice(0, 300));
+      }
+    })();
+    return { requestId, abort };
+  }
+
+  sendCli(
+    args: CliSendArgs,
+    callbacks: RemoteCallbacks & { readonly onSession?: (sessionId: string) => void },
+  ): { requestId: string; abort: () => void } {
+    const requestId = nextRequestId();
+    let aborted = false;
+    this.pending.set(requestId, {
+      onToken: callbacks.onToken,
+      onDone: callbacks.onDone,
+      onError: callbacks.onError,
+      ...(callbacks.onSession !== undefined ? { onSession: callbacks.onSession } : {}),
+    });
+    const abort = (): void => {
+      aborted = true;
+      this.pending.delete(requestId);
+      void this.api.aiChatAbort(requestId).catch(() => undefined);
+    };
+    void (async () => {
+      try {
+        const result = await this.api.aiOpencodeChat({
+          requestId,
+          model: args.model,
+          prompt: args.prompt,
+          sessionId: args.sessionId,
         });
         if (aborted) return;
         if (!result.started) {

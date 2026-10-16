@@ -2,7 +2,10 @@ import type { AiEnvEntry, AiModelsResult, Api } from '../../electron/shared/api-
 import { PROVIDERS, type ModelRef, type ProviderId } from './providers';
 import { safeCall } from './localScan';
 
-type CloudApi = Pick<Api, 'aiModels' | 'aiKeyHas' | 'aiEnvScan' | 'aiLocalModels'>;
+type CloudApi = Pick<
+  Api,
+  'aiModels' | 'aiKeyHas' | 'aiEnvScan' | 'aiLocalModels' | 'aiOpencodeModels'
+>;
 
 export type CloudProbe = {
   readonly provider: ProviderId;
@@ -29,12 +32,14 @@ export async function scanCloudModels(
   for (const target of targets) {
     const baseUrl = target.id === 'custom' && customUrl !== null ? customUrl : target.defaultBaseUrl;
     if (target.id === 'opencode') {
-      // OpenCode Zen'in uzak /models ucu yok; katalog yerel kurulumdan okunur.
-      const local = await safeCall(() => api.aiLocalModels('opencode'), {
-        ok: false,
-        models: [],
-        error: 'API yok',
-      } satisfies AiModelsResult);
+      // OpenCode Zen'in uzak /models ucu yok; liste yerel opencode CLI'sinden
+      // (auth-farkında) ya da yerel katalogdan okunur — anahtar gerekmez.
+      const missing: AiModelsResult = { ok: false, models: [], error: 'API yok' };
+      const cli = await safeCall(() => api.aiOpencodeModels(), missing);
+      const local =
+        cli.ok && cli.models.length > 0
+          ? cli
+          : await safeCall(() => api.aiLocalModels('opencode'), missing);
       if (local.ok && local.models.length > 0) {
         probed.push({
           provider: target.id,
@@ -46,8 +51,15 @@ export async function scanCloudModels(
             source: 'cloud' as const,
           })),
         });
-        continue;
+      } else {
+        probed.push({
+          provider: target.id,
+          ok: false,
+          models: [],
+          error: 'opencode CLI bulunamadı',
+        });
       }
+      continue;
     }
     const keyed = await safeCall(() => api.aiKeyHas(target.id), { present: false });
     const envPresent = env.find((entry) => entry.provider === target.id)?.present ?? false;

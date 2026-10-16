@@ -89,6 +89,17 @@ const api: Api = {
       ipcRenderer.removeListener('ai:chat:error', handler);
     };
   },
+  aiOpencodeModels: () => ipcRenderer.invoke('ai:opencode:models'),
+  aiOpencodeChat: (args) => ipcRenderer.invoke('ai:opencode:chat', args),
+  onAiCliSession: (listener) => {
+    const handler = (_event: unknown, event: Parameters<typeof listener>[0]): void => {
+      listener(event);
+    };
+    ipcRenderer.on('ai:cli:session', handler);
+    return () => {
+      ipcRenderer.removeListener('ai:cli:session', handler);
+    };
+  },
   aiKeyHas: (provider) => ipcRenderer.invoke('ai:key:has', provider),
   aiKeySet: (args) => ipcRenderer.invoke('ai:key:set', args),
   aiKeyDelete: (args) => ipcRenderer.invoke('ai:key:delete', args),

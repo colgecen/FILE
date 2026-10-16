@@ -5,8 +5,10 @@ import type {
   AiModelsArgs,
   AiModelsResult,
   AiOllamaTagsResult,
+  AiOpencodeChatArgs,
   AiPingResult,
 } from '../shared/api-types';
+import { findOpencodeBinary, listOpencodeModels, startOpencodeCliChat } from './opencodeCli';
 
 // Renderer'dan gelen AI ağ isteklerinin main-process karşılığı.
 // Neden main: Ollama/LM Studio CORS engeline takılmaz, API anahtarı renderer'a inmez.
@@ -430,5 +432,41 @@ export function registerAiNetHandlers(
   ipcMain.handle('ai:chat:abort', async (_event: IpcMainInvokeEvent, args: AiChatAbortArgs) => {
     inflight.get(args.requestId)?.();
     inflight.delete(args.requestId);
+  });
+  ipcMain.handle('ai:opencode:models', async () => listOpencodeModels());
+  ipcMain.handle('ai:opencode:chat', async (event: IpcMainInvokeEvent, args: AiOpencodeChatArgs) => {
+    const sender = event.sender;
+    const bin = await findOpencodeBinary();
+    if (bin === null) {
+      return { started: false, error: 'opencode CLI bulunamadı — anahtar ekleyip uzak sağlayıcı kullanın' };
+    }
+    const abort = startOpencodeCliChat(
+      {
+        requestId: args.requestId,
+        model: args.model,
+        prompt: args.prompt,
+        sessionId: args.sessionId,
+      },
+      {
+        onSession: (sessionId) => {
+          if (!sender.isDestroyed()) sender.send('ai:cli:session', { requestId: args.requestId, sessionId });
+        },
+        onToken: (text) => {
+          if (!sender.isDestroyed()) sender.send('ai:chat:token', { requestId: args.requestId, text });
+        },
+        onDone: (text) => {
+          inflight.delete(args.requestId);
+          if (!sender.isDestroyed()) sender.send('ai:chat:done', { requestId: args.requestId, text });
+        },
+        onError: (message) => {
+          inflight.delete(args.requestId);
+          if (!sender.isDestroyed())
+            sender.send('ai:chat:error', { requestId: args.requestId, message });
+        },
+      },
+      { bin },
+    );
+    inflight.set(args.requestId, abort);
+    return { started: true };
   });
 }

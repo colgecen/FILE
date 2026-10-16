@@ -70,9 +70,9 @@ export const PROVIDERS: readonly ProviderDef[] = [
   },
   {
     id: 'opencode',
-    name: 'OpenCode Zen',
+    name: 'OpenCode',
     defaultBaseUrl: 'https://opencode.ai/inference/openai/v1',
-    keyEnv: 'OPENCODE_API_KEY',
+    keyEnv: null,
     source: 'cloud',
     defaultModels: [],
   },

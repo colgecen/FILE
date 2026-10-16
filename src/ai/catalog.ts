@@ -85,7 +85,7 @@ export function useModelCatalog(): CatalogSnapshot {
 
 type RefreshApi = Pick<
   Api,
-  'aiPing' | 'aiModels' | 'aiLocalModels' | 'aiOllamaTags' | 'aiKeyHas' | 'aiEnvScan'
+  'aiPing' | 'aiModels' | 'aiLocalModels' | 'aiOpencodeModels' | 'aiOllamaTags' | 'aiKeyHas' | 'aiEnvScan'
 >;
 
 let refreshing = false;
