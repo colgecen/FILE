@@ -58,6 +58,7 @@ const api: Api = {
   },
   aiPing: (baseUrl) => ipcRenderer.invoke('ai:ping', baseUrl),
   aiModels: (args) => ipcRenderer.invoke('ai:models', args),
+  aiLocalModels: (provider) => ipcRenderer.invoke('ai:models:local', provider),
   aiOllamaTags: (origin) => ipcRenderer.invoke('ai:ollama:tags', origin),
   aiChatStart: (args) => ipcRenderer.invoke('ai:chat:start', args),
   aiChatAbort: (requestId) => ipcRenderer.invoke('ai:chat:abort', { requestId }),

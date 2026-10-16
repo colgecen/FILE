@@ -84,13 +84,69 @@ export function splitSSE(buffer: string): SSEAccumulator {
   return { rest, done, pieces };
 }
 
-function deltaText(payload: string): string | null {
+type DeltaPiece = {
+  readonly content: string;
+  readonly reasoning: string;
+};
+
+type ContentPart = { readonly type?: string; readonly text?: string };
+
+type DeltaShape = {
+  readonly content?: string | readonly ContentPart[];
+  readonly reasoning?: string;
+  readonly reasoning_content?: string;
+  readonly reasoning_details?: readonly { readonly text?: string }[];
+};
+
+/** Farklı sağlayıcıların içerik biçimlerini (metin veya parça dizisi) tek metne indirir. */
+function textFromContent(content: string | readonly ContentPart[] | undefined): string {
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => (typeof part === 'object' && part !== null && typeof part.text === 'string' ? part.text : ''))
+      .join('');
+  }
+  return '';
+}
+
+/** Düşünce metnini sağlayıcıya göre (reasoning / reasoning_content / reasoning_details) çıkarır. */
+function reasoningFromDelta(delta: DeltaShape): string {
+  if (typeof delta.reasoning === 'string' && delta.reasoning.length > 0) return delta.reasoning;
+  if (typeof delta.reasoning_content === 'string' && delta.reasoning_content.length > 0) {
+    return delta.reasoning_content;
+  }
+  if (Array.isArray(delta.reasoning_details)) {
+    return delta.reasoning_details
+      .map((item) => (typeof item?.text === 'string' ? item.text : ''))
+      .join('');
+  }
+  return '';
+}
+
+function deltaPiece(payload: string): DeltaPiece | null {
+  try {
+    const json = JSON.parse(payload) as { choices?: readonly { delta?: DeltaShape }[] };
+    const delta = json.choices?.[0]?.delta;
+    if (delta === undefined) return null;
+    return { content: textFromContent(delta.content), reasoning: reasoningFromDelta(delta) };
+  } catch {
+    return null;
+  }
+}
+
+/** Akış içinde gelen `{"error": ...}` yükünü okunur mesaja çevirir. */
+function streamError(payload: string): string | null {
   try {
     const json = JSON.parse(payload) as {
-      choices?: readonly { delta?: { content?: string } }[];
+      error?: { message?: string; code?: string | number; type?: string };
     };
-    const content = json.choices?.[0]?.delta?.content;
-    return typeof content === 'string' ? content : null;
+    if (json.error === undefined || json.error === null) return null;
+    if (typeof json.error.message === 'string' && json.error.message.length > 0) {
+      return json.error.message;
+    }
+    if (typeof json.error.code === 'string' && json.error.code.length > 0) return json.error.code;
+    if (typeof json.error.type === 'string' && json.error.type.length > 0) return json.error.type;
+    return 'Sağlayıcı akış sırasında hata bildirdi';
   } catch {
     return null;
   }
@@ -108,7 +164,9 @@ async function readStream(
   }
   const decoder = new TextDecoder();
   let buffer = '';
-  let full = '';
+  let answer = '';
+  let reasoning = '';
+  let shown = '';
   for (;;) {
     if (signal.aborted) {
       await reader.cancel().catch(() => undefined);
@@ -121,15 +179,25 @@ async function readStream(
     const split = splitSSE(buffer);
     buffer = split.rest;
     for (const payload of split.pieces) {
-      const piece = deltaText(payload);
-      if (piece !== null && piece.length > 0) {
-        full += piece;
-        callbacks.onToken(full);
+      const failure = streamError(payload);
+      if (failure !== null) {
+        await reader.cancel().catch(() => undefined);
+        callbacks.onError(failure.slice(0, 300));
+        return;
+      }
+      const piece = deltaPiece(payload);
+      if (piece === null) continue;
+      if (piece.content.length > 0) answer += piece.content;
+      if (piece.reasoning.length > 0) reasoning += piece.reasoning;
+      const visible = answer.length > 0 ? answer : reasoning;
+      if (visible.length > 0 && visible !== shown) {
+        shown = visible;
+        callbacks.onToken(visible);
       }
     }
     if (split.done) break;
   }
-  callbacks.onDone(full);
+  callbacks.onDone(answer.length > 0 ? answer : reasoning);
 }
 
 export type AiNet = {
@@ -140,9 +208,13 @@ export type AiNet = {
 };
 
 export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
-  const headersFor = (apiKey: string | null): Record<string, string> => {
+  const headersFor = (baseUrl: string, apiKey: string | null): Record<string, string> => {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (apiKey !== null && apiKey.length > 0) headers['Authorization'] = `Bearer ${apiKey}`;
+    if (baseUrl.includes('openrouter.ai')) {
+      headers['HTTP-Referer'] = 'http://localhost';
+      headers['X-Title'] = 'File';
+    }
     return headers;
   };
 
@@ -166,7 +238,7 @@ export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
     const timeout = withTimeout(undefined, LIST_TIMEOUT_MS);
     try {
       const url = `${baseUrl.replace(/\/+$/, '')}/models`;
-      const response = await fetchFn(url, { method: 'GET', headers: headersFor(apiKey), signal: timeout.signal });
+      const response = await fetchFn(url, { method: 'GET', headers: headersFor(baseUrl, apiKey), signal: timeout.signal });
       if (!response.ok) {
         const body = await readErrorBody(response);
         return { ok: false, models: [], error: `HTTP ${response.status}${body.length > 0 ? `: ${body}` : ''}` };
@@ -211,6 +283,7 @@ export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
     const run = async (): Promise<void> => {
       try {
         const url = `${job.baseUrl.replace(/\/+$/, '')}/chat/completions`;
+        const headers = headersFor(job.baseUrl, job.apiKey);
         const body: Record<string, unknown> = {
           model: job.model,
           messages: job.messages,
@@ -218,12 +291,44 @@ export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
         };
         if (job.temperature !== undefined) body['temperature'] = job.temperature;
         if (job.maxTokens !== undefined) body['max_tokens'] = job.maxTokens;
-        const response = await fetchFn(url, {
+
+        let response = await fetchFn(url, {
           method: 'POST',
-          headers: headersFor(job.apiKey),
+          headers,
           body: JSON.stringify(body),
           signal: controller.signal,
         });
+        if (response.status === 400) {
+          // Bazı modeller (ör. reasoning ailesi) belirli parametreleri reddeder.
+          // Hata mesajına göre desteklenen biçime uyarla ve tek kez yeniden dene.
+          const detail = await readErrorBody(response);
+          const lowered = detail.toLowerCase();
+          let changed = false;
+          if (lowered.includes('temperature') && body['temperature'] !== undefined) {
+            delete body['temperature'];
+            changed = true;
+          }
+          if (
+            (lowered.includes('max_tokens') || lowered.includes('max_completion_tokens')) &&
+            body['max_tokens'] !== undefined
+          ) {
+            body['max_completion_tokens'] = body['max_tokens'];
+            delete body['max_tokens'];
+            changed = true;
+          }
+          if (lowered.includes('stream') && lowered.includes('not support') && body['stream'] === true) {
+            body['stream'] = false;
+            changed = true;
+          }
+          if (changed) {
+            response = await fetchFn(url, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify(body),
+              signal: controller.signal,
+            });
+          }
+        }
         if (!response.ok) {
           const detail = await readErrorBody(response);
           callbacks.onError(`HTTP ${response.status}${detail.length > 0 ? `: ${detail}` : ''}`);
@@ -231,12 +336,30 @@ export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
         }
         const contentType = response.headers.get('content-type') ?? '';
         if (!contentType.includes('text/event-stream')) {
-          // Akışsız cevap (bazı yerel sunucular): tek JSON gövde.
+          // Akışsız cevap (bazı yerel sunucular ve stream desteklemeyen uçlar): tek JSON gövde.
           const json = (await response.json()) as {
-            choices?: readonly { message?: { content?: string } }[];
+            error?: { message?: string };
+            choices?: readonly {
+              message?: {
+                content?: string | readonly ContentPart[];
+                reasoning?: string;
+                reasoning_content?: string;
+              };
+            }[];
           };
-          const content = json.choices?.[0]?.message?.content ?? '';
-          callbacks.onDone(content);
+          if (json.error !== undefined && json.error !== null) {
+            const detail = json.error.message ?? 'Sağlayıcı hata döndürdü';
+            callbacks.onError(detail.slice(0, 300));
+            return;
+          }
+          const message = json.choices?.[0]?.message;
+          const content = textFromContent(message?.content);
+          const reasoning = typeof message?.reasoning === 'string'
+            ? message.reasoning
+            : typeof message?.reasoning_content === 'string'
+              ? message.reasoning_content
+              : '';
+          callbacks.onDone(content.length > 0 ? content : reasoning);
           return;
         }
         await readStream(response, callbacks, controller.signal);

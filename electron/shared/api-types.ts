@@ -186,6 +186,8 @@ export type Api = {
   onPtyExit(listener: (id: string, exitCode: number) => void): () => void;
   aiPing(baseUrl: string): Promise<AiPingResult>;
   aiModels(args: AiModelsArgs): Promise<AiModelsResult>;
+  /** Yerel opencode kataloğundan model listesi (anahtar gerekmez). */
+  aiLocalModels(provider: string): Promise<AiModelsResult>;
   aiOllamaTags(origin: string): Promise<AiOllamaTagsResult>;
   aiChatStart(args: AiChatStartArgs): Promise<AiChatStartResult>;
   aiChatAbort(requestId: string): Promise<void>;

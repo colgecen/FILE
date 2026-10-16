@@ -73,7 +73,7 @@ describe('registerAICommands — sohbet ve kod akışları', () => {
       const messages = aiEngine.getState().chat.messages;
       expect(messages.some((message) => message.content === 'Merhaba')).toBe(true);
       expect(generateSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ maxNewTokens: 256 }),
+        expect.objectContaining({ maxNewTokens: 2048 }),
       );
     });
   });
@@ -320,7 +320,7 @@ describe('aiCommands — birleşik katalog', () => {
     await registry.run('ai.chat.send');
     await vi.waitFor(() => {
       expect(generateSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ maxNewTokens: 1024, temperature: 0.7 }),
+        expect.objectContaining({ maxNewTokens: 8192, temperature: 0.7 }),
       );
     });
   });

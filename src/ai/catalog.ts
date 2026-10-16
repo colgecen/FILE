@@ -83,7 +83,10 @@ export function useModelCatalog(): CatalogSnapshot {
   return snapshot;
 }
 
-type RefreshApi = Pick<Api, 'aiPing' | 'aiModels' | 'aiOllamaTags' | 'aiKeyHas' | 'aiEnvScan'>;
+type RefreshApi = Pick<
+  Api,
+  'aiPing' | 'aiModels' | 'aiLocalModels' | 'aiOllamaTags' | 'aiKeyHas' | 'aiEnvScan'
+>;
 
 let refreshing = false;
 

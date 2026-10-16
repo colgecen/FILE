@@ -10,6 +10,7 @@ import { registerTelemetry } from './telemetry';
 import { registerWindowHandlers } from './windowHandlers';
 import { registerAiNetHandlers } from './aiNet';
 import { registerAiKeyHandlers, resolveApiKey } from './aiKeys';
+import { readLocalApiKey, registerOpencodeLocalHandlers } from './opencodeLocal';
 import { createPtyManager, type PtySpawnFn } from './pty/manager';
 import { registerPtyIpc } from './pty/ipc';
 
@@ -76,7 +77,14 @@ void app.whenReady().then((): void => {
   registerTelemetry(getWindow);
   registerWindowHandlers(getWindow);
   registerAiKeyHandlers();
-  registerAiNetHandlers(resolveApiKey);
+  registerOpencodeLocalHandlers();
+  registerAiNetHandlers(async (provider, keyEnv, override) => {
+    const key = await resolveApiKey(provider, keyEnv, override);
+    if (key !== null) return key;
+    // opencode CLI oturumu açıksa anahtarı yerel auth dosyasından al.
+    if (provider === 'opencode') return readLocalApiKey('opencode');
+    return null;
+  });
   registerPtyIpc(getWindow, ptyManager);
   ptyManager.start();
 

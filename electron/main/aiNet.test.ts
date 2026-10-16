@@ -162,6 +162,64 @@ describe('aiNet startChat', () => {
     await expect(done).resolves.toBe('tam metin');
   });
 
+  it('yalnız reasoning akan modelde metni reasoning ile tamamlar', async () => {
+    const reasoning = (text: string): string =>
+      `data: ${JSON.stringify({ choices: [{ delta: { content: '', reasoning: text } }] })}\n\n`;
+    const fetchFn: FetchFn = vi.fn(async () =>
+      streamResponse([reasoning('Düşünüyorum'), reasoning('...'), 'data: [DONE]\n\n']),
+    );
+    const aiNet = createAiNet(fetchFn);
+    const tokens: string[] = [];
+    const done = new Promise<string>((resolve, reject) => {
+      aiNet.startChat(job, {
+        onToken: (text) => tokens.push(text),
+        onDone: (text) => resolve(text),
+        onError: (message) => reject(new Error(message)),
+      });
+    });
+    await expect(done).resolves.toBe('Düşünüyorum...');
+    expect(tokens[tokens.length - 1]).toBe('Düşünüyorum...');
+  });
+
+  it('reasoning sonrası içerik gelince yalnız cevap metnini döner', async () => {
+    const payload = (delta: Record<string, string>): string =>
+      `data: ${JSON.stringify({ choices: [{ delta }] })}\n\n`;
+    const fetchFn: FetchFn = vi.fn(async () =>
+      streamResponse([
+        payload({ content: '', reasoning: 'sessiz düşünce' }),
+        payload({ content: 'Merhaba' }),
+        payload({ content: ' efendim' }),
+        'data: [DONE]\n\n',
+      ]),
+    );
+    const aiNet = createAiNet(fetchFn);
+    const tokens: string[] = [];
+    const done = new Promise<string>((resolve, reject) => {
+      aiNet.startChat(job, {
+        onToken: (text) => tokens.push(text),
+        onDone: (text) => resolve(text),
+        onError: (message) => reject(new Error(message)),
+      });
+    });
+    await expect(done).resolves.toBe('Merhaba efendim');
+    expect(tokens[tokens.length - 1]).toBe('Merhaba efendim');
+  });
+
+  it('akıssız reasoning_content cevabını döner', async () => {
+    const fetchFn: FetchFn = vi.fn(async () =>
+      jsonResponse({ choices: [{ message: { content: '', reasoning_content: 'düşünce metni' } }] }),
+    );
+    const aiNet = createAiNet(fetchFn);
+    const done = new Promise<string>((resolve, reject) => {
+      aiNet.startChat(job, {
+        onToken: () => undefined,
+        onDone: (text) => resolve(text),
+        onError: (message) => reject(new Error(message)),
+      });
+    });
+    await expect(done).resolves.toBe('düşünce metni');
+  });
+
   it('HTTP hatasını onError ile bildirir', async () => {
     const fetchFn: FetchFn = vi.fn(async () => new Response('kota bitti', { status: 429 }));
     const aiNet = createAiNet(fetchFn);
@@ -190,5 +248,116 @@ describe('aiNet startChat', () => {
       abort();
     });
     await expect(done).resolves.toBe('İptal edildi');
+  });
+
+  it('yalnız reasoning_details gelen akışı çözer', async () => {
+    const payload = `data: ${JSON.stringify({
+      choices: [{ delta: { content: '', reasoning_details: [{ type: 'reasoning.text', text: 'derin düşünce' }] } }],
+    })}\n\n`;
+    const fetchFn: FetchFn = vi.fn(async () => streamResponse([payload, 'data: [DONE]\n\n']));
+    const aiNet = createAiNet(fetchFn);
+    const done = new Promise<string>((resolve, reject) => {
+      aiNet.startChat(job, {
+        onToken: () => undefined,
+        onDone: (text) => resolve(text),
+        onError: (message) => reject(new Error(message)),
+      });
+    });
+    await expect(done).resolves.toBe('derin düşünce');
+  });
+
+  it('parça dizisi biçimindeki content değerini birleştirir', async () => {
+    const payload = `data: ${JSON.stringify({
+      choices: [{ delta: { content: [{ type: 'text', text: 'Parçalı' }, { type: 'text', text: ' cevap' }] } }],
+    })}\n\n`;
+    const fetchFn: FetchFn = vi.fn(async () => streamResponse([payload, 'data: [DONE]\n\n']));
+    const aiNet = createAiNet(fetchFn);
+    const done = new Promise<string>((resolve, reject) => {
+      aiNet.startChat(job, {
+        onToken: () => undefined,
+        onDone: (text) => resolve(text),
+        onError: (message) => reject(new Error(message)),
+      });
+    });
+    await expect(done).resolves.toBe('Parçalı cevap');
+  });
+
+  it('akış içindeki error yükünü onError ile bildirir', async () => {
+    const payload = `data: ${JSON.stringify({ error: { message: 'kota tükendi', code: 402 } })}\n\n`;
+    const fetchFn: FetchFn = vi.fn(async () => streamResponse([sse('başladı'), payload]));
+    const aiNet = createAiNet(fetchFn);
+    const done = new Promise<string>((resolve) => {
+      aiNet.startChat(job, {
+        onToken: () => undefined,
+        onDone: () => resolve('bitti'),
+        onError: (message) => resolve(message),
+      });
+    });
+    await expect(done).resolves.toBe('kota tükendi');
+  });
+
+  it('akışsız error gövdesini onError ile bildirir', async () => {
+    const fetchFn: FetchFn = vi.fn(async () =>
+      jsonResponse({ error: { message: 'model bulunamadı' } }),
+    );
+    const aiNet = createAiNet(fetchFn);
+    const done = new Promise<string>((resolve) => {
+      aiNet.startChat(job, {
+        onToken: () => undefined,
+        onDone: () => resolve('bitti'),
+        onError: (message) => resolve(message),
+      });
+    });
+    await expect(done).resolves.toBe('model bulunamadı');
+  });
+
+  it('temperature reddedilirse parametresiz yeniden dener', async () => {
+    const bodies: string[] = [];
+    const fetchFn: FetchFn = vi.fn(async (_url: string, init) => {
+      bodies.push(init?.body ?? '');
+      if (bodies.length === 1) {
+        return new Response('Unsupported parameter: temperature', { status: 400 });
+      }
+      return streamResponse([sse('tamam'), 'data: [DONE]\n\n']);
+    });
+    const aiNet = createAiNet(fetchFn);
+    const done = new Promise<string>((resolve, reject) => {
+      aiNet.startChat({ ...job, temperature: 0.7 }, {
+        onToken: () => undefined,
+        onDone: (text) => resolve(text),
+        onError: (message) => reject(new Error(message)),
+      });
+    });
+    await expect(done).resolves.toBe('tamam');
+    expect(bodies).toHaveLength(2);
+    expect(JSON.parse(bodies[0] ?? '{}')).toHaveProperty('temperature');
+    expect(JSON.parse(bodies[1] ?? '{}')).not.toHaveProperty('temperature');
+  });
+
+  it('max_tokens reddedilirse max_completion_tokens ile yeniden dener', async () => {
+    const bodies: string[] = [];
+    const fetchFn: FetchFn = vi.fn(async (_url: string, init) => {
+      bodies.push(init?.body ?? '');
+      if (bodies.length === 1) {
+        return new Response(
+          'Unsupported parameter: max_tokens. Use max_completion_tokens instead.',
+          { status: 400 },
+        );
+      }
+      return streamResponse([sse('tamam'), 'data: [DONE]\n\n']);
+    });
+    const aiNet = createAiNet(fetchFn);
+    const done = new Promise<string>((resolve, reject) => {
+      aiNet.startChat({ ...job, maxTokens: 2048 }, {
+        onToken: () => undefined,
+        onDone: (text) => resolve(text),
+        onError: (message) => reject(new Error(message)),
+      });
+    });
+    await expect(done).resolves.toBe('tamam');
+    expect(bodies).toHaveLength(2);
+    const retry = JSON.parse(bodies[1] ?? '{}') as Record<string, unknown>;
+    expect(retry['max_completion_tokens']).toBe(2048);
+    expect(retry).not.toHaveProperty('max_tokens');
   });
 });

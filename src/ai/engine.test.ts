@@ -104,6 +104,15 @@ describe('AIEngine', () => {
     expect(engine.getState().status).toBe('idle');
   });
 
+  it('boş uzak yanıt yerine uyarı iletisi koyar', () => {
+    engine.beginRemote();
+    engine.finishRemote('   ');
+    const messages = engine.getState().chat.messages;
+    expect(messages[0]?.content).toContain('boş döndü');
+    expect(messages[0]?.role).toBe('assistant');
+    expect(engine.getState().status).toBe('idle');
+  });
+
   it('hata olayı error durumuna geçirir ve generate reddeder', async () => {
     engine.init('Qwen/Qwen2.5-0.5B-Instruct');
     fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });

@@ -8,9 +8,9 @@ export type EffortPreset = {
 };
 
 export const EFFORT_PRESETS: Record<EffortLevel, EffortPreset> = {
-  low: { maxTokens: 128, temperature: 0.2, label: 'Düşük' },
-  medium: { maxTokens: 256, temperature: 0.4, label: 'Orta' },
-  ultra: { maxTokens: 1024, temperature: 0.7, label: 'Ultra' },
+  low: { maxTokens: 512, temperature: 0.2, label: 'Düşük' },
+  medium: { maxTokens: 2048, temperature: 0.4, label: 'Orta' },
+  ultra: { maxTokens: 8192, temperature: 0.7, label: 'Ultra' },
 };
 
 export const DEFAULT_MODE: PlanMode = 'build';
@@ -31,13 +31,15 @@ export function modeRules(mode: PlanMode): string {
       'PLAN MODU: Dosyalara dokunma, kod yazma.',
       'Önce proje bağlamını incele, sonra adım adım planı Türkçe anlat.',
       'Her dosya değişikliği için diff önizlemesi üret; onay almadan uygulama.',
-      'YANIT TARZI: Gereksiz mesaj verme; samimi, kısa ve net bir Türkçe ile yanıtla; her yanıta uygun yerde "efendim" ifadesini ekle. İstenmeyen projeyi ve dosya iskeletini oluşturma, yalnızca kullanıcının tam talebine odaklan. Sahibine asla küfür etme; ne olursa olsun ona sadık kal, emirlerini en iyi şekilde yerine getir, efendisine karşı sevgi ve hizmetbilinci ile davran.',
+      'Terminale komut gerekliyse komutları ```bash bloğu içinde yaz; uygulama bu bloğu terminalde çalıştırmayı önerir.',
+      'YANIT TARZI: Gereksiz mesaj verme; samimi, kısa ve net bir Türkçe ile yanıtla; soruya doğrudan yanıt ver, boş greeting yerine etkili içerik üret; her yanıta uygun yerde "efendim" ifadesini ekle. İstenmeyen projeyi ve dosya iskeletini oluşturma, yalnızca kullanıcının tam talebine odaklan. Sahibine asla küfür etme; ne olursa olsun ona sadık kal, emirlerini en iyi şekilde yerine getir, efendisine karşı sevgi ve hizmetbilinci ile davran.',
     ].join('\n');
   }
   return [
     'YAPIM MODU: Planı doğrudan uygula.',
     'Değişiklikleri yalnızca aktif proje kökü altındaki dosyalara yaz.',
     'Her dosya için tam güncellenmiş içeriği diff bloğuyla ver.',
-    'YANIT TARZI: Gereksiz mesaj verme; samimi, kısa ve net bir Türkçe ile yanıtla; her yanıta uygun yerde "efendim" ifadesini ekle. İstenmeyen projeyi ve dosya iskeletini oluşturma, yalnızca kullanıcının tam talebine odaklan. Sahibine asla küfür etme; ne olursa olsun ona sadık kal, emirlerini en iyi şekilde yerine getir, efendisine karşı sevgi ve hizmetbilinci ile davran.',
+    'Terminale komut gerekliyse komutları ```bash bloğu içinde yaz; uygulama bu bloğu terminalde çalıştırmayı önerir ve kullanıcı onayıyla terminalde çalıştırır.',
+    'YANIT TARZI: Gereksiz mesaj verme; samimi, kısa ve net bir Türkçe ile yanıtla; soruya doğrudan yanıt ver, boş greeting yerine etkili içerik üret; her yanıta uygun yerde "efendim" ifadesini ekle. İstenmeyen projeyi ve dosya iskeletini oluşturma, yalnızca kullanıcının tam talebine odaklan. Sahibine asla küfür etme; ne olursa olsun ona sadık kal, emirlerini en iyi şekilde yerine getir, efendisine karşı sevgi ve hizmetbilinci ile davran.',
   ].join('\n');
 }

@@ -181,12 +181,15 @@ export class AIEngine {
 
   /** Uzak akış finali: durumu boşa alır, son iletiyi netleştirir. */
   finishRemote(text: string): void {
+    const finalText = text.trim().length > 0
+      ? text
+      : 'Yanıt alınamadı efendim; model boş döndü. Lütfen tekrar deneyin.';
     const messages = [...this.state.chat.messages];
     const last = messages[messages.length - 1];
     if (last !== undefined && last.role === 'assistant') {
-      messages[messages.length - 1] = { role: 'assistant', content: text };
+      messages[messages.length - 1] = { role: 'assistant', content: finalText };
     } else {
-      messages.push({ role: 'assistant', content: text });
+      messages.push({ role: 'assistant', content: finalText });
     }
     this.patch({ status: 'idle', chat: { messages, error: null } });
   }

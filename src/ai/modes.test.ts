@@ -10,7 +10,7 @@ describe('mod ve efor', () => {
   it('efor presetleri artan bütçe verir', () => {
     expect(EFFORT_PRESETS.low.maxTokens).toBeLessThan(EFFORT_PRESETS.medium.maxTokens);
     expect(EFFORT_PRESETS.medium.maxTokens).toBeLessThan(EFFORT_PRESETS.ultra.maxTokens);
-    expect(EFFORT_PRESETS.medium.maxTokens).toBe(256);
+    expect(EFFORT_PRESETS.medium.maxTokens).toBe(2048);
   });
 
   it('etiketler Türkçedir', () => {

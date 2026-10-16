@@ -9,6 +9,7 @@ export type ProviderId =
   | 'deepseek'
   | 'groq'
   | 'openrouter'
+  | 'opencode'
   | 'ollama'
   | 'lmstudio'
   | 'llamacpp'
@@ -64,6 +65,14 @@ export const PROVIDERS: readonly ProviderDef[] = [
     name: 'OpenRouter',
     defaultBaseUrl: 'https://openrouter.ai/api/v1',
     keyEnv: 'OPENROUTER_API_KEY',
+    source: 'cloud',
+    defaultModels: [],
+  },
+  {
+    id: 'opencode',
+    name: 'OpenCode Zen',
+    defaultBaseUrl: 'https://opencode.ai/inference/openai/v1',
+    keyEnv: 'OPENCODE_API_KEY',
     source: 'cloud',
     defaultModels: [],
   },

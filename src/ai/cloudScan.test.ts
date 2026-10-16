@@ -4,6 +4,7 @@ import { scanCloudModels } from './cloudScan';
 function fakeApi(overrides: Record<string, unknown> = {}): Parameters<typeof scanCloudModels>[0] {
   return {
     aiModels: vi.fn(async () => ({ ok: true, models: [] })),
+    aiLocalModels: vi.fn(async () => ({ ok: false, models: [], error: 'yok' })),
     aiKeyHas: vi.fn(async () => ({ present: false })),
     aiEnvScan: vi.fn(async () => []),
     ...overrides,
@@ -76,5 +77,31 @@ describe('scanCloudModels', () => {
     const openai = result.probed.find((probe) => probe.provider === 'openai');
     expect(openai?.ok).toBe(false);
     expect(result.models.length).toBeGreaterThan(0);
+  });
+
+  it('opencode modellerini anahtarsız yerel katalogdan alır', async () => {
+    const api = fakeApi({
+      aiLocalModels: vi.fn(async (provider: string) =>
+        provider === 'opencode'
+          ? { ok: true, models: ['gpt-5.4', 'big-pickle'] }
+          : { ok: false, models: [], error: 'yok' },
+      ),
+    });
+    const result = await scanCloudModels(api, null);
+    const opencode = result.probed.find((probe) => probe.provider === 'opencode');
+    expect(opencode?.ok).toBe(true);
+    expect(result.models.map((model) => model.id)).toEqual(['gpt-5.4', 'big-pickle']);
+    expect(api.aiModels).not.toHaveBeenCalledWith(
+      expect.objectContaining({ provider: 'opencode' }),
+    );
+  });
+
+  it('yerel katalog yoksa opencode anahtar akışına düşer', async () => {
+    const api = fakeApi({
+      aiKeyHas: vi.fn(async (provider: string) => ({ present: provider === 'opencode' })),
+      aiModels: vi.fn(async () => ({ ok: true, models: ['uzak-model'] })),
+    });
+    const result = await scanCloudModels(api, null);
+    expect(result.models.map((model) => model.id)).toContain('uzak-model');
   });
 });

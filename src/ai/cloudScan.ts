@@ -2,7 +2,7 @@ import type { AiEnvEntry, AiModelsResult, Api } from '../../electron/shared/api-
 import { PROVIDERS, type ModelRef, type ProviderId } from './providers';
 import { safeCall } from './localScan';
 
-type CloudApi = Pick<Api, 'aiModels' | 'aiKeyHas' | 'aiEnvScan'>;
+type CloudApi = Pick<Api, 'aiModels' | 'aiKeyHas' | 'aiEnvScan' | 'aiLocalModels'>;
 
 export type CloudProbe = {
   readonly provider: ProviderId;
@@ -28,6 +28,27 @@ export async function scanCloudModels(
   const probed: CloudProbe[] = [];
   for (const target of targets) {
     const baseUrl = target.id === 'custom' && customUrl !== null ? customUrl : target.defaultBaseUrl;
+    if (target.id === 'opencode') {
+      // OpenCode Zen'in uzak /models ucu yok; katalog yerel kurulumdan okunur.
+      const local = await safeCall(() => api.aiLocalModels('opencode'), {
+        ok: false,
+        models: [],
+        error: 'API yok',
+      } satisfies AiModelsResult);
+      if (local.ok && local.models.length > 0) {
+        probed.push({
+          provider: target.id,
+          ok: true,
+          models: local.models.map((id) => ({
+            id,
+            name: id,
+            provider: target.id,
+            source: 'cloud' as const,
+          })),
+        });
+        continue;
+      }
+    }
     const keyed = await safeCall(() => api.aiKeyHas(target.id), { present: false });
     const envPresent = env.find((entry) => entry.provider === target.id)?.present ?? false;
     if (!keyed.present && !envPresent) {
