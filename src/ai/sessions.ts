@@ -29,6 +29,20 @@ function titleOf(firstMessage: string): string {
   return trimmed.length > 32 ? `${trimmed.slice(0, 32)}…` : trimmed;
 }
 
+/** AI başlık yanıtını sekme adına uygun hale getirir. */
+export function sanitizeTitle(text: string): string {
+  const single = text
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^["'`«»\s]+/, '')
+    .replace(/["'`«»\s]+$/, '')
+    .replace(/[.!?,;:]+$/, '')
+    .trim();
+  if (single.length === 0) return '';
+  return single.length > 32 ? `${single.slice(0, 32).trimEnd()}…` : single;
+}
+
 export class SessionStore {
   private sessions: ChatSession[] = [];
   private activeId: string | null = null;
@@ -103,6 +117,18 @@ export class SessionStore {
         : session,
     );
     this.emit();
+  }
+
+  /** AI üretimi başlığı uygular; boş/geçersiz başlık yok sayılır. */
+  setTitle(id: string, title: string): boolean {
+    const clean = sanitizeTitle(title);
+    if (clean.length === 0) return false;
+    if (!this.sessions.some((session) => session.id === id)) return false;
+    this.sessions = this.sessions.map((session) =>
+      session.id === id ? { ...session, title: clean, updatedAt: Date.now() } : session,
+    );
+    this.emit();
+    return true;
   }
 
   setMode(id: string, mode: PlanMode): boolean {

@@ -103,6 +103,7 @@ async function runAssistant(instruction: string): Promise<void> {
   if (sessionId === null) return;
   aiEngine.appendUserMessage(instruction);
   aiChatModel.open();
+  if (sessionStore.active()?.title === 'Yeni sohbet') titlePending.add(sessionId);
   sessionStore.retitleFrom(sessionId, instruction);
   const session = sessionStore.getSnapshot().sessions.find((entry) => entry.id === sessionId);
   const preset = EFFORT_PRESETS[session?.effort ?? DEFAULT_EFFORT];
@@ -136,6 +137,55 @@ async function runAssistant(instruction: string): Promise<void> {
 
 let remoteAbort: (() => void) | null = null;
 
+// opencode CLI oturum eşlemesi: FILE sohbeti -> opencode sessionID (süreç boyunca bellekte).
+const opencodeSessions = new Map<string, string>();
+
+// İlk isteği gönderilen sohbetler: yanıt bitince AI'dan kısa ad istenir.
+const titlePending = new Set<string>();
+
+const TITLE_INSTRUCTION =
+  'Sohbet adlandırıcısın. Kullanıcının ilk isteğini 2-4 kelimelik Türkçe bir başlıkla özetle. Yalnızca başlığı yaz.';
+
+async function generateSessionTitle(sessionId: string, ref: ActiveRef): Promise<void> {
+  if (!titlePending.has(sessionId)) return;
+  titlePending.delete(sessionId);
+  const exists = sessionStore.getSnapshot().sessions.some((session) => session.id === sessionId);
+  if (!exists) return;
+  const firstUser = aiEngine.getState().chat.messages.find((message) => message.role === 'user');
+  if (firstUser === undefined) return;
+  const request = firstUser.content.slice(0, 600);
+  const apply = (text: string): void => {
+    sessionStore.setTitle(sessionId, text);
+  };
+  const client = getRemoteClient();
+  if (ref.provider === 'opencode') {
+    client.sendCli(
+      { model: ref.id, prompt: `${TITLE_INSTRUCTION}\n\nİstek: ${request}`, sessionId: null },
+      { onToken: () => undefined, onDone: apply, onError: () => undefined },
+    );
+    return;
+  }
+  const endpoint = resolveEndpoint(ref.provider);
+  if ('error' in endpoint) return;
+  client.send(
+    {
+      provider: ref.provider,
+      baseUrl: endpoint.baseUrl,
+      apiKey: null,
+      keyEnv: endpoint.keyEnv,
+      keyRequired: endpoint.keyRequired,
+      model: ref.id,
+      messages: [
+        { role: 'system' as const, content: TITLE_INSTRUCTION },
+        { role: 'user' as const, content: request },
+      ],
+      temperature: 0.3,
+      maxTokens: 48,
+    },
+    { onToken: () => undefined, onDone: apply, onError: () => undefined },
+  );
+}
+
 async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset): Promise<void> {
   if (engineBusy()) {
     aiEngine.appendSystemMessage('Yanıt bekleniyor, bitince tekrar gönderin.');
@@ -161,6 +211,45 @@ async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset
     .slice(-MAX_CONTEXT_MESSAGES)
     .map((message) => ({ role: message.role, content: message.content }));
   await new Promise<void>((resolve) => {
+    const callbacks = {
+      onToken: (text: string) => aiEngine.appendRemoteToken(text),
+      onDone: (text: string) => {
+        remoteAbort = null;
+        aiEngine.finishRemote(text);
+        syncSession(sessionId);
+        void generateSessionTitle(sessionId, ref);
+        resolve();
+      },
+      onError: (message: string) => {
+        remoteAbort = null;
+        aiEngine.setError(message);
+        syncSession(sessionId);
+        resolve();
+      },
+    };
+    if (ref.provider === 'opencode') {
+      // Yerel opencode CLI: auth ona ait, anahtar gerekmez; bağlam opencode oturumunda sürer.
+      const known = opencodeSessions.get(sessionId) ?? null;
+      const prompt =
+        known === null
+          ? [
+              contextBlock,
+              ...history.map(
+                (message) =>
+                  `${message.role === 'user' ? 'Kullanıcı' : 'Asistan'}: ${message.content}`,
+              ),
+            ].join('\n\n')
+          : (history[history.length - 1]?.content ?? '');
+      const handle = client.sendCli(
+        { model: ref.id, prompt, sessionId: known },
+        {
+          ...callbacks,
+          onSession: (id) => opencodeSessions.set(sessionId, id),
+        },
+      );
+      remoteAbort = handle.abort;
+      return;
+    }
     const handle = client.send(
       {
         provider: ref.provider,
@@ -173,21 +262,7 @@ async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset
         temperature: preset.temperature,
         maxTokens: preset.maxTokens,
       },
-      {
-        onToken: (text) => aiEngine.appendRemoteToken(text),
-        onDone: (text) => {
-          remoteAbort = null;
-          aiEngine.finishRemote(text);
-          syncSession(sessionId);
-          resolve();
-        },
-        onError: (message) => {
-          remoteAbort = null;
-          aiEngine.setError(message);
-          syncSession(sessionId);
-          resolve();
-        },
-      },
+      callbacks,
     );
     remoteAbort = handle.abort;
   });

@@ -239,6 +239,43 @@ describe('aiCommands — birleşik katalog', () => {
     ).toBe(true);
   });
 
+  it('ilk yanıttan sonra AI sohbet adı üretir', async () => {
+    const { selectModel } = await import('./aiCommands');
+    const { resetRemoteClient } = await import('./remoteClient');
+    resetRemoteClient();
+    const listeners: { done: ((event: AiChatDoneEvent) => void) | null } = { done: null };
+    vi.mocked(window.api.aiChatStart).mockResolvedValue({ started: true });
+    vi.mocked(window.api.onAiChatDone).mockImplementation(
+      (fn: (event: AiChatDoneEvent) => void) => {
+        listeners.done = fn;
+        return () => undefined;
+      },
+    );
+    selectModel({ id: 'llama3', name: 'llama3', provider: 'ollama', source: 'ollama' });
+    aiChatModel.setDraft('bana react bileşeni yaz');
+    const pending = registry.run('ai.chat.send');
+    await vi.waitFor(() => {
+      expect(window.api.aiChatStart).toHaveBeenCalledTimes(1);
+    });
+    const firstRequest = vi.mocked(window.api.aiChatStart).mock.calls[0]?.[0] as {
+      requestId: string;
+    };
+    listeners.done?.({ requestId: firstRequest.requestId, text: 'tam yanıt' });
+    await pending;
+    await vi.waitFor(() => {
+      expect(window.api.aiChatStart).toHaveBeenCalledTimes(2);
+    });
+    const titleCall = vi.mocked(window.api.aiChatStart).mock.calls[1]?.[0] as {
+      requestId: string;
+      messages: readonly { content: string }[];
+    };
+    expect(titleCall.messages.some((message) => message.content.includes('başlık'))).toBe(true);
+    listeners.done?.({ requestId: titleCall.requestId, text: '"React Bileşeni İsteği."' });
+    await vi.waitFor(() => {
+      expect(sessionStore.active()?.title).toBe('React Bileşeni İsteği');
+    });
+  });
+
   it('anahtar yoksa uzak gönderim hata mesajı bırakır', async () => {
     const { selectModel } = await import('./aiCommands');
     const { resetRemoteClient } = await import('./remoteClient');

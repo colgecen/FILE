@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { sessionStore } from './sessions';
+import { sanitizeTitle, sessionStore } from './sessions';
 
 describe('SessionStore', () => {
   afterEach(() => {
@@ -57,6 +57,23 @@ describe('SessionStore', () => {
     sessionStore.retitleFrom(id, 'ilk');
     sessionStore.retitleFrom(id, 'ikinci');
     expect(sessionStore.active()?.title).not.toBe('ikinci');
+  });
+
+  it('AI başlığı sekme adına temizlenir', () => {
+    expect(sanitizeTitle('"Dosya düzenleme hatası."')).toBe('Dosya düzenleme hatası');
+    expect(sanitizeTitle('```kod```\n  React hatası  ')).toBe('React hatası');
+    expect(sanitizeTitle('a'.repeat(40))).toBe(`${'a'.repeat(32)}…`);
+    expect(sanitizeTitle('   ')).toBe('');
+  });
+
+  it('setTitle AI başlığını uygular, boş ve bilinmeyeni yok sayar', () => {
+    const id = sessionStore.create();
+    sessionStore.retitleFrom(id, 'ilk istek');
+    expect(sessionStore.setTitle(id, 'Sekme Hatası')).toBe(true);
+    expect(sessionStore.active()?.title).toBe('Sekme Hatası');
+    expect(sessionStore.setTitle(id, '  ')).toBe(false);
+    expect(sessionStore.setTitle('yok', 'başlık')).toBe(false);
+    expect(sessionStore.active()?.title).toBe('Sekme Hatası');
   });
 
   it('kip ve efor atanır', () => {
