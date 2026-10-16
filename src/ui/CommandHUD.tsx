@@ -81,41 +81,32 @@ export function CommandHUD(): React.JSX.Element | null {
             }}
           />
         </div>
-        <div
-          className={
-            state.items.length === 0
-              ? 'command-hud__list command-hud__list--empty'
-              : 'command-hud__list'
-          }
-          role="listbox"
-          aria-label="Komut listesi"
-        >
-          {state.items.map((item, index) => {
-            const active = index === state.activeIndex;
-            const className = ['command-hud__item', active ? 'command-hud__item--active' : '']
-              .filter(Boolean)
-              .join(' ');
-            return (
-              <div
-                key={item.commandId}
-                role="option"
-                aria-selected={active}
-                className={className}
-                onMouseEnter={() => paletteModel.setActive(index)}
-                onClick={() => {
-                  paletteModel.setActive(index);
-                  void registry.run('palette.confirm');
-                }}
-              >
-                <span className="command-hud__title">{item.title}</span>
-                <span className="command-hud__category">{item.category}</span>
-              </div>
-            );
-          })}
-        </div>
-        <footer className="command-hud__footer">
-          {state.items.length} eşleşme
-        </footer>
+        {state.items.length > 0 && (
+          <div className="command-hud__list" role="listbox" aria-label="Komut listesi">
+            {state.items.map((item, index) => {
+              const active = index === state.activeIndex;
+              const className = ['command-hud__item', active ? 'command-hud__item--active' : '']
+                .filter(Boolean)
+                .join(' ');
+              return (
+                <div
+                  key={item.commandId}
+                  role="option"
+                  aria-selected={active}
+                  className={className}
+                  onMouseEnter={() => paletteModel.setActive(index)}
+                  onClick={() => {
+                    paletteModel.setActive(index);
+                    void registry.run('palette.confirm');
+                  }}
+                >
+                  <span className="command-hud__title">{item.title}</span>
+                  <span className="command-hud__category">{item.category}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

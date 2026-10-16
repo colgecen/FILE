@@ -925,22 +925,6 @@ textarea {
   padding: 8px;
 }
 
-.command-hud__list--empty {
-  min-height: 44px;
-  padding: 0;
-}
-
-.command-hud__footer {
-  flex: none;
-  padding: 7px 16px 9px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  color: var(--text-muted);
-  font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  text-align: right;
-}
-
 .command-hud__item {
   display: flex;
   align-items: center;
