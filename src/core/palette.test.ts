@@ -66,7 +66,7 @@ describe('PaletteModel', () => {
     const cmds = ['x1', 'x2', 'x3'].map((title) => ({
       id: `seed.${title}`,
       title,
-      category: 'file',
+      category: 'file' as const,
       run: () => ({ ok: true as const }),
     }));
     paletteModel.setQuery('x', cmds);
@@ -80,7 +80,7 @@ describe('PaletteModel', () => {
     const cmds = ['x1', 'x2', 'x3', 'x4'].map((title) => ({
       id: `seed.${title}`,
       title,
-      category: 'file',
+      category: 'file' as const,
       run: () => ({ ok: true as const }),
     }));
     paletteModel.setQuery('x', cmds);
