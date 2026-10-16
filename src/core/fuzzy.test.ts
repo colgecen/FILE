@@ -33,3 +33,10 @@ describe('fuzzyScore', () => {
     expect(head.score).toBeGreaterThan(tail.score);
   });
 });
+describe('fuzzyScore türkçe katlama', () => {
+  it('büyük küçük harf ve İ/I fark etmez', () => {
+    expect(fuzzyScore('GIT', 'GİT DEPO')).not.toBeNull();
+    expect(fuzzyScore('ISIK', 'ısık')).not.toBeNull();
+    expect(fuzzyScore('tree', 'TREE — DOSYA GEZGİNİ')).not.toBeNull();
+  });
+});

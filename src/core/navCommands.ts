@@ -201,17 +201,25 @@ export function registerNavCommands(registry: CommandRegistry): void {
     category: 'view',
     run: async () => {
       if (explorerModel.getState().rootPath === null) {
-        const picked = await window.api.openFolder();
-        if (picked !== null) {
-          const loaded = await explorerModel.loadRoot(picked.path, window.api.readDir);
-          if (loaded) {
-            const { adoptFolderAsEnvironment } = await import('./envCommands');
-            adoptFolderAsEnvironment(picked.path, picked.name);
+        const { environmentsModel } = await import('./environments');
+        const env = environmentsModel.active();
+        if (env !== null) {
+          await explorerModel.loadRoot(env.rootPath, window.api.readDir);
+        } else {
+          const picked = await window.api.openFolder();
+          if (picked !== null) {
+            const loaded = await explorerModel.loadRoot(picked.path, window.api.readDir);
+            if (loaded) {
+              const { adoptFolderAsEnvironment } = await import('./envCommands');
+              adoptFolderAsEnvironment(picked.path, picked.name);
+            }
           }
         }
       }
       explorerModel.open();
       focusManager.set('explorer');
+      const { syncGitPanelWithActiveEnv } = await import('./gitPanel');
+      await syncGitPanelWithActiveEnv(window.api);
       return { ok: true };
     },
   });

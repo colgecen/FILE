@@ -1,7 +1,17 @@
 import { gitModel } from './gitModel';
-import type { CommandDef } from './types';
+import type { CommandDef, CommandResult } from './types';
 
 export function registerGitCommands(register: (command: CommandDef) => void): void {
+  register({
+    id: 'view.git.panel',
+    category: 'view',
+    title: 'Git Paneli',
+    aliases: ['git', 'git panel', 'kaynak kontrolu', 'source control'],
+    run: async (): Promise<CommandResult> => {
+      const { openGitPanelForActiveEnv } = await import('./gitPanel');
+      return openGitPanelForActiveEnv(window.api, { focus: true });
+    },
+  });
   register({
     id: 'git.status',
     category: 'terminal',

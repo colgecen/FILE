@@ -22,6 +22,12 @@ describe('PaletteModel', () => {
     expect(state.activeIndex).toBe(0);
   });
 
+  it("'liste' sorgusu tüm komutları sınırsız listeler", () => {
+    paletteModel.reset(registry.list());
+    paletteModel.setQuery('liste', registry.list());
+    expect(paletteModel.getState().items).toHaveLength(registry.list().length);
+  });
+
   it('sorguya göre komutları filtreler', () => {
     paletteModel.reset(registry.list());
     paletteModel.setQuery('kaydet', registry.list());

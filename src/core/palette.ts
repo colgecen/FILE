@@ -123,8 +123,12 @@ export class PaletteModel {
       title: command.title,
       category: command.category,
     });
-    if (query.trim().length === 0) {
+    const trimmed = query.trim();
+    if (trimmed.length === 0) {
       return [];
+    }
+    if (trimmed.toLowerCase() === 'liste') {
+      return commands.map(candidate);
     }
     type ScoredEntry =
       | { kind: 'command'; command: CommandDef; score: number }
