@@ -6,6 +6,7 @@ import { focusManager } from './focus';
 import { openFilesModel } from './openFiles';
 import { tabsModel } from './tabs';
 import type { CommandResult } from './types';
+import { syncChatWithActiveEnv } from '../ai/envBinding';
 
 export function snapshotTabs(): EnvironmentTabs {
   const state = tabsModel.getState();
@@ -38,6 +39,7 @@ export async function switchToEnvironment(id: string): Promise<CommandResult> {
     reportError(message);
     return { ok: false, error: message };
   }
+  syncChatWithActiveEnv();
   return { ok: true };
 }
 
@@ -60,6 +62,7 @@ export function adoptFolderAsEnvironment(
   if (existing !== undefined) {
     if (mode === 'switch') applyTabs(existing.tabs);
     environmentsModel.setActive(existing.id);
+    syncChatWithActiveEnv();
     return;
   }
   environmentsModel.add(rootPath, name);
@@ -67,6 +70,7 @@ export function adoptFolderAsEnvironment(
     tabsModel.reset();
     openFilesModel.set([]);
   }
+  syncChatWithActiveEnv();
 }
 
 export async function addEnvironmentViaDialog(): Promise<CommandResult> {
@@ -88,6 +92,7 @@ export async function addEnvironmentViaDialog(): Promise<CommandResult> {
   openFilesModel.set([]);
   explorerModel.open();
   focusManager.set('explorer');
+  syncChatWithActiveEnv();
   return { ok: true };
 }
 
@@ -114,6 +119,7 @@ export async function removeEnvironment(id?: string): Promise<CommandResult> {
     reportError(message);
     return { ok: false, error: message };
   }
+  syncChatWithActiveEnv();
   return { ok: true };
 }
 

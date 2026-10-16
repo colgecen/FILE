@@ -3,9 +3,11 @@ import { useAIEngine } from '../ai/engine';
 import { refreshCatalog } from '../ai/catalog';
 import { loadActiveRef } from '../ai/modelStore';
 import { closeSession, newSession, switchSession } from '../ai/aiCommands';
+import { syncChatWithActiveEnv } from '../ai/envBinding';
 import { terminalModel } from '../core/terminalModel';
 import { writeToActiveTerminal } from '../core/terminalRegistry';
 import { sessionStore, useSessions } from '../ai/sessions';
+import { useEnvironmentsState } from '../core/environments';
 import { aiChatModel, useAIChat } from '../core/chatModel';
 import { focusManager, useFocusZone } from '../core/focus';
 import { useCore } from '../layout/AppShell';
@@ -43,6 +45,7 @@ export function AIChatPanel(): React.JSX.Element | null {
   const ai = useAIEngine();
   const chat = useAIChat();
   const sessions = useSessions();
+  const envState = useEnvironmentsState();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -90,6 +93,7 @@ export function AIChatPanel(): React.JSX.Element | null {
 
   useEffect(() => {
     if (chat.open) {
+      syncChatWithActiveEnv();
       sessionStore.ensure(false);
       void refreshCatalog(window.api);
     }
@@ -98,6 +102,12 @@ export function AIChatPanel(): React.JSX.Element | null {
   if (!chat.open) return null;
 
   const activeRef = loadActiveRef();
+  const activeSession = sessions.sessions.find((session) => session.id === sessions.activeId) ?? null;
+  const boundEnvId = activeSession?.envId ?? null;
+  const boundEnv =
+    boundEnvId !== null
+      ? envState.environments.find((env) => env.id === boundEnvId) ?? null
+      : null;
   return (
     <aside
       className="ai-chat"
@@ -149,6 +159,11 @@ export function AIChatPanel(): React.JSX.Element | null {
         <span className="ai-chat__modelname" title={activeRef.id}>
           {activeRef.id}
         </span>
+        {boundEnv !== null && (
+          <span className="ai-chat__project" title={boundEnv.rootPath} data-testid="ai-project-chip">
+            {boundEnv.name}
+          </span>
+        )}
         <span className="ai-chat__status" data-status={ai.status}>
           <span className="ai-chat__dot" aria-hidden="true" />
           {ai.status === 'loading' && ai.progress !== null

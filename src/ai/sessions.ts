@@ -9,6 +9,7 @@ export type ChatSession = {
   readonly mode: PlanMode;
   readonly effort: EffortLevel;
   readonly updatedAt: number;
+  readonly envId: string | null;
 };
 
 export type SessionsSnapshot = {
@@ -63,7 +64,7 @@ export class SessionStore {
     return this.create();
   }
 
-  create(): string {
+  create(envId: string | null = null): string {
     const id = nextId();
     const now = Date.now();
     this.sessions = [
@@ -75,6 +76,7 @@ export class SessionStore {
         mode: DEFAULT_MODE,
         effort: DEFAULT_EFFORT,
         updatedAt: now,
+        envId,
       },
     ];
     this.activeId = id;
@@ -90,6 +92,42 @@ export class SessionStore {
     this.activeId = id;
     this.emit();
     return true;
+  }
+
+  findForEnv(envId: string): ChatSession | null {
+    return this.sessions.find((session) => session.envId === envId) ?? null;
+  }
+
+  bindEnv(id: string, envId: string | null): boolean {
+    if (!this.sessions.some((session) => session.id === id)) return false;
+    this.sessions = this.sessions.map((session) =>
+      session.id === id ? { ...session, envId, updatedAt: Date.now() } : session,
+    );
+    this.emit();
+    return true;
+  }
+
+  /**
+   * Proje ortamına ait sohbete geçiş: bağlı oturum varsa ona atlar,
+   * aktif oturum dokunulmamış boş bir sohbetse ona bağlar, yoksa yeni bağlar.
+   * Akış sürüyorsa (busy) hiçbir şey yapmaz.
+   */
+  activateForEnv(envId: string, busy: boolean): string | null {
+    if (busy) return null;
+    const existing = this.findForEnv(envId);
+    if (existing !== null) {
+      if (this.activeId !== existing.id) {
+        this.activeId = existing.id;
+        this.emit();
+      }
+      return existing.id;
+    }
+    const active = this.active();
+    if (active !== null && active.envId === null && active.messages.length === 0) {
+      this.bindEnv(active.id, envId);
+      return active.id;
+    }
+    return this.create(envId);
   }
 
   close(id: string, busy: boolean): boolean {

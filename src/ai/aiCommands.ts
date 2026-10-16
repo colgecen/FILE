@@ -1,5 +1,6 @@
 import { aiEngine } from './engine';
 import { aiChatModel } from '../core/chatModel';
+import { environmentsModel } from '../core/environments';
 import { focusManager } from '../core/focus';
 import { getActiveEditor } from '../editor/activeEditor';
 import { paletteModel } from '../core/palette';
@@ -34,7 +35,7 @@ export function newSession(): string | null {
   if (engineBusy()) return null;
   const current = sessionStore.active();
   if (current !== null) syncSession(current.id);
-  const id = sessionStore.create();
+  const id = sessionStore.create(environmentsModel.active()?.id ?? null);
   aiEngine.resetChat();
   return id;
 }

@@ -190,6 +190,22 @@
   white-space: nowrap;
 }
 
+.ai-chat__project {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: #dfeaff;
+  background: rgba(10, 132, 255, 0.18);
+  border: 1px solid rgba(10, 132, 255, 0.32);
+  border-radius: 999px;
+  padding: 3px 10px;
+  max-width: 128px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ai-chat__meta {
   display: flex;
   align-items: center;
