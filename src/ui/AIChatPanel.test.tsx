@@ -52,6 +52,32 @@ describe('AIChatPanel', () => {
     expect(mockCore.registry.run).toHaveBeenCalledWith('ai.chat.send');
   });
 
+  it('Enter olayı pencere kısayollarına sızmaz', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    const spy = vi.fn();
+    window.addEventListener('keydown', spy);
+    const input = screen.getByPlaceholderText('Mesajınızı yazın…');
+    fireEvent.keyDown(input, { key: 'Enter' });
+    window.removeEventListener('keydown', spy);
+    expect(mockCore.registry.run).toHaveBeenCalledWith('ai.chat.send');
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('panele tıklama odak bölgesini ai yapar', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    focusManager.set('editor');
+    fireEvent.mouseDown(screen.getByLabelText('Yapay zekâ sohbeti'));
+    expect(focusManager.get()).toBe('ai');
+  });
+
+  it('yeni sohbet düğmesi her durumda görünür', () => {
+    aiChatModel.open();
+    render(<AIChatPanel />);
+    expect(screen.getByRole('button', { name: 'Yeni sohbet' })).toBeInTheDocument();
+  });
+
   it('Esc kapatma komutunu tetikler', () => {
     aiChatModel.open();
     render(<AIChatPanel />);

@@ -7,7 +7,7 @@ import { terminalModel } from '../core/terminalModel';
 import { writeToActiveTerminal } from '../core/terminalRegistry';
 import { sessionStore, useSessions } from '../ai/sessions';
 import { aiChatModel, useAIChat } from '../core/chatModel';
-import { useFocusZone } from '../core/focus';
+import { focusManager, useFocusZone } from '../core/focus';
 import { useCore } from '../layout/AppShell';
 import { phaseLabel, statusLabel } from '../ai/format';
 import { AIKeyVault, AIModelToolbar, AIStopButton } from './AIControls';
@@ -99,50 +99,52 @@ export function AIChatPanel(): React.JSX.Element | null {
 
   const activeRef = loadActiveRef();
   return (
-    <aside className="ai-chat" aria-label="Yapay zekâ sohbeti">
-      {sessions.sessions.length > 0 && (
-        <div className="ai-chat__tabs">
-          <div className="ai-chat__tablist" role="tablist" aria-label="Sohbetler">
-            {sessions.sessions.map((session) => {
-              const selected = session.id === sessions.activeId;
-              return (
-                <div
-                  key={session.id}
-                  role="tab"
-                  aria-selected={selected}
-                  title={session.title}
-                  className={selected ? 'ai-chat__tab ai-chat__tab--active' : 'ai-chat__tab'}
-                  onClick={() => switchSession(session.id)}
+    <aside
+      className="ai-chat"
+      aria-label="Yapay zekâ sohbeti"
+      onMouseDown={() => focusManager.set('ai')}
+    >
+      <div className="ai-chat__tabs">
+        <div className="ai-chat__tablist" role="tablist" aria-label="Sohbetler">
+          {sessions.sessions.map((session) => {
+            const selected = session.id === sessions.activeId;
+            return (
+              <div
+                key={session.id}
+                role="tab"
+                aria-selected={selected}
+                title={session.title}
+                className={selected ? 'ai-chat__tab ai-chat__tab--active' : 'ai-chat__tab'}
+                onClick={() => switchSession(session.id)}
+              >
+                <span className="ai-chat__tab-title">{session.title}</span>
+                <button
+                  type="button"
+                  className="ai-chat__tab-close"
+                  aria-label={`Kapat: ${session.title}`}
+                  disabled={busy}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    closeSession(session.id);
+                  }}
                 >
-                  <span className="ai-chat__tab-title">{session.title}</span>
-                  <button
-                    type="button"
-                    className="ai-chat__tab-close"
-                    aria-label={`Kapat: ${session.title}`}
-                    disabled={busy}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      closeSession(session.id);
-                    }}
-                  >
-                    ✕
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-          <button
-            type="button"
-            className="ai-chat__tab-new"
-            aria-label="Yeni sohbet"
-            title="Yeni sohbet"
-            disabled={busy}
-            onClick={() => newSession()}
-          >
-            +
-          </button>
+                  ✕
+                </button>
+              </div>
+            );
+          })}
         </div>
-      )}
+        <button
+          type="button"
+          className="ai-chat__tab-new"
+          aria-label="Yeni sohbet"
+          title="Yeni sohbet"
+          disabled={busy}
+          onClick={() => newSession()}
+        >
+          +
+        </button>
+      </div>
       <header className="ai-chat__header">
         <span className="ai-chat__modelname" title={activeRef.id}>
           {activeRef.id}
@@ -299,6 +301,7 @@ export function AIChatPanel(): React.JSX.Element | null {
       <footer className="ai-chat__footer" onKeyDown={(event) => {
         if (event.key === 'Tab') {
           event.preventDefault();
+          event.stopPropagation();
           const activeSession = sessions.sessions.find((session) => session.id === sessions.activeId) ?? null;
           void registry.run(activeSession?.mode === 'plan' ? 'ai.mode.build' : 'ai.mode.plan');
         }
@@ -311,14 +314,18 @@ export function AIChatPanel(): React.JSX.Element | null {
             rows={1}
             spellCheck={false}
             value={chat.draft}
+            onFocus={() => focusManager.set('ai')}
             onChange={(event) => aiChatModel.setDraft(event.currentTarget.value)}
             onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
+                event.stopPropagation();
                 registry.run('ai.chat.send');
+                return;
               }
               if (event.key === 'Escape') {
                 event.preventDefault();
+                event.stopPropagation();
                 registry.run('ai.chat.close');
               }
             }}
