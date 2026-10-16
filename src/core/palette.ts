@@ -124,7 +124,7 @@ export class PaletteModel {
       category: command.category,
     });
     if (query.trim().length === 0) {
-      return commands.slice(0, 12).map(candidate);
+      return [];
     }
     type ScoredEntry =
       | { kind: 'command'; command: CommandDef; score: number }

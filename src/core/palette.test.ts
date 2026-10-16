@@ -15,10 +15,10 @@ afterEach(() => {
 });
 
 describe('PaletteModel', () => {
-  it('varsayılan listede ilk on iki komutu gösterir', () => {
+  it('boş sorguda varsayılan sonuç listesi boş kalır', () => {
     paletteModel.reset(registry.list());
     const state = paletteModel.getState();
-    expect(state.items.length).toBe(12);
+    expect(state.items).toHaveLength(0);
     expect(state.activeIndex).toBe(0);
   });
 
@@ -63,15 +63,27 @@ describe('PaletteModel', () => {
   });
 
   it('seçim sarar', () => {
-    paletteModel.reset(registry.list());
+    const cmds = ['x1', 'x2', 'x3'].map((title) => ({
+      id: `seed.${title}`,
+      title,
+      category: 'file',
+      run: () => ({ ok: true as const }),
+    }));
+    paletteModel.setQuery('x', cmds);
     paletteModel.move(-1);
-    expect(paletteModel.getState().activeIndex).toBe(11);
+    expect(paletteModel.getState().activeIndex).toBe(2);
     paletteModel.move(1);
     expect(paletteModel.getState().activeIndex).toBe(0);
   });
 
   it('setActive geçerli dizini seçer, geçersizi yoksayar', () => {
-    paletteModel.reset(registry.list());
+    const cmds = ['x1', 'x2', 'x3', 'x4'].map((title) => ({
+      id: `seed.${title}`,
+      title,
+      category: 'file',
+      run: () => ({ ok: true as const }),
+    }));
+    paletteModel.setQuery('x', cmds);
     paletteModel.setActive(3);
     expect(paletteModel.getState().activeIndex).toBe(3);
     paletteModel.setActive(99);
@@ -117,10 +129,12 @@ describe('PaletteModel', () => {
 });
 
 describe('palette açılış akışı', () => {
-  it('toggle palet bölgesini açar ve komutları yükler', async () => {
+  it('toggle palet bölgesini açar ve yazınca komutları yükler', async () => {
     paletteModel.reset(registry.list());
     await registry.run('palette.toggle');
     expect(focusManager.get()).toBe('palette');
+    expect(paletteModel.getState().items).toHaveLength(0);
+    paletteModel.setQuery('kaydet', registry.list());
     expect(paletteModel.getState().items.length).toBeGreaterThan(0);
     while (focusManager.get() !== 'editor') focusManager.returnToPrevious();
   });
@@ -136,7 +150,8 @@ describe('palette açılış akışı', () => {
 
 describe('palet seçim komutları', () => {
   it('up ve down seçimi kaydırır', async () => {
-    paletteModel.reset(registry.list());
+    paletteModel.setQuery('kaydet', registry.list());
+    expect(paletteModel.getState().items.length).toBeGreaterThan(1);
     await registry.run('palette.down');
     expect(paletteModel.getState().activeIndex).toBe(1);
     await registry.run('palette.up');
@@ -155,7 +170,7 @@ let executed = false;
       },
     });
     await registry.run('palette.toggle');
-    paletteModel.reset([registry.get('test.hello')!]);
+    paletteModel.setQuery('merhaba', [registry.get('test.hello')!]);
     await registry.run('palette.confirm');
     expect(executed).toBe(true);
     expect(focusManager.get()).toBe('editor');

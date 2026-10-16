@@ -56,7 +56,7 @@ describe('CommandHUD', () => {
     renderShell();
     act(() => {
       focusManager.set('palette');
-      paletteModel.reset([
+      paletteModel.setQuery('a', [
         { id: 'a.open', title: 'Dosya Aç', category: 'file', run: () => ({ ok: true }) },
         { id: 'b.save', title: 'Kaydet', category: 'file', run: () => ({ ok: true }) },
       ]);
@@ -254,11 +254,13 @@ describe('palet klavye akışı', () => {
     expect(document.querySelector('.command-hud--open')).not.toBeNull();
   });
 
-  it('ctrl+p paleti açar ve ilk sonuç seçilidir', () => {
+  it('ctrl+p paleti boş açar, yazınca ilk sonuç seçilir', () => {
     render(<AppShell />);
     fireEvent.keyDown(window, { key: 'p', ctrlKey: true });
     expect(focusManager.get()).toBe('palette');
     expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(document.querySelectorAll('.command-hud__item')).toHaveLength(0);
+    fireEvent.change(screen.getByLabelText('Komut yaz'), { target: { value: 'kaydet' } });
     const items = document.querySelectorAll('.command-hud__item');
     expect(items.length).toBeGreaterThan(0);
     expect(items[0]!.className).toContain('command-hud__item--active');
