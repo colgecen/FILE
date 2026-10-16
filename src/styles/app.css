@@ -908,6 +908,10 @@ textarea {
   outline: none;
 }
 
+.command-hud__input:focus-visible {
+  box-shadow: none;
+}
+
 .command-hud__list {
   max-height: 344px;
   overflow-y: auto;
