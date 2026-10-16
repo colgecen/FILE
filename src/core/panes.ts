@@ -19,6 +19,10 @@ function leafIds(layout: PaneLayout): string[] {
   return layout.children.flatMap((child) => leafIds(child));
 }
 
+export function countLeaves(layout: PaneLayout): number {
+  return leafIds(layout).length;
+}
+
 function splitAt(node: PaneLayout, targetId: string, direction: SplitDirection): PaneLayout {
   if (node.id === targetId) {
     if (node.children !== undefined) return node;

@@ -4,6 +4,7 @@ import { reportError } from '../core/appErrors';
 import { errorStore } from '../core/errorStore';
 import { createCore } from '../core/instances';
 import { panesModel } from '../core/panes';
+import { tabsModel } from '../core/tabs';
 import { menuModel, selectableIndexOfItems } from '../menus/menuModel';
 import { AppShell } from '../layout/AppShell';
 import { PaneManager } from './PaneManager';
@@ -17,10 +18,12 @@ vi.mock('../editor/EditorCore', () => ({
 describe('PaneManager', () => {
   beforeEach(() => {
     panesModel.reset();
+    tabsModel.reset();
     menuModel.close();
   });
 
   afterEach(() => {
+    tabsModel.reset();
     act(() => {
       errorStore.clear();
     });
@@ -59,6 +62,7 @@ describe('PaneManager', () => {
   });
 
   it('Görünüm menüsünden Dikey Böl seçilince iki panel çizer', async () => {
+    tabsModel.open({ path: '/a.ts', name: 'a.ts', content: 'x', language: 'ts' });
     render(<AppShell />);
     act(() => {
       menuModel.openAt(3);
@@ -76,6 +80,7 @@ describe('PaneManager', () => {
   });
 
   it('Görünüm menüsünden Yatay Böl seçilince iki panel çizer', async () => {
+    tabsModel.open({ path: '/a.ts', name: 'a.ts', content: 'x', language: 'ts' });
     render(<AppShell />);
     act(() => {
       menuModel.openAt(3);

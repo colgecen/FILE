@@ -39,6 +39,7 @@ const SEEDS: readonly BindingSeed[] = [
 
   // Sekmeler
   { commandId: 'tab.close', keys: ['Control+w'], label: 'Aktif sekmeyi kapat' },
+  { commandId: 'view.closeActive', keys: ['Shift+4'], label: 'Sekmeyi/paneli kapat (Shift+4)' },
   { commandId: 'tab.next', keys: ['Control+Tab'], label: 'Sonraki sekme' },
   { commandId: 'tab.prev', keys: ['Control+Shift+Tab'], label: 'Önceki sekme' },
 

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { CommandRegistry } from './commands';
 import { Keymap } from './keymap';
 import type { KeyBinding } from './types';
-import { KeyboardController, keyChordFromEvent } from './input';
+import { KeyboardController, keyChordFromEvent, keyChordsFromEvent } from './input';
 
 const binding = (id: string, commandId: string, keys: string[]): KeyBinding => ({
   id,
@@ -29,6 +29,17 @@ describe('keyChordFromEvent', () => {
 
   it('boşluk tuşunu adlandırılmış tuş olarak korur', () => {
     expect(keyChordFromEvent(press({ key: ' ' }))).toBe('Space');
+  });
+
+  it('shift+4 türkçe yerleşimde £ üretse de akoru sayıya çevirir', () => {
+    expect(keyChordsFromEvent(press({ key: '£', code: 'Digit4', shiftKey: true }))).toEqual([
+      'Shift+£',
+      'Shift+4',
+    ]);
+  });
+
+  it('değiştiricisiz sayı tek akor döndürür', () => {
+    expect(keyChordsFromEvent(press({ key: '4', code: 'Digit4' }))).toEqual(['4']);
   });
 });
 

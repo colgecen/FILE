@@ -25,6 +25,24 @@ export function keyChordFromEvent(event: KeyboardEvent): string | null {
   return chord.join('+');
 }
 
+const DIGIT_CODE = /^Digit(\d)$/;
+
+export function keyChordsFromEvent(event: KeyboardEvent): string[] {
+  const base = keyChordFromEvent(event);
+  if (base === null) return [];
+  const chords = [base];
+  const match = DIGIT_CODE.exec(event.code ?? '');
+  const digit = match?.[1];
+  if (digit !== undefined && event.key !== digit) {
+    const parts = base.split('+');
+    parts.pop();
+    parts.push(digit);
+    const alt = parts.join('+');
+    if (alt !== base) chords.push(alt);
+  }
+  return chords;
+}
+
 export class KeyboardController {
   private readonly keymap: Keymap;
   private readonly registry: CommandRegistry;
@@ -38,27 +56,32 @@ export class KeyboardController {
   }
 
   handle(event: KeyboardEvent): boolean {
-    const chord = keyChordFromEvent(event);
-    if (chord === null) return false;
+    const chords = keyChordsFromEvent(event);
+    const chord = chords[0] ?? '';
+    if (chords.length === 0) return false;
     const zone = getFocusZone();
     if (this.pendingPrefix !== null) {
       const first = this.pendingPrefix;
       this.clearPending();
       if (chord !== 'Escape') {
-        const binding = this.keymap.resolve([first, chord], zone);
-        if (binding === undefined) return false;
-        event.preventDefault();
-        void this.registry.run(binding.commandId);
-        return true;
+        for (const candidate of chords) {
+          const binding = this.keymap.resolve([first, candidate], zone);
+          if (binding === undefined) continue;
+          event.preventDefault();
+          void this.registry.run(binding.commandId);
+          return true;
+        }
+        return false;
       }
     }
-    const binding = this.keymap.resolve([chord], zone);
-    if (binding !== undefined) {
+    for (const candidate of chords) {
+      const binding = this.keymap.resolve([candidate], zone);
+      if (binding === undefined) continue;
       event.preventDefault();
       void this.registry.run(binding.commandId);
       return true;
     }
-    if (this.keymap.hasPrefix(chord, zone)) {
+    if (chords.some((candidate) => this.keymap.hasPrefix(candidate, zone))) {
       event.preventDefault();
       this.pendingPrefix = chord;
       this.pendingTimer = setTimeout(() => {

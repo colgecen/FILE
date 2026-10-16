@@ -10,6 +10,7 @@ const WELCOME_LINES = [
   '• tree — sol dosya gezginini açar',
   '• F3 — gezgin klasörleri arasında dolaşır',
   '• Tab / yön tuşları — gezgin dosyaları ve menüler',
+  '• Shift+4 — aktif sekmeyi kapat (bölünmüşse paneli kapatır)',
 ];
 
 const ABOUT_LINES = ['Sürüm:', '  • Arayüz — v0.1.0', '  • Çekirdek — TypeScript + React + Monaco', '  • Kabuk — Electron'];
