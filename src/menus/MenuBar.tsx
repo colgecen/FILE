@@ -92,8 +92,10 @@ export function MenuBar(): React.JSX.Element {
       }}
     >
       {items}
-      <Clock />
-      <TrafficLights />
+      <div className="menubar__trailing">
+        <Clock />
+        <TrafficLights />
+      </div>
     </nav>
   );
 }
