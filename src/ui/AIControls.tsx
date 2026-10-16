@@ -14,7 +14,6 @@ export function AIModelToolbar(): React.JSX.Element {
   const { registry } = useCore();
   const catalog = useModelCatalog();
   const sessions = useSessions();
-  const ai = useAIEngine();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
@@ -101,14 +100,6 @@ export function AIModelToolbar(): React.JSX.Element {
         <option value="medium">Orta</option>
         <option value="ultra">Ultra</option>
       </select>
-      <button
-        type="button"
-        className="ai-chat__stop"
-        disabled={!(ai.status === 'loading' || ai.status === 'computing')}
-        onClick={() => registry.run('ai.models.cancel')}
-      >
-        Durdur
-      </button>
       {open && (
         <div
           className="ai-chat__centermodal"
@@ -152,6 +143,21 @@ export function AIModelToolbar(): React.JSX.Element {
         </div>
       )}
     </div>
+  );
+}
+
+export function AIStopButton(): React.JSX.Element {
+  const { registry } = useCore();
+  const ai = useAIEngine();
+  const busy = ai.status === 'loading' || ai.status === 'computing';
+  return (
+    <button
+      type="button"
+      className={busy ? 'ai-chat__stop ai-chat__stop--busy' : 'ai-chat__stop ai-chat__stop--idle'}
+      aria-label="Durdur"
+      title="Durdur"
+      onClick={() => registry.run('ai.models.cancel')}
+    />
   );
 }
 

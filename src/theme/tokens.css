@@ -20,6 +20,7 @@
   --selection: rgba(0, 85, 255, 0.4);
   --line-active: rgba(0, 210, 255, 0.05);
   --error: #ff5252;
+  --success: #3ddc84;
   --border: #00d2ff;
   --border-dim: rgba(0, 210, 255, 0.35);
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;

@@ -186,7 +186,7 @@ describe('AIChatPanel indirme akışı', () => {
     const bar = screen.getByLabelText('Model indirme ilerlemesi');
     expect(bar).toBeTruthy();
     expect(screen.getByText(/İndiriliyor/)).toBeTruthy();
-    fireEvent.click(screen.getByText('Durdur'));
+    fireEvent.click(screen.getByLabelText('Durdur'));
     expect(mockCore.registry.run).toHaveBeenCalledWith('ai.models.cancel');
   });
 });

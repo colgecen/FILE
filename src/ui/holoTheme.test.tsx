@@ -68,6 +68,6 @@ describe('holo tema birliği (Ctrl+P paleti hariç)', () => {
     });
     expect(document.querySelector('.ai-chat')).not.toBeNull();
     expect(document.querySelector('.ai-chat__status')).not.toBeNull();
-    expect(document.querySelector('.ai-chat__modelbar')).not.toBeNull();
+    expect(document.querySelector('.ai-chat__modelname')?.textContent?.length).toBeGreaterThan(0);
   });
 });
