@@ -7,7 +7,7 @@ import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
 import { registerTelemetry } from './telemetry';
-import { registerWindowHandlers } from './windowHandlers';
+import { registerWindowHandlers, WINDOW_CHROME } from './windowHandlers';
 import { registerAiNetHandlers } from './aiNet';
 import { registerAiKeyHandlers, resolveApiKey } from './aiKeys';
 import { readLocalApiKey, registerOpencodeLocalHandlers } from './opencodeLocal';
@@ -45,6 +45,7 @@ function createMainWindow(): void {
     title: 'File',
     autoHideMenuBar: true,
     transparent: TRANSPARENT,
+    ...WINDOW_CHROME,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

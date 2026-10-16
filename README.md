@@ -4,7 +4,7 @@ Klavye-öncelikli, masaüstünde çalışan kod editörü.
 
 - **Arayüz:** TypeScript + React + Vite + Monaco Editor + Web Workers
 - **Kabuk:** Electron (fs/dialog/telemetri işlemleri Main Process'te)
-- **Görsel dil:** mavi tonları, beyaz, siyah; kırmızı yalnızca hata; köşeler keskin (`border-radius: 0`)
+- **Görsel dil:** premium karanlık zemin, macOS tarzı cam (glassmorphism) paneller, Inter + JetBrains Mono tipografisi, tek vurgu rengi mavi; kırmızı yalnızca hata; yumuşak köşeler
 
 ## Gereksinimler
 

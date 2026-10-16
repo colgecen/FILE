@@ -168,6 +168,7 @@ export type PtyEvent = {
 export type Api = {
   readonly version: string;
   readonly glass: boolean;
+  readonly platform: string;
   openFile(): Promise<OpenFileResult | null>;
   openFolder(): Promise<FolderResult | null>;
   saveFileAs(defaultPath: string): Promise<string | null>;
@@ -188,6 +189,8 @@ export type Api = {
   sysStop(): Promise<void>;
   onMetrics(listener: (snapshot: TelemetrySnapshot) => void): () => void;
   setFullscreen(enabled: boolean): Promise<boolean>;
+  winMinimize(): Promise<boolean>;
+  winToggleMaximize(): Promise<boolean>;
   appExit(): Promise<void>;
   newWindow(): Promise<void>;
   ptySpawn(options: PtySpawnOptions): Promise<{ id: string } | null>;

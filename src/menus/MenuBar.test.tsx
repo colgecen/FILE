@@ -28,9 +28,17 @@ describe('MenuBar', () => {
   it('dokuz üst başlığı çizer', () => {
     renderShell();
     const menubar = screen.getByRole('menubar');
-    expect(within(menubar).getAllByRole('button')).toHaveLength(9);
+    expect(menubar.querySelectorAll('.menubar__item')).toHaveLength(9);
     expect(screen.getByText('Dosya')).toBeInTheDocument();
     expect(screen.getByText('Yapay Zekâ')).toBeInTheDocument();
+  });
+
+  it('pencere düğmeleri (traffic lights) çizilir', () => {
+    renderShell();
+    const lights = screen.getByTestId('traffic-lights');
+    expect(lights.querySelectorAll('.traffic')).toHaveLength(3);
+    expect(within(lights).getByRole('button', { name: 'Pencereyi Kapat' })).toBeInTheDocument();
+    expect(within(lights).getByRole('button', { name: 'Küçült' })).toBeInTheDocument();
   });
 
   it('açılan alt menü öğelerini panoda gösterir', () => {

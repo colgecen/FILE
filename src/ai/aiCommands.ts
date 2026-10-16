@@ -58,8 +58,12 @@ export function closeSession(id: string): boolean {
   }
   if (!sessionStore.close(id, engineBusy())) return false;
   const active = sessionStore.active();
-  if (active === null) aiEngine.resetChat();
-  else aiEngine.loadMessages(active.messages);
+  if (active === null) {
+    aiEngine.resetChat();
+    aiChatModel.close(); // son sekme de kapandıysa sohbet paneli kapanır
+  } else {
+    aiEngine.loadMessages(active.messages);
+  }
   return true;
 }
 

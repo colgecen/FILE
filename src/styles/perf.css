@@ -1,46 +1,52 @@
 .perf-panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px 14px;
+  gap: 10px;
+  padding: 14px 16px;
 }
 
 .perf-panel__header {
   border-bottom: 1px solid var(--border-dim);
-  padding-bottom: 6px;
+  padding-bottom: 8px;
 }
 
 .perf-panel__row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12px;
   color: var(--text-primary);
 }
 
 .perf-panel__row select {
   margin-left: auto;
-  background: rgba(0, 16, 24, 0.75);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
-  border: 1px solid var(--border-dim);
-  border-radius: 0;
-  font-family: var(--font-mono);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
   font-size: 12px;
-  padding: 2px 6px;
+  padding: 3px 8px;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .perf-panel__row select:focus {
   outline: none;
-  border-color: var(--holo-cyan);
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
 }
 
 .perf-sheet {
   position: fixed;
-  top: 48px;
+  top: 52px;
   right: 16px;
   z-index: 200;
-  width: 280px;
+  width: 300px;
+  border-radius: var(--radius-lg);
+  animation: holo-fade-in 180ms ease-out;
 }
 
 /* ========== HIZLI MOD — pahalı efektleri kapat, her şey anında açılır ========== */
@@ -59,9 +65,11 @@
 .perf-reduced .holo-scan::after,
 .perf-reduced .holo-enter,
 .perf-reduced .command-hud__sweep,
-.perf-reduced .command-hud__flash {
+.perf-reduced .command-hud__flash,
+.perf-reduced .app-shell::after {
   animation: none !important;
   opacity: 0 !important;
+  display: none;
 }
 
 /* AI paneli ve rozetler sabit halleriyle görünür kalır */
@@ -80,7 +88,7 @@
   opacity: 1 !important;
 }
 
-/* CRT açılış/kapanış yok — panel direkt son halinde */
+/* Panel direkt son halinde açılır */
 .perf-reduced .command-hud__panel {
   animation: none !important;
   transform: none !important;

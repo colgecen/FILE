@@ -118,6 +118,16 @@ describe('AIChatPanel', () => {
     expect(screen.queryByText('ikinci-mesaj')).toBeNull();
   });
 
+  it('son sekme kapatılınca panel kapanır', async () => {
+    const { newSession } = await import('../ai/aiCommands');
+    aiChatModel.open();
+    newSession();
+    render(<AIChatPanel />);
+    expect(screen.getByLabelText('Yapay zekâ sohbeti')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Kapat:/ }));
+    expect(screen.queryByLabelText('Yapay zekâ sohbeti')).toBeNull();
+  });
+
   it('model seçimi kataloğu listeler ve değiştirir', async () => {
     modelCatalog.setScanned([
       { id: 'llama3', name: 'llama3', provider: 'ollama', source: 'ollama' },

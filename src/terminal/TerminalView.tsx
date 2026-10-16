@@ -3,10 +3,10 @@ import { Terminal } from 'xterm';
 import { setActivePtyId, getActivePtyId } from '../core/terminalRegistry';
 
 const THEME = {
-  background: '#0a141f',
-  foreground: '#ffffff',
-  cursor: '#00e5ff',
-  selectionBackground: 'rgba(0, 229, 255, 0.22)',
+  background: '#121317',
+  foreground: '#f5f5f7',
+  cursor: '#0a84ff',
+  selectionBackground: 'rgba(10, 132, 255, 0.35)',
 };
 
 function generatePtyId(): string {

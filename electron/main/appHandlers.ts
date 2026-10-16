@@ -3,6 +3,7 @@ import { ipcMain } from 'electron';
 import type { BrowserWindow as BW } from 'electron';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { WINDOW_CHROME } from './windowHandlers';
 
 export function registerAppHandlers(getWindow: () => BW | null): void {
   ipcMain.handle('app:exit', async (): Promise<void> => {
@@ -20,6 +21,7 @@ export function registerAppHandlers(getWindow: () => BW | null): void {
       backgroundColor: '#000000',
       title: 'File',
       autoHideMenuBar: true,
+      ...WINDOW_CHROME,
       webPreferences: {
         contextIsolation: true,
         nodeIntegration: false,

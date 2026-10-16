@@ -5,6 +5,7 @@ import { afterEach, vi } from 'vitest';
 const api = {
   version: '0.1.0',
   glass: false,
+  platform: 'linux',
   openFile: vi.fn().mockResolvedValue(null),
   openFolder: vi.fn().mockResolvedValue(null),
   readFile: vi.fn().mockResolvedValue(null),
@@ -14,6 +15,8 @@ const api = {
   sysStart: vi.fn().mockResolvedValue(undefined),
   sysStop: vi.fn().mockResolvedValue(undefined),
   onMetrics: vi.fn(() => () => undefined),
+  winMinimize: vi.fn().mockResolvedValue(true),
+  winToggleMaximize: vi.fn().mockResolvedValue(true),
   appExit: vi.fn().mockResolvedValue(undefined),
   aiPing: vi.fn().mockResolvedValue({ ok: false, error: 'mock' }),
   aiModels: vi.fn().mockResolvedValue({ ok: true, models: [] }),

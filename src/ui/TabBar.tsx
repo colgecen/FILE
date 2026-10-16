@@ -30,8 +30,7 @@ export function TabBar(): React.JSX.Element {
   if (tabs.length === 0) {
     return (
       <div ref={barRef} className="tab-bar" role="tablist" aria-label="Açık sekmeler">
-        <span className="tab-bar__hint">Açık sekme yok</span>
-        <TabBarActions />
+        <TabBarActions showClose={false} />
       </div>
     );
   }
@@ -93,7 +92,7 @@ export function TabBar(): React.JSX.Element {
   );
 }
 
-function TabBarActions(): React.JSX.Element {
+function TabBarActions({ showClose = true }: { showClose?: boolean }): React.JSX.Element {
   return (
     <div className="tab-bar__actions" role="toolbar" aria-label="Panel işlemleri">
       <button
@@ -114,15 +113,17 @@ function TabBarActions(): React.JSX.Element {
       >
         <SplitHorizontalIcon />
       </button>
-      <button
-        type="button"
-        className="tab-bar__action"
-        title="Panel Kapat"
-        aria-label="Panel Kapat"
-        onClick={() => runPaneClose()}
-      >
-        ×
-      </button>
+      {showClose && (
+        <button
+          type="button"
+          className="tab-bar__action"
+          title="Panel Kapat"
+          aria-label="Panel Kapat"
+          onClick={() => runPaneClose()}
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }

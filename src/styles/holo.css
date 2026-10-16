@@ -1,12 +1,36 @@
-/* Holografik efekt katmanı (D-020, D-021) — tüm stiller tema tokenlarına bağlıdır. */
+/* Tema kiti — tüm panellerin ortak "premium material" dili. Sınıf adları korunur.
+
+   Kullanım: bileşen kendi sınıfının yanına holo-* sınıfını ekler.
+   Örn: className="git-panel holo-panel". Renk/font yalnızca tokenlardan. */
 
 @keyframes holo-pulse {
   0%,
   100% {
-    box-shadow: 0 0 4px rgba(0, 229, 255, 0.12);
+    box-shadow: 0 0 0 1px rgba(10, 132, 255, 0);
   }
   50% {
-    box-shadow: var(--glow-soft);
+    box-shadow: 0 0 0 1px rgba(10, 132, 255, 0.35);
+  }
+}
+
+@keyframes holo-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes holo-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
   }
 }
 
@@ -19,29 +43,16 @@
   }
 }
 
-@keyframes holo-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .holo-glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--material-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--material-blur)) saturate(1.5);
 }
 
 .holo-frame {
   border: 1px solid var(--border);
-  border-radius: 0;
-  box-shadow:
-    0 0 0 1px rgba(124, 77, 255, 0.25),
-    0 6px 24px rgba(0, 0, 0, 0.7);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
 }
 
 .holo-pulse {
@@ -58,14 +69,9 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 3px,
-    var(--scan) 3px,
-    var(--scan) 4px
-  );
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, var(--scan) 3px, var(--scan) 4px);
   animation: holo-scan-drift 12s linear infinite;
+  opacity: 0;
 }
 
 .holo-grid {
@@ -80,28 +86,24 @@
 }
 
 .holo-title {
-  color: var(--holo-ice);
+  color: var(--text-primary);
   font-family: var(--font-display);
-  letter-spacing: 2px;
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.45);
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
 .holo-enter {
   animation: holo-fade-in 180ms ease-out;
 }
 
-/* ========== Holo panel kiti — tüm panellerin ortak chrome dili ==========
-   Kullanım: bileşen kendi sınıfının yanına holo-* sınıfını ekler.
-   Örn: className="git-panel holo-panel". Renk/font yalnızca tokenlardan. */
+/* ========== Panel kiti ========== */
 
 .holo-panel {
-  background: linear-gradient(165deg, rgba(0, 30, 40, 0.88), rgba(0, 10, 16, 0.94));
-  border: 1px solid var(--border-dim);
-  box-shadow:
-    0 0 24px rgba(0, 229, 255, 0.18),
-    inset 0 0 60px rgba(0, 229, 255, 0.04);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(var(--material-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--material-blur)) saturate(1.5);
+  box-shadow: var(--shadow-float);
 }
 
 .holo-panel__header {
@@ -111,7 +113,7 @@
   gap: 8px;
   padding: 12px 14px;
   border-bottom: 1px solid var(--border-dim);
-  background: linear-gradient(90deg, rgba(0, 234, 255, 0.12), transparent 65%);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .holo-panel__brand {
@@ -122,18 +124,17 @@
 }
 
 .holo-panel__mark {
-  color: var(--holo-cyan);
-  font-size: 16px;
-  text-shadow: 0 0 12px var(--holo-cyan);
+  color: var(--accent);
+  font-size: 15px;
+  flex: none;
 }
 
 .holo-panel__title {
   font-family: var(--font-display);
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--holo-ice);
-  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -145,11 +146,12 @@
   align-items: center;
   gap: 6px;
   font-family: var(--font-display);
-  font-size: 10px;
-  letter-spacing: 1px;
-  color: var(--accent-dim);
-  border: 1px solid var(--border-dim);
-  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
   white-space: nowrap;
 }
 
@@ -157,24 +159,24 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent-dim);
+  background: var(--text-muted);
   flex: none;
 }
 
 .holo-status[data-status='active'] {
-  color: var(--holo-ice);
-  border-color: var(--holo-cyan);
+  color: var(--holo-cyan);
+  border-color: rgba(10, 132, 255, 0.5);
 }
 
 .holo-status[data-status='active'] .holo-dot {
-  background: var(--holo-cyan);
-  box-shadow: 0 0 8px var(--holo-cyan);
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(10, 132, 255, 0.6);
   animation: holo-blink 1.1s ease-in-out infinite;
 }
 
 .holo-status[data-status='error'] {
   color: var(--error);
-  border-color: var(--error);
+  border-color: rgba(255, 69, 58, 0.5);
 }
 
 .holo-status[data-status='error'] .holo-dot {
@@ -182,75 +184,81 @@
   box-shadow: 0 0 8px var(--error);
 }
 
-@keyframes holo-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.25;
-  }
-}
-
 /* bölüm etiketi */
 .holo-label {
   font-family: var(--font-display);
-  font-size: 10px;
-  letter-spacing: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-dim);
+  color: var(--text-muted);
 }
 
-/* butonlar */
+/* butonlar — macOS push button dili */
 .holo-btn {
   appearance: none;
-  background: transparent;
-  border: 1px solid var(--border-dim);
-  border-radius: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 500;
   padding: 6px 14px;
   cursor: pointer;
+  box-shadow: var(--shadow-push);
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    transform 90ms ease;
 }
 
 .holo-btn:hover:not(:disabled) {
-  border-color: var(--holo-cyan);
-  box-shadow: var(--glow-soft);
-  color: var(--holo-ice);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
+  border-color: var(--border-strong);
+}
+
+.holo-btn:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .holo-btn:focus-visible {
-  outline: 1px solid var(--accent);
+  box-shadow: var(--focus-ring);
 }
 
 .holo-btn--primary {
-  background: rgba(0, 120, 150, 0.25);
-  border-color: var(--holo-cyan);
-  color: var(--holo-ice);
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
-  box-shadow: 0 0 14px rgba(0, 229, 255, 0.2);
+  background: linear-gradient(180deg, #2d94ff 0%, #0a84ff 45%, #0071f0 100%);
+  border-color: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  font-weight: 600;
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .holo-btn--primary:hover:not(:disabled) {
-  background: rgba(0, 150, 190, 0.35);
+  background: linear-gradient(180deg, #4aa3ff 0%, #2d94ff 45%, #0a84ff 100%);
+  border-color: rgba(0, 0, 0, 0.32);
+  color: #fff;
+  box-shadow:
+    0 2px 8px rgba(10, 132, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
 .holo-btn--danger {
-  border-color: var(--error);
+  border-color: rgba(255, 69, 58, 0.5);
   color: var(--error);
 }
 
 .holo-btn--danger:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(255, 69, 58, 0.2), rgba(255, 69, 58, 0.1));
   border-color: var(--error);
-  background: rgba(255, 82, 82, 0.12);
-  box-shadow: 0 0 12px rgba(255, 82, 82, 0.3);
   color: var(--error);
 }
 
 .holo-btn:disabled {
-  opacity: 0.35;
+  opacity: 0.4;
   cursor: default;
   box-shadow: none;
 }
@@ -259,26 +267,29 @@
 .holo-input {
   width: 100%;
   box-sizing: border-box;
-  background: rgba(0, 16, 24, 0.75);
-  border: 1px solid var(--border-dim);
-  border-radius: 0;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 13px;
   line-height: 1.55;
-  padding: 10px;
+  padding: 9px 11px;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background-color 140ms ease;
 }
 
 .holo-input::placeholder {
-  color: var(--accent-dim);
+  color: var(--text-muted);
 }
 
 .holo-input:focus {
   outline: none;
-  border-color: var(--holo-cyan);
-  box-shadow:
-    0 0 0 1px rgba(0, 229, 255, 0.35),
-    0 0 18px rgba(0, 229, 255, 0.15);
+  border-color: var(--accent);
+  background: rgba(10, 132, 255, 0.06);
+  box-shadow: var(--focus-ring);
 }
 
 /* boş durum kahramanı */
@@ -288,28 +299,25 @@
   align-items: center;
   text-align: center;
   gap: 10px;
-  padding: 24px 12px;
-  color: var(--accent-dim);
+  padding: 28px 16px;
+  color: var(--text-muted);
   font-size: 12px;
   line-height: 1.7;
 }
 
 .holo-empty__hero {
-  font-size: 40px;
+  font-size: 38px;
   line-height: 1;
   color: var(--holo-cyan);
-  text-shadow:
-    0 0 18px var(--holo-cyan),
-    0 0 60px rgba(0, 229, 255, 0.4);
+  filter: drop-shadow(0 4px 16px rgba(10, 132, 255, 0.35));
 }
 
 .holo-empty__greet {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 2px;
-  color: var(--holo-ice);
-  text-shadow: 0 0 10px rgba(0, 229, 255, 0.45);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* hızlı işlem çipleri */
@@ -322,35 +330,41 @@
 
 .holo-chips button {
   appearance: none;
-  background: rgba(0, 40, 52, 0.5);
-  border: 1px solid var(--border-dim);
-  border-radius: 0;
-  color: var(--holo-ice);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
   font-family: var(--font-display);
-  font-size: 10px;
-  letter-spacing: 1px;
-  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
   cursor: pointer;
+  box-shadow: var(--shadow-push);
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
 }
 
 .holo-chips button:hover {
-  border-color: var(--holo-cyan);
-  box-shadow: var(--glow-soft);
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+  border-color: rgba(10, 132, 255, 0.6);
+  background: linear-gradient(180deg, rgba(10, 132, 255, 0.22), rgba(10, 132, 255, 0.14));
+  color: var(--text-primary);
 }
 
 .holo-chips button:focus-visible {
-  outline: 1px solid var(--accent);
+  box-shadow: var(--focus-ring);
 }
 
 /* hata kutusu */
 .holo-error {
-  padding: 9px 11px;
-  border: 1px solid var(--error);
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 69, 58, 0.45);
   border-left-width: 3px;
-  background: rgba(255, 82, 82, 0.08);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 69, 58, 0.1);
   color: var(--error);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12px;
   line-height: 1.6;
   white-space: pre-wrap;

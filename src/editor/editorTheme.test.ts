@@ -31,10 +31,10 @@ describe('defineEditorTheme', () => {
   it('zemin, metin ve imleç tokenlarını uygular', () => {
     defineEditorTheme();
     const { colors } = themeOfLastCall();
-    expect(colors['editor.background']).toBe('#0A141F');
-    expect(colors['editor.foreground']).toBe('#FFFFFF');
-    expect(colors['editorCursor.foreground']).toBe('#00E5FF');
-    expect(colors['editorWidget.background']).toBe('#0D1B2A');
+    expect(colors['editor.background']).toBe('#121317');
+    expect(colors['editor.foreground']).toBe('#F5F5F7');
+    expect(colors['editorCursor.foreground']).toBe('#0A84FF');
+    expect(colors['editorWidget.background']).toBe('#26262C');
   });
 
   it('anahtar kelime, string ve yorum renklerini tanımlar', () => {
@@ -42,16 +42,16 @@ describe('defineEditorTheme', () => {
     const { rules } = themeOfLastCall();
     const colorOf = (token: string): string | undefined =>
       rules.find((rule) => rule.token === token)?.foreground;
-    expect(colorOf('keyword')).toBe('#00d2ff');
-    expect(colorOf('keyword.control')).toBe('#c586c0');
-    expect(colorOf('string')).toBe('#ce9178');
-    expect(colorOf('type')).toBe('#7c4dff');
-    expect(colorOf('comment')).toBe('#4a6b8c');
+    expect(colorOf('keyword')).toBe('#cba6f7');
+    expect(colorOf('keyword.control')).toBe('#f5c2e7');
+    expect(colorOf('string')).toBe('#a6e3a1');
+    expect(colorOf('type')).toBe('#94e2d5');
+    expect(colorOf('comment')).toBe('#6c7086');
   });
 
-  it('teşhis işaretlerini mavi tanımlar', () => {
+  it('teşhis işaretlerini hata renginde tanımlar', () => {
     defineEditorTheme();
     const { colors } = themeOfLastCall();
-    expect(colors['editorError.foreground']).toBe('#00E5FF');
+    expect(colors['editorError.foreground']).toBe('#FF453A');
   });
 });

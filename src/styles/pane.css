@@ -13,10 +13,10 @@
 
 @keyframes error-pulse {
   from {
-    box-shadow: inset 0 0 0 var(--error);
+    box-shadow: inset 0 0 0 0 rgba(255, 69, 58, 0);
   }
   to {
-    box-shadow: inset 0 0 0 1px var(--error);
+    box-shadow: inset 0 0 0 1px rgba(255, 69, 58, 0.6);
   }
 }
 
@@ -45,7 +45,7 @@
 }
 
 .pane--active {
-  box-shadow: inset 0 0 0 1px rgba(0, 229, 255, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(10, 132, 255, 0.4);
 }
 
 .pane-split > .pane-split {
@@ -54,26 +54,22 @@
 
 .pane-split--vertical .pane + .pane {
   border-left: 1px solid var(--border);
-  box-shadow: -1px 0 8px rgba(0, 229, 255, 0.25);
 }
 
 .pane-split--horizontal .pane + .pane {
   border-top: 1px solid var(--border);
-  box-shadow: 0 -1px 8px rgba(0, 229, 255, 0.25);
 }
 
 .pane-split--vertical .pane-split + .pane,
 .pane-split--vertical .pane + .pane-split,
 .pane-split--vertical .pane-split + .pane-split {
   border-left: 1px solid var(--border);
-  box-shadow: -1px 0 8px rgba(0, 229, 255, 0.25);
 }
 
 .pane-split--horizontal .pane-split + .pane,
 .pane-split--horizontal .pane + .pane-split,
 .pane-split--horizontal .pane-split + .pane-split {
   border-top: 1px solid var(--border);
-  box-shadow: 0 -1px 8px rgba(0, 229, 255, 0.25);
 }
 
 .pane-split--vertical > .pane:first-child,

@@ -42,6 +42,9 @@ export function ExplorerView(): React.JSX.Element | null {
 
   return (
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
+      <div className="explorer-view__head">
+        <span className="explorer-view__title">Dosyalar</span>
+      </div>
       <div className="explorer-view__body" role="listbox" aria-label="Dosya listesi">
         {state.loading && (
           <div className="explorer-view__loading" role="status">

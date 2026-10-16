@@ -74,7 +74,6 @@ export function AppShell({
         <ErrorIndicator />
         <CommandHUD />
         <HelpOverlay />
-        <AIChatPanel />
         {exitPending && (
           <ConfirmOverlay
             message="Kaydedilmemiş değişiklikler var. Kapatılsın mı?"
@@ -102,6 +101,7 @@ export function AppShell({
             </div>
             {terminalOpen && <TerminalView />}
           </div>
+          <AIChatPanel />
           {children}
         </div>
         <StatusBar />

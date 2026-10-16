@@ -24,7 +24,7 @@ export function Waveform({ active }: { readonly active: boolean }): React.JSX.El
 
     if (!active || reduced) {
       context.clearRect(0, 0, width, height);
-      context.fillStyle = 'rgba(0, 210, 255, 0.5)';
+      context.fillStyle = 'rgba(10, 132, 255, 0.4)';
       context.fillRect(0, Math.floor(height / 2), width, 1);
       return;
     }
@@ -41,7 +41,7 @@ export function Waveform({ active }: { readonly active: boolean }): React.JSX.El
         const y = (height - barHeight) / 2;
         const center = Math.abs(i - BARS / 2) / (BARS / 2);
         const alpha = 0.35 + (1 - center) * 0.55;
-        context.fillStyle = `rgba(0, 229, 255, ${alpha.toFixed(2)})`;
+        context.fillStyle = `rgba(10, 132, 255, ${alpha.toFixed(2)})`;
         context.fillRect(x, y, Math.max(1, gap * 0.5), barHeight);
       }
       frame = requestAnimationFrame(draw);

@@ -4,6 +4,7 @@ import { APP_VERSION, type Api } from '../shared/api-types';
 const api: Api = {
   version: APP_VERSION,
   glass: process.env['TRANSPARENT'] === '1',
+  platform: process.platform,
   openFile: () => ipcRenderer.invoke('dialog:open-file'),
   openFolder: () => ipcRenderer.invoke('dialog:open-folder'),
   saveFileAs: (defaultPath) => ipcRenderer.invoke('dialog:save-as', defaultPath),
@@ -32,6 +33,8 @@ const api: Api = {
     };
   },
   setFullscreen: (enabled) => ipcRenderer.invoke('window:set-fullscreen', enabled),
+  winMinimize: () => ipcRenderer.invoke('window:minimize'),
+  winToggleMaximize: () => ipcRenderer.invoke('window:toggle-maximize'),
   appExit: () => ipcRenderer.invoke('app:exit'),
   newWindow: () => ipcRenderer.invoke('app:new-window'),
   ptySpawn: (options) => ipcRenderer.invoke('pty:spawn', options),

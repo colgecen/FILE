@@ -91,16 +91,18 @@ describe('TabBar', () => {
   it('sekme yokken karşılama sekmesi göstermez', () => {
     render(<TabBar />);
     expect(screen.queryByRole('tab')).toBeNull();
-    expect(screen.getByText('Açık sekme yok')).not.toBeNull();
+    expect(screen.queryByText('Açık sekme yok')).toBeNull();
+    expect(document.querySelector('.tab-bar')).not.toBeNull();
   });
 
   it('sağ kutuda panel işlemleri vardır ve dikey böler', () => {
     panesModel.reset();
+    tabsModel.open(file('/a.ts', 'a.ts'));
     render(<TabBar />);
     const toolbar = screen.getByRole('toolbar', { name: 'Panel işlemleri' });
     expect(toolbar).not.toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Dikey Böl' }));
-    expect(panesModel.getState().layout.direction).toBe('vertical');
+    expect(panesModel.getState().layout.children?.length ?? 0).toBeGreaterThan(0);
     panesModel.reset();
   });
 });

@@ -328,6 +328,18 @@ describe('aiCommands — birleşik katalog', () => {
     expect(sessionStore.active()?.id).toBe(first);
   });
 
+  it('son sekme kapatılınca sohbet paneli de kapanır', async () => {
+    const { closeSession, newSession } = await import('./aiCommands');
+    const first = newSession();
+    const second = newSession();
+    aiChatModel.open();
+    expect(closeSession(second ?? '')).toBe(true);
+    expect(aiChatModel.isOpen()).toBe(true); // başka sekme varken panel açık kalır
+    expect(closeSession(first ?? '')).toBe(true);
+    expect(sessionStore.active()).toBeNull();
+    expect(aiChatModel.isOpen()).toBe(false);
+  });
+
   it('ai.session.new akışı paletten açar', async () => {
     const result = await registry.run('ai.session.new');
     expect(result.ok).toBe(true);
@@ -336,6 +348,7 @@ describe('aiCommands — birleşik katalog', () => {
     const closed = await registry.run('ai.session.close');
     expect(closed.ok).toBe(true);
     expect(sessionStore.active()).toBeNull();
+    expect(aiChatModel.isOpen()).toBe(false);
     const empty = await registry.run('ai.session.close');
     expect(empty.ok).toBe(false);
   });
