@@ -60,7 +60,10 @@ export function CommandHUD(): React.JSX.Element | null {
         <span className="command-hud__corner command-hud__corner--br" aria-hidden="true" />
         <div className="command-hud__inputbar">
           <span className="command-hud__prompt" aria-hidden="true">
-            ❯
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <circle cx="7" cy="7" r="4.4" />
+              <line x1="10.4" y1="10.4" x2="13.8" y2="13.8" />
+            </svg>
           </span>
           <input
             ref={inputRef}
@@ -75,6 +78,10 @@ export function CommandHUD(): React.JSX.Element | null {
               if (event.key === 'Tab') event.preventDefault();
             }}
           />
+          <span className="command-hud__hints" aria-hidden="true">
+            <span className="command-hud__key">⏎</span>
+            <span className="command-hud__key">esc</span>
+          </span>
         </div>
         <div className="command-hud__list" role="listbox" aria-label="Komut listesi">
           {state.items.map((item, index) => {
