@@ -78,10 +78,6 @@ export function CommandHUD(): React.JSX.Element | null {
               if (event.key === 'Tab') event.preventDefault();
             }}
           />
-          <span className="command-hud__hints" aria-hidden="true">
-            <span className="command-hud__key">⏎</span>
-            <span className="command-hud__key">esc</span>
-          </span>
         </div>
         <div className="command-hud__list" role="listbox" aria-label="Komut listesi">
           {state.items.map((item, index) => {

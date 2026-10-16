@@ -885,9 +885,20 @@ textarea {
 .command-hud__inputbar {
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 17px 16px 16px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 10px;
+  margin: 14px 14px 12px;
+  padding: 10px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.22);
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.command-hud__inputbar:focus-within {
+  border-color: rgba(10, 132, 255, 0.55);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.12);
 }
 
 .command-hud__prompt {
@@ -910,7 +921,7 @@ textarea {
   background: transparent;
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 500;
   letter-spacing: 0.005em;
   caret-color: var(--accent);
@@ -920,30 +931,6 @@ textarea {
 .command-hud__input::placeholder {
   color: var(--text-muted);
   font-weight: 400;
-}
-
-.command-hud__hints {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  flex: none;
-}
-
-.command-hud__key {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 20px;
-  padding: 0 7px;
-  border: 1px solid var(--border-dim);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-  color: var(--text-muted);
-  font-family: var(--font-sans);
-  font-size: 10.5px;
-  letter-spacing: 0.02em;
 }
 
 .command-hud__list {
