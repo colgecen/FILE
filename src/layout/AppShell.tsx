@@ -7,12 +7,13 @@ import { useSaveFlash } from '../core/saveSignal';
 import { perfModel, usePerfPanelOpen, usePerfState } from '../core/perfModel';
 import { useGitPanelState } from '../core/gitModel';
 import { useTabsState } from '../core/tabs';
+import { useEnvironmentsState } from '../core/environments';
 import { useTerminalOpen } from '../core/terminalModel';
 import { useViewMode } from '../core/viewMode';
 import { MenuBar } from '../menus/MenuBar';
 import { AIChatPanel } from '../ui/AIChatPanel';
 import { Breadcrumb } from '../ui/Breadcrumb';
-import { BrowserUrlPrompt } from '../ui/BrowserUrlPrompt';
+import { BrowserView } from '../ui/BrowserView';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { EnvironmentsBar } from '../ui/EnvironmentsBar';
@@ -53,6 +54,8 @@ export function AppShell({
   const gitState = useGitPanelState();
   const perf = usePerfState();
   const perfPanelOpen = usePerfPanelOpen();
+  const envState = useEnvironmentsState();
+  const browserEnvActive = envState.activeId !== null && envState.activeId.startsWith('browser:');
   const [nativeFullscreen, setNativeFullscreen] = useState(false);
   useEffect(() => window.api.onWindowFullscreen(setNativeFullscreen), []);
   useIpcLifecycle(window.api);
@@ -79,7 +82,6 @@ export function AppShell({
         <ErrorIndicator />
         <CommandHUD />
         <HelpOverlay />
-        <BrowserUrlPrompt />
         {exitPending && (
           <ConfirmOverlay
             message="Kaydedilmemiş değişiklikler var. Kapatılsın mı?"
@@ -97,13 +99,19 @@ export function AppShell({
           <EnvironmentsBar />
         </div>
         <div className="app-shell__workspace">
-          <ExplorerView />
+          {!browserEnvActive && <ExplorerView />}
           {gitState.isOpen && <GitPanel />}
           <div className="app-shell__main">
             <div className="app-shell__editor">
-              <TabBar />
-              <Breadcrumb />
-              <PaneManager file={activeFile} />
+              {browserEnvActive ? (
+                <BrowserView />
+              ) : (
+                <>
+                  <TabBar />
+                  <Breadcrumb />
+                  <PaneManager file={activeFile} />
+                </>
+              )}
             </div>
             {terminalOpen && <TerminalView />}
           </div>

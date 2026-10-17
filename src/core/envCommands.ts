@@ -1,7 +1,6 @@
 import { reportError } from './appErrors';
-import { browserUrlPromptModel } from './browserUrlPrompt';
 import type { CommandRegistry } from './commands';
-import { environmentsModel, type Environment, type EnvironmentTabs } from './environments';
+import { environmentsModel, type EnvironmentTabs } from './environments';
 import { explorerModel } from './explorer';
 import { focusManager } from './focus';
 import { openFilesModel } from './openFiles';
@@ -156,80 +155,20 @@ export const BROWSER_LABELS: Record<BrowserKind, string> = {
   default: 'Sistem',
 };
 
-const BROWSER_BIN: Record<BrowserKind, string | undefined> = {
-  zen: 'zen',
-  'google-chrome': 'google-chrome',
-  chromium: 'chromium',
-  firefox: 'firefox',
-  default: undefined,
-};
-
-async function launchInBrowser(
-  env: Environment,
-  kind: BrowserKind,
-  raw: string,
-): Promise<CommandResult> {
-  const label = BROWSER_LABELS[kind];
-  const trimmed = raw.trim();
-  const url = trimmed.length === 0 ? '' : normalizeBrowserUrl(trimmed);
-  if (trimmed.length > 0 && url === null) return { ok: false, error: 'Geçersiz adres' };
-  const result = await window.api.openInBrowser(url ?? '', BROWSER_BIN[kind]);
-  if (result === 'invalid' || result === 'none') {
-    return { ok: false, error: `${label} başlatılamadı (kurulu değil)` };
-  }
-  if (url !== null && url !== env.browserUrl) environmentsModel.setBrowserUrl(env.id, url);
-  return { ok: true };
+export function isBrowserEnvId(id: string): boolean {
+  return id.startsWith('browser:');
 }
 
-export async function openBrowserEnvironment(kind: BrowserKind, url?: string): Promise<CommandResult> {
-  const state = environmentsModel.getState();
+export function openBrowserEnvironment(kind: BrowserKind): CommandResult {
   const label = BROWSER_LABELS[kind];
-  let env = state.environments.find((entry) => entry.id === `browser:${kind}`);
-  if (env === undefined) {
-    env = {
-      id: `browser:${kind}`,
-      name: label,
-      rootPath: `browser:${kind}`,
-      tabs: { files: [], activeId: null },
-      browserUrl: null,
-    };
-    environmentsModel.addExternal(env);
-  }
-  const current = env;
-  if (url !== undefined) return launchInBrowser(current, kind, url);
-  const stored = normalizeBrowserUrl(current.browserUrl ?? '');
-  return launchInBrowser(current, kind, stored ?? '');
-}
-
-export async function openBrowserEnvironmentWithUrl(kind: BrowserKind): Promise<CommandResult> {
-  const state = environmentsModel.getState();
-  const label = BROWSER_LABELS[kind];
-  let env = state.environments.find((entry) => entry.id === `browser:${kind}`);
-  if (env === undefined) {
-    env = {
-      id: `browser:${kind}`,
-      name: label,
-      rootPath: `browser:${kind}`,
-      tabs: { files: [], activeId: null },
-      browserUrl: null,
-    };
-    environmentsModel.addExternal(env);
-  }
-  const current = env;
-  browserUrlPromptModel.open({
-    label: `${label} ile aç`,
-    value: current.browserUrl ?? 'https://',
-    onSubmit: (raw) => {
-      if (normalizeBrowserUrl(raw) === null) {
-        reportError('Geçersiz adres');
-        return;
-      }
-      browserUrlPromptModel.close();
-      void launchInBrowser(current, kind, raw).then((result) => {
-        if (!result.ok && result.error !== undefined) reportError(result.error);
-      });
-    },
+  environmentsModel.addExternal({
+    id: `browser:${kind}`,
+    name: label,
+    rootPath: `browser:${kind}`,
+    tabs: { files: [], activeId: null },
+    browserUrl: null,
   });
+  syncChatWithActiveEnv();
   return { ok: true };
 }
 

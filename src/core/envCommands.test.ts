@@ -4,13 +4,10 @@ import {
   adoptFolderAsEnvironment,
   cycleEnvironment,
   openBrowserEnvironment,
-  openBrowserEnvironmentWithUrl,
   removeEnvironment,
   switchToEnvironment,
 } from './envCommands';
 import { environmentsModel } from './environments';
-import { browserUrlPromptModel } from './browserUrlPrompt';
-import { onAppError } from './appErrors';
 import { explorerModel } from './explorer';
 import { openFilesModel } from './openFiles';
 import { tabsModel } from './tabs';
@@ -38,7 +35,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  browserUrlPromptModel.close();
   environmentsModel.reset();
   tabsModel.reset();
   openFilesModel.set([]);
@@ -163,53 +159,15 @@ describe('envCommands', () => {
     adoptFolderAsEnvironment('/proj/a', 'a', 'ensure');
     expect(tabsModel.getState().tabs).toHaveLength(1);
     expect(environmentsModel.active()?.tabs.files).toHaveLength(1);
-  });
-  it('tarayıcı ortamı tıklanınca adres sormadan doğrudan açılır', async () => {
-    vi.mocked(window.api.openInBrowser).mockClear();
+  });  it('tarayıcı ortamı uygulama içinde açılır ve tek kalır', () => {
     environmentsModel.add('/proj/a', 'a');
-    vi.mocked(window.api.openInBrowser).mockResolvedValueOnce('zen');
-    const result = await openBrowserEnvironment('zen');
+    const result = openBrowserEnvironment('zen');
     expect(result.ok).toBe(true);
-    expect(window.api.openInBrowser).toHaveBeenCalledWith('', 'zen');
-    expect(browserUrlPromptModel.getSnapshot()).toBeNull();
-    expect(environmentsModel.getState().environments.some((entry) => entry.id === 'browser:zen')).toBe(true);
-    await openBrowserEnvironment('zen');
+    const state = environmentsModel.getState();
+    expect(state.activeId).toBe('browser:zen');
+    expect(state.environments.find((entry) => entry.id === 'browser:zen')?.name).toBe('Zen');
+    openBrowserEnvironment('zen');
+    expect(state.environments.filter((entry) => entry.id === 'browser:zen')).toHaveLength(1);
     expect(environmentsModel.getState().environments.filter((entry) => entry.id === 'browser:zen')).toHaveLength(1);
-  });
-
-  it('kayıtlı adres sonraki açılışta kullanılır, sağ tık kutusu yeni adrese açar', async () => {
-    vi.mocked(window.api.openInBrowser).mockClear();
-    environmentsModel.addExternal({
-      id: 'browser:firefox',
-      name: 'Firefox',
-      rootPath: 'browser:firefox',
-      tabs: { files: [], activeId: null },
-      browserUrl: 'https://a.dev',
-    });
-    vi.mocked(window.api.openInBrowser).mockResolvedValue('firefox');
-    await openBrowserEnvironment('firefox');
-    expect(window.api.openInBrowser).toHaveBeenCalledWith('https://a.dev/', 'firefox');
-    await openBrowserEnvironmentWithUrl('firefox');
-    const prompt = browserUrlPromptModel.getSnapshot();
-    expect(prompt?.value).toBe('https://a.dev/');
-    prompt?.onSubmit('ornek.com/x');
-    await vi.waitFor(() => {
-      expect(window.api.openInBrowser).toHaveBeenLastCalledWith('https://ornek.com/x', 'firefox');
-    });
-    expect(browserUrlPromptModel.getSnapshot()).toBeNull();
-  });
-
-  it('tarayıcı bulunamazsa hata döner, geçersiz adres kutuyu kapatmaz', async () => {
-    const errors: string[] = [];
-    const off = onAppError((error) => errors.push(error.message));
-    vi.mocked(window.api.openInBrowser).mockClear();
-    vi.mocked(window.api.openInBrowser).mockResolvedValueOnce('none');
-    const missing = await openBrowserEnvironment('zen');
-    expect(missing.ok).toBe(false);
-    await openBrowserEnvironmentWithUrl('chromium');
-    browserUrlPromptModel.getSnapshot()?.onSubmit('ftp://olmaz');
-    expect(browserUrlPromptModel.getSnapshot()).not.toBeNull();
-    expect(errors.some((message) => message.includes('Geçersiz adres'))).toBe(true);
-    off();
   });
 });

@@ -51,6 +51,7 @@ function createMainWindow(): void {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      webviewTag: true,
       preload: join(__dirname, '../preload/index.cjs'),
     },
   });

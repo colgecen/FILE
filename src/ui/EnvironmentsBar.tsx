@@ -1,4 +1,4 @@
-import { openBrowserEnvironment, openBrowserEnvironmentWithUrl, removeEnvironment, switchToEnvironment } from '../core/envCommands';
+import { removeEnvironment, switchToEnvironment } from '../core/envCommands';
 import { useEnvironmentsState } from '../core/environments';
 
 export function EnvironmentsBar(): React.JSX.Element {
@@ -21,20 +21,11 @@ export function EnvironmentsBar(): React.JSX.Element {
             >
               <button
                 type="button"
-                title={browserEnv ? 'Tıkla: aç · sağ tık: adrese aç' : env.rootPath}
+                title={browserEnv ? `${env.name} tarayıcısı (uygulama içi)` : env.rootPath}
                 aria-label={browserEnv ? `Tarayıcı ortamı: ${env.name}` : `Ortam: ${env.name}`}
                 aria-pressed={env.id === activeId}
                 className="env-bar__name"
-                onClick={() =>
-                  browserEnv
-                    ? void openBrowserEnvironment(env.id.slice('browser:'.length) as never)
-                    : void switchToEnvironment(env.id)
-                }
-                onContextMenu={(event) => {
-                  if (!browserEnv) return;
-                  event.preventDefault();
-                  void openBrowserEnvironmentWithUrl(env.id.slice('browser:'.length) as never);
-                }}
+                onClick={() => void switchToEnvironment(env.id)}
               >
                 {browserEnv && (
                   <span className="env-bar__globe" aria-hidden="true">

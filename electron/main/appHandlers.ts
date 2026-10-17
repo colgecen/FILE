@@ -26,6 +26,7 @@ export function registerAppHandlers(getWindow: () => BW | null): void {
         contextIsolation: true,
         nodeIntegration: false,
         sandbox: true,
+        webviewTag: true,
         preload: join(__dirname, '../preload/index.cjs'),
       },
     });
