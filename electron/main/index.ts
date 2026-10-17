@@ -58,6 +58,7 @@ function createMainWindow(): void {
 
   if (mainWindow !== null) {
     attachFullscreenEvents(mainWindow);
+    mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   }
 
   mainWindow.on('closed', (): void => {

@@ -37,6 +37,8 @@ export function BrowserView(): React.JSX.Element {
   const activeEnv = environments.find((env) => env.id === activeId) ?? null;
   const browserEnvs = environments.filter((env) => env.id.startsWith('browser:'));
 
+  const homeRef = useRef(new Set<string>());
+
   useEffect(() => {
     const pool = poolRef.current;
     if (pool === null) return;
@@ -54,7 +56,12 @@ export function BrowserView(): React.JSX.Element {
       const api = wv as unknown as WebviewLike;
       wv.setAttribute('partition', `persist:${env.id}`);
       wv.setAttribute('allowpopups', '');
-      api.src = 'about:blank';
+      wv.setAttribute('webpreferences', 'sandbox=false');
+      const onFail = (event: Event): void => {
+        const code = (event as Event & { errorCode?: number; errorDescription?: string }).errorDescription ?? 'yükleme hatası';
+        setNav((current) => ({ ...current, [env.id]: { url: current[env.id]?.url ?? '', title: String(code) } }));
+      };
+      wv.addEventListener('did-fail-load', onFail);
       const onTitle = (event: Event): void => {
         const title = (event as Event & { title?: string }).title ?? '';
         setNav((current) => ({ ...current, [env.id]: { url: api.getURL(), title } }));
@@ -79,6 +86,15 @@ export function BrowserView(): React.JSX.Element {
       wv.addEventListener('new-window', onNewWindow);
       pool.appendChild(wv);
       webviews.current.set(env.id, wv);
+      if (homeRef.current.has(env.id)) continue;
+      homeRef.current.add(env.id);
+      wv.addEventListener(
+        'dom-ready',
+        () => {
+          api.loadURL('https://www.google.com');
+        },
+        { once: true },
+      );
     }
   }, [browserEnvs]);
 
