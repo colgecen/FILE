@@ -12,6 +12,7 @@ import { useViewMode } from '../core/viewMode';
 import { MenuBar } from '../menus/MenuBar';
 import { AIChatPanel } from '../ui/AIChatPanel';
 import { Breadcrumb } from '../ui/Breadcrumb';
+import { BrowserUrlPrompt } from '../ui/BrowserUrlPrompt';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { EnvironmentsBar } from '../ui/EnvironmentsBar';
@@ -78,6 +79,7 @@ export function AppShell({
         <ErrorIndicator />
         <CommandHUD />
         <HelpOverlay />
+        <BrowserUrlPrompt />
         {exitPending && (
           <ConfirmOverlay
             message="Kaydedilmemiş değişiklikler var. Kapatılsın mı?"

@@ -8,6 +8,8 @@ import {
   switchToEnvironment,
 } from './envCommands';
 import { environmentsModel } from './environments';
+import { browserUrlPromptModel } from './browserUrlPrompt';
+import { onAppError } from './appErrors';
 import { explorerModel } from './explorer';
 import { openFilesModel } from './openFiles';
 import { tabsModel } from './tabs';
@@ -35,6 +37,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  browserUrlPromptModel.close();
   environmentsModel.reset();
   tabsModel.reset();
   openFilesModel.set([]);
@@ -160,34 +163,59 @@ describe('envCommands', () => {
     expect(tabsModel.getState().tabs).toHaveLength(1);
     expect(environmentsModel.active()?.tabs.files).toHaveLength(1);
   });
-  it('tarayıcı ortamı ilk açılışta oluşturur, adresi kaydedip seçili tarayıcıyı başlatır', async () => {
+
+  it('tarayıcı ortamı ilk açılışta adres kutusunu açar, adres verilince başlatır', async () => {
+    vi.mocked(window.api.openInBrowser).mockClear();
     environmentsModel.add('/proj/a', 'a');
-    vi.spyOn(window, 'prompt').mockReturnValue('https://docs.example.com/x');
-    vi.mocked(window.api.openInBrowser).mockResolvedValueOnce('zen');
     const result = await openBrowserEnvironment('zen');
     expect(result.ok).toBe(true);
-    expect(window.api.openInBrowser).toHaveBeenCalledWith('https://docs.example.com/x', 'zen');
-    const env = environmentsModel.getState().environments.find((entry) => entry.id === 'browser:zen');
-    expect(env?.name).toBe('Zen');
-    expect(env?.browserUrl).toBe('https://docs.example.com/x');
+    expect(window.api.openInBrowser).not.toHaveBeenCalled();
+    const prompt = browserUrlPromptModel.getSnapshot();
+    expect(prompt?.label).toBe('Zen ile aç');
+    expect(environmentsModel.getState().environments.some((entry) => entry.id === 'browser:zen')).toBe(true);
+    vi.mocked(window.api.openInBrowser).mockResolvedValueOnce('zen');
+    prompt?.onSubmit('https://docs.example.com/x');
+    await vi.waitFor(() => {
+      expect(window.api.openInBrowser).toHaveBeenCalledWith('https://docs.example.com/x', 'zen');
+    });
+    expect(environmentsModel.getState().environments.find((entry) => entry.id === 'browser:zen')?.browserUrl).toBe(
+      'https://docs.example.com/x',
+    );
+    expect(browserUrlPromptModel.getSnapshot()).toBeNull();
   });
 
-  it('aynı tarayıcı ortamı yeniden açılınca adres sormaz, ortamı çoğaltmaz', async () => {
-    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('https://a.dev');
-    vi.mocked(window.api.openInBrowser).mockResolvedValue('default');
+  it('kayıtlı adres varsa kutu açılmaz, doğrudan başlar; ortam çoğalmaz', async () => {
+    vi.mocked(window.api.openInBrowser).mockClear();
+    environmentsModel.addExternal({
+      id: 'browser:firefox',
+      name: 'Firefox',
+      rootPath: 'browser:firefox',
+      tabs: { files: [], activeId: null },
+      browserUrl: 'https://a.dev',
+    });
+    vi.mocked(window.api.openInBrowser).mockResolvedValue('firefox');
     await openBrowserEnvironment('firefox');
     await openBrowserEnvironment('firefox');
-    expect(promptSpy).toHaveBeenCalledTimes(1);
+    expect(browserUrlPromptModel.getSnapshot()).toBeNull();
+    expect(window.api.openInBrowser).toHaveBeenCalledTimes(2);
     expect(environmentsModel.getState().environments.filter((entry) => entry.id === 'browser:firefox')).toHaveLength(1);
   });
 
-  it('tarayıcı bulunamazsa hata döner, geçersiz adres reddedilir', async () => {
-    vi.spyOn(window, 'prompt').mockReturnValue('https://a.dev');
+  it('tarayıcı bulunamazsa hata bildirir, geçersiz adres kutuyu kapatmaz', async () => {
+    const errors: string[] = [];
+    const off = onAppError((error) => errors.push(error.message));
+    vi.mocked(window.api.openInBrowser).mockClear();
+    await openBrowserEnvironment('zen');
     vi.mocked(window.api.openInBrowser).mockResolvedValueOnce('none');
-    const missing = await openBrowserEnvironment('zen');
-    expect(missing.ok).toBe(false);
-    vi.spyOn(window, 'prompt').mockReturnValue('ftp://olmaz');
-    const bad = await openBrowserEnvironment('chromium');
-    expect(bad.ok).toBe(false);
+    browserUrlPromptModel.getSnapshot()?.onSubmit('https://a.dev');
+    await vi.waitFor(() => {
+      expect(errors.some((message) => message.includes('başlatılamadı'))).toBe(true);
+    });
+    expect(browserUrlPromptModel.getSnapshot()).toBeNull();
+    await openBrowserEnvironment('chromium');
+    browserUrlPromptModel.getSnapshot()?.onSubmit('ftp://olmaz');
+    expect(browserUrlPromptModel.getSnapshot()).not.toBeNull();
+    expect(errors.some((message) => message.includes('Geçersiz adres'))).toBe(true);
+    off();
   });
 });

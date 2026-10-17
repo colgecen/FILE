@@ -1,6 +1,7 @@
 import { reportError } from './appErrors';
+import { browserUrlPromptModel } from './browserUrlPrompt';
 import type { CommandRegistry } from './commands';
-import { environmentsModel, type EnvironmentTabs } from './environments';
+import { environmentsModel, type Environment, type EnvironmentTabs } from './environments';
 import { explorerModel } from './explorer';
 import { focusManager } from './focus';
 import { openFilesModel } from './openFiles';
@@ -163,6 +164,22 @@ const BROWSER_BIN: Record<BrowserKind, string | undefined> = {
   default: undefined,
 };
 
+async function launchInBrowser(
+  env: Environment,
+  kind: BrowserKind,
+  raw: string,
+): Promise<CommandResult> {
+  const label = BROWSER_LABELS[kind];
+  const url = normalizeBrowserUrl(raw);
+  if (url === null) return { ok: false, error: 'Geçersiz adres' };
+  const result = await window.api.openInBrowser(url, BROWSER_BIN[kind]);
+  if (result === 'invalid' || result === 'none') {
+    return { ok: false, error: `${label} başlatılamadı (kurulu değil)` };
+  }
+  if (url !== env.browserUrl) environmentsModel.setBrowserUrl(env.id, url);
+  return { ok: true };
+}
+
 export async function openBrowserEnvironment(kind: BrowserKind): Promise<CommandResult> {
   const state = environmentsModel.getState();
   const label = BROWSER_LABELS[kind];
@@ -178,15 +195,22 @@ export async function openBrowserEnvironment(kind: BrowserKind): Promise<Command
     environmentsModel.addExternal(env);
   }
   const stored = normalizeBrowserUrl(env.browserUrl ?? '');
-  const raw = stored ?? window.prompt(`${label} için adres (https://… veya site alanı):`, 'https://');
-  if (raw === null) return { ok: true };
-  const url = normalizeBrowserUrl(raw);
-  if (url === null) return { ok: false, error: 'Geçersiz adres' };
-  const result = await window.api.openInBrowser(url, BROWSER_BIN[kind]);
-  if (result === 'invalid' || result === 'none') {
-    return { ok: false, error: `${label} başlatılamadı (kurulu değil)` };
-  }
-  if (url !== env.browserUrl) environmentsModel.setBrowserUrl(env.id, url);
+  if (stored !== null) return launchInBrowser(env, kind, stored);
+  const current = env;
+  browserUrlPromptModel.open({
+    label: `${label} ile aç`,
+    value: 'https://',
+    onSubmit: (raw) => {
+      if (normalizeBrowserUrl(raw) === null) {
+        reportError('Geçersiz adres');
+        return;
+      }
+      browserUrlPromptModel.close();
+      void launchInBrowser(current, kind, raw).then((result) => {
+        if (!result.ok && result.error !== undefined) reportError(result.error);
+      });
+    },
+  });
   return { ok: true };
 }
 
