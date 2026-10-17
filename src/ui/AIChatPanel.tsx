@@ -51,6 +51,10 @@ export function AIChatPanel(): React.JSX.Element | null {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [terminalDecisions, setTerminalDecisions] = useState<Record<string, 'pending' | 'allowed' | 'denied' | 'done'>>({});
   const busy = ai.status === 'loading' || ai.status === 'computing';
+  const emptySession =
+    sessions.sessions.find((session) => session.messages.length === 0 && (session.id !== sessions.activeId || ai.chat.messages.length === 0)) ??
+    null;
+  const emptyIsActive = emptySession !== null && emptySession.id === sessions.activeId;
 
   function runTerminalCommand(key: string, code: string): void {
     setTerminalDecisions((current) => ({ ...current, [key]: 'allowed' }));
@@ -184,8 +188,8 @@ export function AIChatPanel(): React.JSX.Element | null {
           type="button"
           className="ai-chat__tab-new"
           aria-label="Yeni sohbet"
-          title="Yeni sohbet"
-          disabled={busy}
+          title={emptyIsActive ? 'Zaten açık bir yeni sohbet var' : 'Yeni sohbet'}
+          disabled={busy || emptyIsActive}
           onClick={() => newSession()}
         >
           +

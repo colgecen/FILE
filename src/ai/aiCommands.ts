@@ -34,6 +34,14 @@ function syncSession(sessionId: string): void {
 export function newSession(): string | null {
   if (engineBusy()) return null;
   const current = sessionStore.active();
+  const engineStarted = current !== null && aiEngine.getState().chat.messages.length > 0;
+  const empty = sessionStore
+    .getSnapshot()
+    .sessions.find((session) => session.messages.length === 0 && (session.id !== current?.id || !engineStarted));
+  if (empty !== undefined) {
+    if (empty.id === current?.id) return empty.id;
+    return switchSession(empty.id) ? empty.id : null;
+  }
   if (current !== null) syncSession(current.id);
   const id = sessionStore.create(environmentsModel.active()?.id ?? null);
   aiEngine.resetChat();

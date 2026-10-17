@@ -318,6 +318,7 @@ describe('aiCommands — birleşik katalog', () => {
     const { closeSession, newSession, switchSession } = await import('./aiCommands');
     const first = newSession();
     expect(first).not.toBeNull();
+    expect(newSession()).toBe(first); // sohbet başlamadan ikincisi açılmaz
     aiEngine.appendUserMessage('birinci');
     const second = newSession();
     expect(second).not.toBeNull();
@@ -331,6 +332,8 @@ describe('aiCommands — birleşik katalog', () => {
   it('son sekme kapatılınca sohbet paneli de kapanır', async () => {
     const { closeSession, newSession } = await import('./aiCommands');
     const first = newSession();
+    expect(newSession()).toBe(first); // boş sohbet varken ikinci boş açılmaz
+    aiEngine.appendUserMessage('mesaj');
     const second = newSession();
     aiChatModel.open();
     expect(closeSession(second ?? '')).toBe(true);

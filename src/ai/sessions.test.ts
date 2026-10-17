@@ -19,12 +19,41 @@ describe('SessionStore', () => {
 
   it('geçişte aktif değişir, meşgulken engellenir', () => {
     const first = sessionStore.create();
+    sessionStore.saveMessages(first, [{ role: 'user', content: 'mesaj' }]);
     const second = sessionStore.create();
     expect(sessionStore.active()?.id).toBe(second);
     expect(sessionStore.switch(first, false)).toBe(true);
     expect(sessionStore.active()?.id).toBe(first);
     expect(sessionStore.switch(second, true)).toBe(false);
     expect(sessionStore.active()?.id).toBe(first);
+  });
+
+  it('aynı anda en fazla bir boş sohbet olur', () => {
+    const first = sessionStore.create();
+    expect(sessionStore.create()).toBe(first);
+    expect(sessionStore.getSnapshot().sessions).toHaveLength(1);
+    sessionStore.saveMessages(first, [{ role: 'user', content: 'mesaj' }]);
+    const second = sessionStore.create();
+    expect(second).not.toBe(first);
+    expect(sessionStore.create()).toBe(second);
+    expect(sessionStore.getSnapshot().sessions).toHaveLength(2);
+  });
+
+  it('boş sohbet aktifken boşta olan boş sohbete atlar', () => {
+    const first = sessionStore.create();
+    sessionStore.saveMessages(first, [{ role: 'user', content: 'mesaj' }]);
+    const empty = sessionStore.create();
+    sessionStore.switch(first, false);
+    expect(sessionStore.findEmpty()?.id).toBe(empty);
+    expect(sessionStore.create()).toBe(empty);
+    expect(sessionStore.active()?.id).toBe(empty);
+  });
+
+  it('findEmpty boş sohbeti bulur, yoksa null döner', () => {
+    const first = sessionStore.create();
+    expect(sessionStore.findEmpty()?.id).toBe(first);
+    sessionStore.saveMessages(first, [{ role: 'user', content: 'mesaj' }]);
+    expect(sessionStore.findEmpty()).toBeNull();
   });
 
   it('bilinmeyen sekmeye geçilmez', () => {
@@ -34,7 +63,9 @@ describe('SessionStore', () => {
 
   it('kapatma son sekmeyi aktif yapar, meşgulken engellenir', () => {
     const first = sessionStore.create();
+    sessionStore.saveMessages(first, [{ role: 'user', content: 'mesaj' }]);
     const second = sessionStore.create();
+    sessionStore.switch(first, false);
     expect(sessionStore.close(first, true)).toBe(false);
     expect(sessionStore.close(first, false)).toBe(true);
     expect(sessionStore.active()?.id).toBe(second);

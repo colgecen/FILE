@@ -65,6 +65,18 @@ export class SessionStore {
   }
 
   create(envId: string | null = null): string {
+    const empty = this.findEmpty();
+    if (empty !== null) {
+      if (envId !== null && empty.envId === null) {
+        this.bindEnv(empty.id, envId);
+        return empty.id;
+      }
+      if (this.activeId !== empty.id) {
+        this.activeId = empty.id;
+        this.emit();
+      }
+      return empty.id;
+    }
     const id = nextId();
     const now = Date.now();
     this.sessions = [
@@ -96,6 +108,13 @@ export class SessionStore {
 
   findForEnv(envId: string): ChatSession | null {
     return this.sessions.find((session) => session.envId === envId) ?? null;
+  }
+
+  /** Depodaki (en eski) boş oturumu bulur — aynı anda en fazla bir boş sohbet olabilir. */
+  findEmpty(): ChatSession | null {
+    const empty = this.sessions.filter((session) => session.messages.length === 0);
+    if (empty.length === 0) return null;
+    return empty.reduce((oldest, session) => (session.updatedAt < oldest.updatedAt ? session : oldest));
   }
 
   bindEnv(id: string, envId: string | null): boolean {
