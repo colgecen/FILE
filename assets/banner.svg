@@ -1,74 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" role="img" aria-label="Dosya Editörü — klavye-öncelikli kod editörü">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" role="img" aria-label="FILE">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#17181D"/>
       <stop offset="1" stop-color="#0F1014"/>
     </linearGradient>
-    <radialGradient id="glow" cx="0.75" cy="0.42" r="0.55">
-      <stop offset="0" stop-color="#0A84FF" stop-opacity="0.16"/>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0" stop-color="#0A84FF" stop-opacity="0.14"/>
       <stop offset="1" stop-color="#0A84FF" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#24252C"/>
-      <stop offset="1" stop-color="#1A1B21"/>
+      <stop offset="1" stop-color="#191A20"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0A84FF"/>
       <stop offset="1" stop-color="#3E9BFF"/>
     </linearGradient>
-    <filter id="blur" x="-20%" y="-20%" width="140%" height="160%">
-      <feGaussianBlur stdDeviation="20"/>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="22"/>
     </filter>
   </defs>
 
   <rect width="1200" height="600" fill="url(#bg)"/>
   <rect width="1200" height="600" fill="url(#glow)"/>
 
-  <rect x="630" y="138" width="490" height="350" rx="18" fill="#000000" opacity="0.45" filter="url(#blur)"/>
-  <rect x="630" y="120" width="490" height="350" rx="18" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="1.5"/>
-  <circle cx="656" cy="144" r="6" fill="#3E3F47"/>
-  <circle cx="676" cy="144" r="6" fill="#3E3F47"/>
-  <circle cx="696" cy="144" r="6" fill="#3E3F47"/>
-  <text x="875" y="149" text-anchor="middle" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="15" fill="#9A9AA5">main.ts</text>
-  <line x1="630" y1="168" x2="1120" y2="168" stroke="#2A2B33" stroke-width="1.5"/>
+  <g transform="translate(160,71) scale(1.35)">
+    <path d="M 24 0 H 188 L 260 72 V 316 Q 260 340 236 340 H 24 Q 0 340 0 316 V 24 Q 0 0 24 0 Z" fill="#000000" opacity="0.5" filter="url(#blur)" transform="translate(0,18)"/>
+    <path d="M 24 0 H 188 L 260 72 V 316 Q 260 340 236 340 H 24 Q 0 340 0 316 V 24 Q 0 0 24 0 Z" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="1.5"/>
+    <path d="M 188 0 L 260 72 H 212 Q 188 72 188 48 Z" fill="url(#accent)"/>
+    <rect x="44" y="126" width="150" height="16" rx="8" fill="#45464F"/>
+    <rect x="44" y="170" width="110" height="16" rx="8" fill="#45464F"/>
+    <rect x="44" y="214" width="134" height="16" rx="8" fill="#45464F"/>
+  </g>
 
-  <rect x="668" y="269" width="404" height="34" rx="8" fill="#0A84FF" opacity="0.1"/>
-
-  <text x="656" y="203" text-anchor="end" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="14" fill="#55565F">1</text>
-  <rect x="676" y="192" width="92" height="12" rx="6" fill="#cba6f7"/>
-  <rect x="782" y="192" width="140" height="12" rx="6" fill="#94e2d5"/>
-
-  <text x="656" y="247" text-anchor="end" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="14" fill="#55565F">2</text>
-  <rect x="676" y="236" width="56" height="12" rx="6" fill="#E6E6EB"/>
-  <rect x="746" y="236" width="48" height="12" rx="6" fill="#89b4fa"/>
-  <rect x="808" y="236" width="96" height="12" rx="6" fill="#E6E6EB"/>
-
-  <text x="656" y="291" text-anchor="end" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="14" fill="#55565F">3</text>
-  <rect x="676" y="280" width="224" height="12" rx="6" fill="#a6e3a1"/>
-
-  <text x="656" y="335" text-anchor="end" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="14" fill="#55565F">4</text>
-  <rect x="676" y="324" width="176" height="12" rx="6" fill="#6c7086"/>
-
-  <text x="656" y="379" text-anchor="end" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="14" fill="#55565F">5</text>
-  <rect x="676" y="368" width="36" height="12" rx="6" fill="#fab387"/>
-  <rect x="826" y="368" width="118" height="12" rx="6" fill="#E6E6EB"/>
-  <rect x="950" y="361" width="10" height="26" rx="5" fill="#0A84FF" opacity="0.25"/>
-  <rect x="954" y="361" width="4" height="26" rx="2" fill="#0A84FF"/>
-
-  <line x1="630" y1="434" x2="1120" y2="434" stroke="#2A2B33" stroke-width="1.5"/>
-  <circle cx="656" cy="452" r="4" fill="#0A84FF"/>
-  <text x="668" y="457" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="13" fill="#8E8E96">main</text>
-  <text x="1094" y="457" text-anchor="end" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="13" fill="#8E8E96">TypeScript</text>
-
-  <rect x="96" y="176" width="56" height="6" rx="3" fill="url(#accent)"/>
-  <text x="96" y="254" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="62" font-weight="700" letter-spacing="-1" fill="#F5F5F7">Dosya Editörü</text>
-  <text x="96" y="304" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="27" fill="#9A9AA5">Klavye-öncelikli kod editörü</text>
-
-  <rect x="96" y="360" width="66" height="44" rx="11" fill="#22232A" stroke="#35363E" stroke-width="1.5"/>
-  <text x="129" y="388" text-anchor="middle" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="17" fill="#F5F5F7">F1</text>
-  <text x="180" y="388" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="19" fill="#8E8E96">Menü çubuğu</text>
-
-  <rect x="96" y="424" width="118" height="44" rx="11" fill="#22232A" stroke="#35363E" stroke-width="1.5"/>
-  <text x="155" y="452" text-anchor="middle" font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-size="17" fill="#F5F5F7">Ctrl + I</text>
-  <text x="232" y="452" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="19" fill="#8E8E96">Komut paleti</text>
+  <text x="845" y="350" text-anchor="middle" font-family="Inter, 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="140" font-weight="700" letter-spacing="42" fill="#F5F5F7">FILE</text>
 </svg>

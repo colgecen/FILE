@@ -1,4 +1,5 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
@@ -12,12 +13,14 @@ let installed = false;
 export function installMonacoEnvironment(): void {
   if (installed) return;
   installed = true;
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+  const ts = monaco.languages.typescript;
+  if (ts === undefined) return;
+  ts.typescriptDefaults.setDiagnosticsOptions({
     noSemanticValidation: true,
     noSyntaxValidation: true,
     noSuggestionDiagnostics: true,
   });
-  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+  ts.javascriptDefaults.setDiagnosticsOptions({
     noSemanticValidation: true,
     noSyntaxValidation: true,
     noSuggestionDiagnostics: true,

@@ -1,6 +1,7 @@
 import type { OpenFile, PaneLayout } from '../core/types';
 import { useErrorFlash } from '../core/errorFlash';
 import { usePanes } from '../core/panes';
+import { EditorBoundary } from '../editor/EditorBoundary';
 import { EditorCore } from '../editor/EditorCore';
 
 function PaneNode({
@@ -16,7 +17,9 @@ function PaneNode({
     const isActive = layout.id === activePaneId;
     return (
       <div className={isActive ? 'pane pane--active' : 'pane'}>
-        <EditorCore file={file} />
+        <EditorBoundary>
+          <EditorCore file={file} />
+        </EditorBoundary>
       </div>
     );
   }
