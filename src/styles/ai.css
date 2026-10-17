@@ -1040,42 +1040,20 @@
 
 .ai-chat__stop::before {
   content: '➤';
-  font-size: 12px;
-  transform: translateX(1px);
+  font-size: 11px;
+  line-height: 1;
 }
 
-.ai-chat__stop:hover {
-  transform: scale(1.05);
-}
-
-.ai-chat__stop:active {
-  transform: scale(0.95);
-}
-
-.ai-chat__stop--busy {
-  background: rgba(255, 69, 58, 0.16);
-  border-color: rgba(255, 69, 58, 0.5);
-  color: #ffb3ad;
+.ai-chat__stop--busy::before {
+  content: '■';
+  font-size: 9px;
+  line-height: 1;
 }
 
 .ai-chat__stop--busy:hover {
   background: rgba(255, 69, 58, 0.26);
   border-color: rgba(255, 69, 58, 0.7);
-}
-
-.ai-chat__stop--busy::before {
-  content: '■';
-  font-size: 10px;
-  transform: none;
-}
-
-.ai-chat__stop--idle {
-  background: linear-gradient(180deg, #2d94ff 0%, #0a84ff 45%, #0071f0 100%);
-  border-color: rgba(0, 0, 0, 0.28);
-  color: #fff;
-  box-shadow:
-    0 1px 4px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: #ffb3ad;
 }
 
 .ai-chat__stop:focus-visible {
