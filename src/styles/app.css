@@ -270,6 +270,7 @@ textarea {
 .tab-bar__item {
   appearance: none;
   position: relative;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;

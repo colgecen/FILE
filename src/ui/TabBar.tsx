@@ -55,6 +55,7 @@ export function TabBar(): React.JSX.Element {
                 closeOpenedTab(tab.id);
               }
             }}
+            onClick={() => tabsModel.activate(tab.id)}
             onDoubleClick={() => closeOpenedTab(tab.id)}
             onContextMenu={(event) => {
               event.preventDefault();
@@ -67,7 +68,7 @@ export function TabBar(): React.JSX.Element {
               className="tab-bar__select"
               type="button"
               title={tooltip}
-              onClick={() => tabsModel.activate(tab.id)}
+              tabIndex={-1}
             >
               {tab.file.name}
             </button>
@@ -80,7 +81,10 @@ export function TabBar(): React.JSX.Element {
               className="tab-bar__close"
               type="button"
               aria-label={`Sekmeyi kapat: ${tab.file.name}`}
-              onClick={() => closeOpenedTab(tab.id)}
+              onClick={(event) => {
+                event.stopPropagation();
+                closeOpenedTab(tab.id);
+              }}
             >
               ×
             </button>
