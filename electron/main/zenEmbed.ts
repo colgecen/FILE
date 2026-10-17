@@ -43,6 +43,7 @@ let queue: Promise<unknown> = Promise.resolve();
 let daemon: ChildProcessByStdio<Writable, Readable, null> | null = null;
 let daemonBuffer = '';
 let requestSeq = 0;
+let grabWanted = false;
 const pending = new Map<number, { resolve: (r: HelperResult) => void; timer: NodeJS.Timeout }>();
 
 function stamp(): string {
@@ -92,7 +93,15 @@ function ensureDaemon(): ChildProcessByStdio<Writable, Readable, null> | null {
         daemonBuffer = daemonBuffer.slice(index + 1);
         if (line.length === 0) continue;
         try {
-          const parsed = JSON.parse(line) as HelperResult;
+          const parsed = JSON.parse(line) as HelperResult & { event?: string; key?: string };
+          if (parsed.event === 'envkey') {
+            console.log(`[env-key ${stamp()}] ${parsed.key}`);
+            const win = getWindow();
+            if (win !== null && !win.isDestroyed()) {
+              win.webContents.send('env:key', parsed.key === 'left' ? -1 : 1);
+            }
+            continue;
+          }
           if (typeof parsed.id === 'number') settle(parsed.id, parsed);
         } catch {
           // satır atlanır
@@ -107,6 +116,7 @@ function ensureDaemon(): ChildProcessByStdio<Writable, Readable, null> | null {
       if (daemon === proc) daemon = null;
     });
     daemon = proc;
+    if (grabWanted) void runHelper(['grab', 'on']);
     return proc;
   } catch {
     return null;
@@ -200,7 +210,10 @@ function spawnEmbeddedZen(): void {
     { stdio: 'ignore', detached: true },
   );
   child.on('error', () => {
-    zenProc = null;
+    if (zenProc === child) zenProc = null;
+  });
+  child.on('exit', () => {
+    if (zenProc === child) zenProc = null;
   });
   child.unref();
   zenProc = child;
@@ -211,15 +224,25 @@ function spawnEmbeddedZen(): void {
   }
 }
 
+async function killZenInstance(): Promise<void> {
+  await new Promise<void>((resolve) => {
+    execFile('flatpak', ['kill', ZEN_FLATPAK], () => resolve());
+  });
+  await sleep(1500);
+}
+
 async function ensureZenWindow(): Promise<number | null> {
   const found = await findZenWindow();
   if (found !== null) return found;
   if (zenProc === null && (await zenInstanceRunning())) {
-    // Harici (muhtemelen Wayland) örnek çalışıyor: öldürme, penceresini bekle.
-    return waitForZenWindow(6000);
+    // Instance var ama pencere yok: yarim/kilitli kalmis olabilir. Kisa bir
+    // sure bekle; hâlâ pencere yoksa temizleyip kendi ornegimizi baslat.
+    const quick = await waitForZenWindow(8000);
+    if (quick !== null) return quick;
+    await killZenInstance();
   }
   spawnEmbeddedZen();
-  return waitForZenWindow(40000);
+  return waitForZenWindow(45000);
 }
 
 async function waitForZenWindow(timeoutMs: number): Promise<number | null> {
@@ -393,6 +416,14 @@ export function registerZenEmbed(getWin: () => BrowserWindow | null): void {
   getWindow = getWin;
   overrideZenOnce();
   startStrayWatcher();
+
+  // Ctrl+Shift+←/→: FILE aktifken X seviyesinde yakalanır (zen odakta olsa bile).
+  const setGrab = (on: boolean): void => {
+    grabWanted = on;
+    void runHelper(['grab', on ? 'on' : 'off']);
+  };
+  app.on('browser-window-focus', () => setGrab(true));
+  app.on('browser-window-blur', () => setGrab(false));
 
   app.on('before-quit', () => {
     if (strayTimer !== null) {

@@ -122,3 +122,18 @@
   font-size: 13px;
   pointer-events: none;
 }
+
+.zen-host__paused {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7078;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  pointer-events: none;
+  background: rgba(10, 132, 255, 0.04);
+  border: 1px dashed rgba(138, 143, 152, 0.25);
+  border-radius: 8px;
+}

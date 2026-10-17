@@ -55,8 +55,8 @@ const SEEDS: readonly BindingSeed[] = [
   { commandId: 'view.sidebar.source', keys: ['Control+g'], label: 'Git paneli aç/kapat' },
 
   // Ortamlar
-  { commandId: 'env.next', keys: ['Control+Alt+ArrowRight'], label: 'Sonraki ortam' },
-  { commandId: 'env.prev', keys: ['Control+Alt+ArrowLeft'], label: 'Önceki ortam' },
+  { commandId: 'env.next', keys: ['Control+Shift+ArrowRight'], label: 'Sonraki ortam (Ctrl+Shift+→)' },
+  { commandId: 'env.prev', keys: ['Control+Shift+ArrowLeft'], label: 'Önceki ortam (Ctrl+Shift+←)' },
 
   // Çoklu imleç
   { commandId: 'cursor.up', keys: ['Control+Alt+ArrowUp'], label: 'İmleci yukarı ekle', zone: 'editor' },

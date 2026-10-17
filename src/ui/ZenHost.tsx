@@ -15,7 +15,7 @@ function measure(host: HTMLElement): EmbeddedLayout {
 
 let pendingHide: number | null = null;
 
-export function ZenHost(): React.JSX.Element {
+export function ZenHost({ paused = false }: { readonly paused?: boolean }): React.JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'starting' | 'ready' | 'failed'>('starting');
 
@@ -30,10 +30,18 @@ export function ZenHost(): React.JSX.Element {
     const send = (): void => {
       void window.api.zenLayout(measure(host));
     };
-    void window.api.zenEmbed(measure(host)).then((ok: boolean) => {
-      if (disposed) return;
-      setStatus(ok ? 'ready' : 'failed');
-    });
+    let retry: number | null = null;
+    const tryEmbed = (): void => {
+      void window.api.zenEmbed(measure(host)).then((ok: boolean) => {
+        if (disposed) return;
+        setStatus(ok ? 'ready' : 'failed');
+        if (!ok && retry === null) {
+          // Basarisiz olursa 5 sn'de bir yeniden dene (bekci pencereyi yakalayabilir).
+          retry = window.setTimeout(tryEmbed, 5000);
+        }
+      });
+    };
+    tryEmbed();
     let debounce: number | null = null;
     const observer = new ResizeObserver(() => {
       if (debounce !== null) window.clearTimeout(debounce);
@@ -44,6 +52,7 @@ export function ZenHost(): React.JSX.Element {
     return () => {
       disposed = true;
       if (debounce !== null) window.clearTimeout(debounce);
+      if (retry !== null) window.clearTimeout(retry);
       observer.disconnect();
       window.removeEventListener('resize', send);
       // Gecikmeli gizle: StrictMode/yeniden eşleştirme anında iptal edilir,
@@ -59,7 +68,12 @@ export function ZenHost(): React.JSX.Element {
   return (
     <div className="zen-host">
       <div className="zen-host__page" ref={hostRef} />
-      {status !== 'ready' && (
+      {paused && (
+        <div className="zen-host__paused" role="status">
+          Menü açık — tarayıcı menü kapanınca geri gelir
+        </div>
+      )}
+      {status !== 'ready' && !paused && (
         <div className="zen-host__status" role="status">
           {status === 'starting' ? 'Zen başlatılıyor…' : 'Zen gömülemedi — dışarıdan açık bir Zen (Wayland) varsa kapatıp yeniden dene'}
         </div>

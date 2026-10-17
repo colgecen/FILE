@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
-import { openBrowserEnvironment } from '../core/envCommands';
+import { openBrowserEnvironment, cycleEnvironment } from '../core/envCommands';
 import { recentFiles } from '../core/recentFiles';
 import { useSaveFlash } from '../core/saveSignal';
 import { perfModel, usePerfPanelOpen, usePerfState } from '../core/perfModel';
@@ -61,10 +61,8 @@ export function AppShell({
   const zenEnvActive = envState.activeId === 'browser:zen';
   const [nativeFullscreen, setNativeFullscreen] = useState(false);
   useEffect(() => window.api.onWindowFullscreen(setNativeFullscreen), []);
-  useEffect(() => window.api.onZenExternal(() => {
-    // Dışarıdan başlatılan Zen algılandı: ortamı aç, embedZen pencereyi içeri alır.
-    void openBrowserEnvironment('zen');
-  }), []);
+  const [zenNonce, setZenNonce] = useState(0);
+  const [zenMenuPaused, setZenMenuPaused] = useState(false);
   useEffect(() => {
     if (!zenEnvActive) return undefined;
     // X child pencere DOM üstüne her zaman çizilir: açık bir açılır menü/palet varsa
@@ -72,17 +70,29 @@ export function AppShell({
     const POPUPS = '.menu-panel, .command-hud, .perf-sheet, .help-overlay, [role="dialog"]';
     let popupOpen = false;
     const sync = (): void => {
-      const now = document.querySelector(POPUPS) !== null;
+      const node = document.querySelector<HTMLElement>(POPUPS);
+      const now = node !== null;
       if (now === popupOpen) return;
       popupOpen = now;
+      setZenMenuPaused(now);
       void (now ? window.api.zenHide() : window.api.zenShow());
     };
     const observer = new MutationObserver(sync);
     observer.observe(document.body, { childList: true, subtree: true });
     return () => {
       observer.disconnect();
+      setZenMenuPaused(false);
     };
   }, [zenEnvActive]);
+  useEffect(() => window.api.onZenExternal(() => {
+    // Dışarıdan başlatılan Zen algılandı: ortamı aç ve host'u yeniden bağla
+    // (yeniden mount embed + resize zincirini kurar).
+    void openBrowserEnvironment('zen');
+    setZenNonce((n) => n + 1);
+  }), []);
+  useEffect(() => window.api.onEnvKey((delta: number) => {
+    void cycleEnvironment(delta < 0 ? -1 : 1);
+  }), []);
   useIpcLifecycle(window.api);
   useEffect(() => perfModel.init(), []);
   useEffect(() => recentFiles.attach(window.localStorage), []);
@@ -130,7 +140,7 @@ export function AppShell({
           <div className="app-shell__main">
             <div className="app-shell__editor">
               {zenEnvActive ? (
-                <ZenHost />
+                <ZenHost key={zenNonce} paused={zenMenuPaused} />
               ) : browserEnvActive ? (
                 <BrowserView />
               ) : (

@@ -72,6 +72,15 @@ const api: Api = {
       ipcRenderer.removeListener('zen:external', handler);
     };
   },
+  onEnvKey: (listener) => {
+    const handler = (_event: unknown, delta: number): void => {
+      listener(delta);
+    };
+    ipcRenderer.on('env:key', handler);
+    return () => {
+      ipcRenderer.removeListener('env:key', handler);
+    };
+  },
   onBrowserState: (listener) => {
     const handler = (_event: unknown, state: Parameters<typeof listener>[0]): void => {
       listener(state);

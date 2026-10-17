@@ -226,6 +226,7 @@ export type Api = {
   zenHide(): Promise<boolean>;
   zenClose(): Promise<boolean>;
   onZenExternal(listener: () => void): () => void;
+  onEnvKey(listener: (delta: number) => void): () => void;
   openInBrowser(url: string, browser?: string): Promise<'zen' | 'google-chrome' | 'chromium' | 'firefox' | 'default' | 'none' | 'invalid'>;
   ptySpawn(options: PtySpawnOptions): Promise<{ id: string } | null>;
   ptyWrite(id: string, data: string): Promise<boolean>;

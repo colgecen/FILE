@@ -109,9 +109,10 @@ export class KeyboardController {
         this.handle(event);
       }
     };
-    target.addEventListener('keydown', listener);
+    // Capture fazı: Monaco gibi stopPropagation yapan bileşenler bağlamayı yutmasın.
+    target.addEventListener('keydown', listener, true);
     const detach = (): void => {
-      target.removeEventListener('keydown', listener);
+      target.removeEventListener('keydown', listener, true);
       this.detachers.delete(target);
     };
     this.detachers.set(target, detach);

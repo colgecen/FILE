@@ -140,9 +140,76 @@ def dispatch(d, root, cmd: str, a: list) -> dict:
         except Exception as exc:
             return {'ok': False, 'error': f'unparent: {exc}'}
         return {'ok': True}
+    if cmd == 'grab':
+        from Xlib import XK
+        mode = a[0] if len(a) > 0 else 'off'
+        kcs = [d.keysym_to_keycode(XK.XK_Left), d.keysym_to_keycode(XK.XK_Right)]
+        mods = X.ControlMask | X.ShiftMask
+        try:
+            for kc in kcs:
+                if mode == 'on':
+                    root.grab_key(kc, mods, False, X.GrabModeAsync, X.GrabModeAsync)
+                else:
+                    root.ungrab_key(kc, mods)
+            d.sync()
+        except Exception as exc:
+            return {'ok': False, 'error': f'grab: {exc}'}
+        return {'ok': True}
     if cmd == 'ping':
         return {'ok': True}
     return {'ok': False, 'error': 'unknown command'}
+
+
+def emit(obj: dict) -> None:
+    sys.stdout.write(json.dumps(obj) + '\n')
+    sys.stdout.flush()
+
+
+def serve_loop(d, root) -> None:
+    import os
+    import select
+    from Xlib import X as _X, XK
+
+    sock = d.display.socket
+    xfd = sock.fileno() if hasattr(sock, 'fileno') else int(sock)
+    stdin_fd = sys.stdin.fileno()
+    left_kc = d.keysym_to_keycode(XK.XK_Left)
+    right_kc = d.keysym_to_keycode(XK.XK_Right)
+    buf = ''
+    while True:
+        try:
+            ready, _, _ = select.select([stdin_fd, xfd], [], [])
+        except (InterruptedError, OSError):
+            continue
+        if stdin_fd in ready:
+            chunk = os.read(stdin_fd, 65536)
+            if len(chunk) == 0:
+                return
+            buf += chunk.decode(errors='ignore')
+            while '\n' in buf:
+                raw, buf = buf.split('\n', 1)
+                raw = raw.strip()
+                if len(raw) == 0:
+                    continue
+                rid = None
+                try:
+                    req = json.loads(raw)
+                    rid = req.get('id')
+                    res = dispatch(d, root, str(req.get('cmd', '')), list(req.get('a', [])))
+                except Exception as exc:
+                    res = {'ok': False, 'error': str(exc)}
+                res['id'] = rid
+                emit(res)
+        if xfd in ready:
+            try:
+                # select uyanışı ham baytları getirir; Xlib'i okumaya zorla
+                d.sync()
+                while d.pending_events() > 0:
+                    ev = d.next_event()
+                    if ev.type == _X.KeyPress and ev.detail in (left_kc, right_kc):
+                        emit({'event': 'envkey', 'key': 'left' if ev.detail == left_kc else 'right'})
+            except Exception:
+                return
 
 
 def main() -> None:
@@ -154,20 +221,7 @@ def main() -> None:
     if len(argv) > 0 and argv[0] != '--serve':
         print(json.dumps(dispatch(d, root, argv[0], argv[1:])))
         return
-    for line in sys.stdin:
-        line = line.strip()
-        if len(line) == 0:
-            continue
-        rid = None
-        try:
-            req = json.loads(line)
-            rid = req.get('id')
-            res = dispatch(d, root, str(req.get('cmd', '')), list(req.get('a', [])))
-        except Exception as exc:
-            res = {'ok': False, 'error': str(exc)}
-        res['id'] = rid
-        sys.stdout.write(json.dumps(res) + '\n')
-        sys.stdout.flush()
+    serve_loop(d, root)
 
 
 if __name__ == '__main__':

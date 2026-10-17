@@ -21,6 +21,7 @@ const api = {
   openInBrowser: vi.fn().mockResolvedValue('default'),
   onWindowFullscreen: vi.fn(() => () => undefined),
   onZenExternal: vi.fn(() => () => undefined),
+  onEnvKey: vi.fn(() => () => undefined),
   zenEmbed: vi.fn().mockResolvedValue(true),
   zenLayout: vi.fn().mockResolvedValue(true),
   zenShow: vi.fn().mockResolvedValue(true),
