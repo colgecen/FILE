@@ -9,7 +9,7 @@ describe('ViewModeModel', () => {
   });
 
   it('başlangıçta tüm modlar kapalıdır', () => {
-    expect(model.getState()).toEqual({ fullscreen: false, zen: false, wordWrap: 'off' });
+    expect(model.getState()).toEqual({ fullscreen: false, zen: false, wordWrap: 'on' });
   });
 
   it('tam ekran durumunu ayarlar', () => {
@@ -38,8 +38,8 @@ describe('ViewModeModel', () => {
 
   it('kelime sarmalamayı değiştirir', () => {
     model.toggleWordWrap();
-    expect(model.getState().wordWrap).toBe('on');
-    model.toggleWordWrap();
     expect(model.getState().wordWrap).toBe('off');
+    model.toggleWordWrap();
+    expect(model.getState().wordWrap).toBe('on');
   });
 });

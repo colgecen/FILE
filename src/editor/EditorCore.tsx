@@ -26,6 +26,7 @@ const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   glyphMargin: true,
   lineNumbersMinChars: 2,
   lineDecorationsWidth: 5,
+  wordWrap: 'on',
 };
 
 export function EditorCore({ file }: { readonly file: OpenFile | null }): React.JSX.Element {

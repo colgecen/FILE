@@ -37,13 +37,13 @@ describe('görünüm modu komutları', () => {
     expect(viewModeModel.getState().zen).toBe(false);
   });
 
-  it('view.wordwrap sarmalamayı açar ve kapatır', () => {
+  it('view.wordwrap sarmalamayı kapatır ve açar', () => {
     const list = commands();
     const command = list.find((entry) => entry.id === 'view.wordwrap');
     expect(command?.run()).toEqual({ ok: true });
-    expect(viewModeModel.getState().wordWrap).toBe('on');
-    expect(command?.run()).toEqual({ ok: true });
     expect(viewModeModel.getState().wordWrap).toBe('off');
+    expect(command?.run()).toEqual({ ok: true });
+    expect(viewModeModel.getState().wordWrap).toBe('on');
   });
 
   it('view.sidebar.* ve view.layout.single komutları kayıtlıdır ve rozetsiz çalışır', async () => {

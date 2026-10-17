@@ -7,7 +7,7 @@ export type ViewModeState = {
 };
 
 export class ViewModeModel {
-  private state: ViewModeState = { fullscreen: false, zen: false, wordWrap: 'off' };
+  private state: ViewModeState = { fullscreen: false, zen: false, wordWrap: 'on' };
   private readonly listeners = new Set<() => void>();
 
   getState(): ViewModeState {
@@ -34,7 +34,7 @@ export class ViewModeModel {
   }
 
   reset(): void {
-    this.state = { fullscreen: false, zen: false, wordWrap: 'off' };
+    this.state = { fullscreen: false, zen: false, wordWrap: 'on' };
     this.emit();
   }
 
