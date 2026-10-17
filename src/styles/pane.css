@@ -48,6 +48,44 @@
   box-shadow: inset 0 0 0 1px rgba(10, 132, 255, 0.4);
 }
 
+.editor-boundary {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  background: var(--bg-editor);
+  color: var(--fg-muted);
+  font: 13px/1.5 var(--font-ui, sans-serif);
+}
+
+.editor-boundary pre {
+  max-width: 520px;
+  overflow: auto;
+  padding: 12px;
+  background: color-mix(in srgb, var(--bg-elevated, #0d0f14) 70%, transparent);
+  border: 1px solid var(--border);
+  color: var(--fg-danger, #ff6b6b);
+  white-space: pre-wrap;
+}
+
+.editor-boundary button {
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-elevated, #16181d);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.editor-boundary button:hover {
+  border-color: var(--accent);
+}
+
 .pane-split > .pane-split {
   flex: 1 1 0;
 }
