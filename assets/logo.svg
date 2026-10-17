@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-label="Dosya Editörü logosu">
+  <defs>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#0A84FF" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#0A84FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#26272E"/>
+      <stop offset="1" stop-color="#1A1B21"/>
+    </linearGradient>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="1200" fill="#121317"/>
+  <rect width="1200" height="1200" fill="url(#glow)"/>
+
+  <rect x="290" y="316" width="620" height="620" rx="150" fill="#000000" opacity="0.5" filter="url(#blur)"/>
+  <rect x="290" y="290" width="620" height="620" rx="150" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity="0.09" stroke-width="2.5"/>
+
+  <rect x="415" y="445" width="370" height="310" rx="26" fill="#17181E" stroke="#FFFFFF" stroke-opacity="0.07" stroke-width="2"/>
+  <circle cx="457" cy="483" r="7" fill="#3E3F47"/>
+  <circle cx="483" cy="483" r="7" fill="#3E3F47"/>
+  <circle cx="509" cy="483" r="7" fill="#3E3F47"/>
+  <line x1="415" y1="521" x2="785" y2="521" stroke="#26272E" stroke-width="2"/>
+
+  <rect x="461" y="562" width="104" height="14" rx="7" fill="#cba6f7"/>
+  <rect x="579" y="562" width="84" height="14" rx="7" fill="#94e2d5"/>
+
+  <rect x="461" y="606" width="52" height="14" rx="7" fill="#E6E6EB"/>
+  <rect x="527" y="606" width="44" height="14" rx="7" fill="#89b4fa"/>
+  <rect x="585" y="606" width="92" height="14" rx="7" fill="#E6E6EB"/>
+
+  <rect x="461" y="650" width="196" height="14" rx="7" fill="#a6e3a1"/>
+
+  <rect x="461" y="694" width="64" height="14" rx="7" fill="#6c7086"/>
+  <rect x="539" y="686" width="11" height="30" rx="5" fill="#0A84FF" opacity="0.25"/>
+  <rect x="543" y="686" width="5" height="30" rx="2.5" fill="#0A84FF"/>
+</svg>

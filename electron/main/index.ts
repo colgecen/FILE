@@ -25,6 +25,14 @@ const DEV_RENDERER_URL = 'http://localhost:5173';
 
 const TRANSPARENT = process.env['TRANSPARENT'] === '1';
 
+// Haswell-era drivers on this class of machine intermittently fail to spawn the GPU
+// process (error_code=1002), which is fatal for Electron. Compositing a text editor in
+// software costs nothing; opt back in with FILE_GPU=1 if the GPU path is healthy.
+if (process.env['FILE_GPU'] !== '1') {
+  app.disableHardwareAcceleration();
+  app.commandLine.appendSwitch('disable-gpu-sandbox');
+}
+
 let mainWindow: BrowserWindow | null = null;
 const ptyManager = createPtyManager(spawn as unknown as PtySpawnFn, join(__dirname, 'pty-helper.js'));
 
