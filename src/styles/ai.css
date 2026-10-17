@@ -32,7 +32,7 @@
   align-items: center;
   gap: 6px;
   flex: none;
-  padding: 12px 12px 0;
+  padding: 0 12px 12px;
 }
 
 .ai-chat__tablist {
@@ -171,7 +171,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 12px 14px 10px;
 }
 
 .ai-chat__modelname {

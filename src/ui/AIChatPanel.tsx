@@ -114,6 +114,42 @@ export function AIChatPanel(): React.JSX.Element | null {
       aria-label="Yapay zekâ sohbeti"
       onMouseDown={() => focusManager.set('ai')}
     >
+      <header className="ai-chat__header">
+        <span className="ai-chat__modelname" title={activeRef.id}>
+          {activeRef.id}
+        </span>
+        {boundEnv !== null && (
+          <span className="ai-chat__project" title={boundEnv.rootPath} data-testid="ai-project-chip">
+            {boundEnv.name}
+          </span>
+        )}
+        <span className="ai-chat__status" data-status={ai.status}>
+          <span className="ai-chat__dot" aria-hidden="true" />
+          {ai.status === 'loading' && ai.progress !== null
+            ? `${statusLabel(ai.status)} %${ai.progress.percent}`
+            : statusLabel(ai.status)}
+        </span>
+        <div className="ai-chat__meta">
+          <button
+            type="button"
+            className="ai-chat__iconbtn"
+            aria-label="Ayarlar"
+            title="Ayarlar"
+            onClick={() => setSettingsOpen(true)}
+          >
+            ⚙
+          </button>
+          <button
+            type="button"
+            className="ai-chat__iconbtn"
+            aria-label="Kapat"
+            title="Kapat (Esc)"
+            onClick={() => registry.run('ai.chat.close')}
+          >
+            ✕
+          </button>
+        </div>
+      </header>
       <div className="ai-chat__tabs">
         <div className="ai-chat__tablist" role="tablist" aria-label="Sohbetler">
           {sessions.sessions.map((session) => {
@@ -155,42 +191,6 @@ export function AIChatPanel(): React.JSX.Element | null {
           +
         </button>
       </div>
-      <header className="ai-chat__header">
-        <span className="ai-chat__modelname" title={activeRef.id}>
-          {activeRef.id}
-        </span>
-        {boundEnv !== null && (
-          <span className="ai-chat__project" title={boundEnv.rootPath} data-testid="ai-project-chip">
-            {boundEnv.name}
-          </span>
-        )}
-        <span className="ai-chat__status" data-status={ai.status}>
-          <span className="ai-chat__dot" aria-hidden="true" />
-          {ai.status === 'loading' && ai.progress !== null
-            ? `${statusLabel(ai.status)} %${ai.progress.percent}`
-            : statusLabel(ai.status)}
-        </span>
-        <div className="ai-chat__meta">
-          <button
-            type="button"
-            className="ai-chat__iconbtn"
-            aria-label="Ayarlar"
-            title="Ayarlar"
-            onClick={() => setSettingsOpen(true)}
-          >
-            ⚙
-          </button>
-          <button
-            type="button"
-            className="ai-chat__iconbtn"
-            aria-label="Kapat"
-            title="Kapat (Esc)"
-            onClick={() => registry.run('ai.chat.close')}
-          >
-            ✕
-          </button>
-        </div>
-      </header>
       {settingsOpen && (
         <div
           className="ai-chat__settings-modal"
