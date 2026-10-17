@@ -165,6 +165,21 @@ export type PtyEvent = {
   readonly exitCode?: number;
 };
 
+export type EmbeddedState = {
+  readonly envId: string;
+  readonly url: string;
+  readonly title: string;
+  readonly canGoBack: boolean;
+  readonly canGoForward: boolean;
+};
+
+export type EmbeddedLayout = {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+};
+
 export type Api = {
   readonly version: string;
   readonly glass: boolean;
@@ -194,6 +209,17 @@ export type Api = {
   winToggleMaximize(): Promise<boolean>;
   appExit(): Promise<void>;
   newWindow(): Promise<void>;
+  browserAdd(envId: string): Promise<boolean>;
+  browserActivate(envId: string | null): Promise<boolean>;
+  browserRemove(envId: string): Promise<boolean>;
+  browserNavigate(envId: string, url: string): Promise<boolean>;
+  browserBack(envId: string): Promise<boolean>;
+  browserForward(envId: string): Promise<boolean>;
+  browserReload(envId: string): Promise<boolean>;
+  browserLayout(layout: EmbeddedLayout): Promise<boolean>;
+  browserState(envId: string): Promise<EmbeddedState | null>;
+  browserOpenExternal(url: string): Promise<boolean>;
+  onBrowserState(listener: (state: EmbeddedState) => void): () => void;
   openInBrowser(url: string, browser?: string): Promise<'zen' | 'google-chrome' | 'chromium' | 'firefox' | 'default' | 'none' | 'invalid'>;
   ptySpawn(options: PtySpawnOptions): Promise<{ id: string } | null>;
   ptyWrite(id: string, data: string): Promise<boolean>;

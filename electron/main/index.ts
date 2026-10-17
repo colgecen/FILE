@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { registerAppHandlers } from './appHandlers';
 import { registerBrowserHandlers } from './browserHandlers';
+import { registerEmbeddedBrowser } from './embeddedBrowser';
 import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
@@ -51,14 +52,12 @@ function createMainWindow(): void {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
-      webviewTag: true,
       preload: join(__dirname, '../preload/index.cjs'),
     },
   });
 
   if (mainWindow !== null) {
     attachFullscreenEvents(mainWindow);
-    mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   }
 
   mainWindow.on('closed', (): void => {
@@ -83,6 +82,12 @@ void app.whenReady().then((): void => {
   registerGitHandlers();
   registerAppHandlers(getWindow);
   registerBrowserHandlers();
+  registerEmbeddedBrowser(getWindow, (state) => {
+    const win = getWindow();
+    if (win !== null && !win.isDestroyed()) {
+      win.webContents.send('browser:state', state);
+    }
+  });
   registerTelemetry(getWindow);
   registerWindowHandlers(getWindow);
   registerAiKeyHandlers();

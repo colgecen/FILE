@@ -1,21 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useEnvironmentsState } from '../core/environments';
+import type { EmbeddedState } from '../../electron/preload/index';
 import '../styles/browser.css';
-
-type WebviewLike = {
-  src: string;
-  loadURL(url: string): void;
-  goBack(): void;
-  goForward(): void;
-  reload(): void;
-  stop(): void;
-  getURL(): string;
-};
-
-type NavState = {
-  url: string;
-  title: string;
-};
 
 function normalizeInput(raw: string): string {
   const trimmed = raw.trim();
@@ -30,99 +16,102 @@ function normalizeInput(raw: string): string {
 
 export function BrowserView(): React.JSX.Element {
   const { environments, activeId } = useEnvironmentsState();
-  const poolRef = useRef<HTMLDivElement>(null);
-  const webviews = useRef(new Map<string, HTMLElement>());
-  const [nav, setNav] = useState<Record<string, NavState>>({});
-  const [editing, setEditing] = useState<Record<string, string>>({});
-  const activeEnv = environments.find((env) => env.id === activeId) ?? null;
+  const [states, setStates] = useState<Record<string, EmbeddedState>>({});
+  const [editing, setEditing] = useState<{ id: string; value: string } | null>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
   const browserEnvs = environments.filter((env) => env.id.startsWith('browser:'));
+  const activeBrowser =
+    activeId !== null && activeId.startsWith('browser:') ? browserEnvs.find((env) => env.id === activeId) ?? null : null;
+  const ids = browserEnvs.map((env) => env.id).join(',');
 
-  const homeRef = useRef(new Set<string>());
+  const knownRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const pool = poolRef.current;
-    if (pool === null) return;
-    const disposers = new Map(webviews.current);
-    const alive = new Set(browserEnvs.map((env) => env.id));
-    for (const [id, el] of webviews.current) {
-      if (!alive.has(id)) {
-        el.remove();
-        webviews.current.delete(id);
-      }
+    const current = new Set(ids.length === 0 ? [] : ids.split(','));
+    for (const id of knownRef.current) {
+      if (!current.has(id)) void window.api.browserRemove(id);
     }
-    for (const env of browserEnvs) {
-      if (disposers.has(env.id)) continue;
-      const wv = document.createElement('webview') as HTMLElement;
-      const api = wv as unknown as WebviewLike;
-      wv.setAttribute('partition', `persist:${env.id}`);
-      wv.setAttribute('allowpopups', '');
-      wv.setAttribute('webpreferences', 'sandbox=false');
-      const onFail = (event: Event): void => {
-        const code = (event as Event & { errorCode?: number; errorDescription?: string }).errorDescription ?? 'yükleme hatası';
-        setNav((current) => ({ ...current, [env.id]: { url: current[env.id]?.url ?? '', title: String(code) } }));
-      };
-      wv.addEventListener('did-fail-load', onFail);
-      const onTitle = (event: Event): void => {
-        const title = (event as Event & { title?: string }).title ?? '';
-        setNav((current) => ({ ...current, [env.id]: { url: api.getURL(), title } }));
-      };
-      const onUrl = (): void => {
-        let url = 'about:blank';
-        try {
-          url = api.getURL();
-        } catch {
-          // webview henüz hazır değil
-        }
-        setNav((current) => ({ ...current, [env.id]: { url, title: current[env.id]?.title ?? '' } }));
-      };
-      const onNewWindow = (event: Event): void => {
-        event.preventDefault();
-        const target = (event as Event & { url?: string }).url;
-        if (target !== undefined) api.loadURL(target);
-      };
-      wv.addEventListener('page-title-updated', onTitle);
-      wv.addEventListener('did-navigate', onUrl);
-      wv.addEventListener('did-navigate-in-page', onUrl);
-      wv.addEventListener('new-window', onNewWindow);
-      pool.appendChild(wv);
-      webviews.current.set(env.id, wv);
-      if (homeRef.current.has(env.id)) continue;
-      homeRef.current.add(env.id);
-      wv.addEventListener(
-        'dom-ready',
-        () => {
-          api.loadURL('https://www.google.com');
-        },
-        { once: true },
-      );
+    for (const id of current) {
+      if (!knownRef.current.has(id)) void window.api.browserAdd(id);
     }
-  }, [browserEnvs]);
+    knownRef.current = current;
+  }, [ids]);
 
-  const activeBrowser = activeEnv !== null && activeEnv.id.startsWith('browser:') ? activeEnv : null;
-  const activeWebview =
-    activeBrowser !== null ? (webviews.current.get(activeBrowser.id) as unknown as WebviewLike | undefined) : undefined;
-  const shown = activeBrowser !== null ? (editing[activeBrowser.id] ?? nav[activeBrowser.id]?.url ?? '') : '';
+  useEffect(() => {
+    void window.api.browserActivate(activeId !== null && activeId.startsWith('browser:') ? activeId : null);
+  }, [activeId]);
 
-  const navigate = (): void => {
-    if (activeBrowser === null || activeWebview === undefined) return;
-    activeWebview.loadURL(normalizeInput(editing[activeBrowser.id] ?? ''));
-    setEditing((current) => ({ ...current, [activeBrowser.id]: '' }));
-  };
+  useEffect(() => () => void window.api.browserActivate(null), []);
 
-  const call = (fn: (wv: WebviewLike) => void): void => {
-    if (activeWebview !== undefined) fn(activeWebview);
+  useEffect(() => {
+    return window.api.onBrowserState((state: EmbeddedState) => {
+      setStates((current) => ({ ...current, [state.envId]: state }));
+    });
+  }, []);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (host === null) return;
+    const send = (): void => {
+      const rect = host.getBoundingClientRect();
+      void window.api.browserLayout({ x: rect.x, y: rect.y, width: rect.width, height: rect.height });
+    };
+    send();
+    const observer = new ResizeObserver(send);
+    observer.observe(host);
+    window.addEventListener('resize', send);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', send);
+    };
+  }, [activeBrowser?.id]);
+
+  useEffect(() => {
+    if (activeBrowser === null) return;
+    void window.api.browserState(activeBrowser.id).then((state: EmbeddedState | null) => {
+      if (state !== null) setStates((current) => ({ ...current, [state.envId]: state }));
+    });
+  }, [activeBrowser?.id]);
+
+  const state = activeBrowser !== null ? states[activeBrowser.id] : undefined;
+  const shown = activeBrowser !== null ? (editing?.id === activeBrowser.id ? editing.value : state?.url ?? '') : '';
+
+  const submit = (): void => {
+    if (activeBrowser === null) return;
+    void window.api.browserNavigate(activeBrowser.id, normalizeInput(editing?.value ?? ''));
+    setEditing(null);
   };
 
   return (
     <div className="browser-view">
       <div className="browser-view__bar" role="toolbar" aria-label="Tarayıcı araç çubuğu">
-        <button type="button" className="browser-view__nav" title="Geri" aria-label="Geri" onClick={() => call((wv) => wv.goBack())}>
+        <button
+          type="button"
+          className="browser-view__nav"
+          title="Geri"
+          aria-label="Geri"
+          disabled={state !== undefined && !state.canGoBack}
+          onClick={() => activeBrowser !== null && void window.api.browserBack(activeBrowser.id)}
+        >
           ‹
         </button>
-        <button type="button" className="browser-view__nav" title="İleri" aria-label="İleri" onClick={() => call((wv) => wv.goForward())}>
+        <button
+          type="button"
+          className="browser-view__nav"
+          title="İleri"
+          aria-label="İleri"
+          disabled={state !== undefined && !state.canGoForward}
+          onClick={() => activeBrowser !== null && void window.api.browserForward(activeBrowser.id)}
+        >
           ›
         </button>
-        <button type="button" className="browser-view__nav" title="Yenile" aria-label="Yenile" onClick={() => call((wv) => wv.reload())}>
+        <button
+          type="button"
+          className="browser-view__nav"
+          title="Yenile"
+          aria-label="Yenile"
+          onClick={() => activeBrowser !== null && void window.api.browserReload(activeBrowser.id)}
+        >
           ⟳
         </button>
         <input
@@ -130,35 +119,31 @@ export function BrowserView(): React.JSX.Element {
           value={shown}
           placeholder="Adres veya arama (Enter)"
           spellCheck={false}
-          onFocus={() => {
-            if (activeBrowser !== null) setEditing((c) => ({ ...c, [activeBrowser.id]: nav[activeBrowser.id]?.url ?? '' }));
-          }}
-          onBlur={() => {
-            if (activeBrowser !== null) setEditing((c) => ({ ...c, [activeBrowser.id]: '' }));
-          }}
-          onChange={(event) => {
-            if (activeBrowser !== null) setEditing((c) => ({ ...c, [activeBrowser.id]: event.target.value }));
-          }}
+          onFocus={() => activeBrowser !== null && setEditing({ id: activeBrowser.id, value: state?.url ?? '' })}
+          onBlur={() => setEditing(null)}
+          onChange={(event) => activeBrowser !== null && setEditing({ id: activeBrowser.id, value: event.target.value })}
           onKeyDown={(event) => {
             event.stopPropagation();
-            if (event.key === 'Enter') navigate();
+            if (event.key === 'Enter') submit();
             else if (event.key === 'Escape') (event.target as HTMLInputElement).blur();
           }}
         />
+        {state !== undefined && state.title.length > 0 && (
+          <span className="browser-view__title" title={state.title}>
+            {state.title}
+          </span>
+        )}
         <button
           type="button"
           className="browser-view__nav"
-          title="Harici tarayıcıda aç"
-          aria-label="Harici tarayıcıda aç"
-          onClick={() => {
-            const url = nav[activeBrowser?.id ?? '']?.url ?? '';
-            if (url.length > 0 && !url.startsWith('about:')) void window.api.openInBrowser(url);
-          }}
+          title="Sistem tarayıcısında aç"
+          aria-label="Sistem tarayıcısında aç"
+          onClick={() => state !== undefined && void window.api.browserOpenExternal(state.url)}
         >
           ↗
         </button>
       </div>
-      <div className="browser-view__pages" ref={poolRef} />
+      <div className="browser-view__page" ref={hostRef} />
     </div>
   );
 }

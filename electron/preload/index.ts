@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+export type { EmbeddedState, EmbeddedLayout } from '../shared/api-types';
 import { APP_VERSION, type Api } from '../shared/api-types';
 
 const api: Api = {
@@ -47,6 +48,25 @@ const api: Api = {
   appExit: () => ipcRenderer.invoke('app:exit'),
   newWindow: () => ipcRenderer.invoke('app:new-window'),
   openInBrowser: (url, browser) => ipcRenderer.invoke('app:open-browser', url, browser),
+  browserAdd: (envId) => ipcRenderer.invoke('browser:add', envId),
+  browserActivate: (envId) => ipcRenderer.invoke('browser:activate', envId),
+  browserRemove: (envId) => ipcRenderer.invoke('browser:remove', envId),
+  browserNavigate: (envId, url) => ipcRenderer.invoke('browser:navigate', envId, url),
+  browserBack: (envId) => ipcRenderer.invoke('browser:back', envId),
+  browserForward: (envId) => ipcRenderer.invoke('browser:forward', envId),
+  browserReload: (envId) => ipcRenderer.invoke('browser:reload', envId),
+  browserLayout: (layout) => ipcRenderer.invoke('browser:layout', layout),
+  browserState: (envId) => ipcRenderer.invoke('browser:state', envId),
+  browserOpenExternal: (url) => ipcRenderer.invoke('browser:open-external', url),
+  onBrowserState: (listener) => {
+    const handler = (_event: unknown, state: Parameters<typeof listener>[0]): void => {
+      listener(state);
+    };
+    ipcRenderer.on('browser:state', handler);
+    return () => {
+      ipcRenderer.removeListener('browser:state', handler);
+    };
+  },
   ptySpawn: (options) => ipcRenderer.invoke('pty:spawn', options),
   ptyWrite: (id, data) => ipcRenderer.invoke('pty:write', id, data),
   ptyResize: (id, cols, rows) => ipcRenderer.invoke('pty:resize', id, cols, rows),
