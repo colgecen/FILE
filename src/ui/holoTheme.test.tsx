@@ -61,13 +61,13 @@ describe('holo tema birliği (Ctrl+P paleti hariç)', () => {
     expect(screen.getByRole('button', { name: 'Kapat' }).className).toContain('holo-btn');
   });
 
-  it('asistan paneli rozet ve model şeridiyle temaya uyar', () => {
+  it('asistan paneli araç şeridi ve model şeridiyle temaya uyar', () => {
     render(<AppShell />);
     act(() => {
       aiChatModel.open();
     });
     expect(document.querySelector('.ai-chat')).not.toBeNull();
-    expect(document.querySelector('.ai-chat__status')).not.toBeNull();
+    expect(document.querySelector('.ai-chat__meta')).not.toBeNull();
     expect(document.querySelector('.ai-chat__modelname')?.textContent?.length).toBeGreaterThan(0);
   });
 });

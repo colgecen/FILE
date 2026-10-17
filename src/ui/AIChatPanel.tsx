@@ -11,7 +11,7 @@ import { useEnvironmentsState } from '../core/environments';
 import { aiChatModel, useAIChat } from '../core/chatModel';
 import { focusManager, useFocusZone } from '../core/focus';
 import { useCore } from '../layout/AppShell';
-import { phaseLabel, statusLabel } from '../ai/format';
+import { phaseLabel } from '../ai/format';
 import { AIKeyVault, AIModelToolbar, AIStopButton } from './AIControls';
 
 function roleLabel(role: string): string {
@@ -127,12 +127,6 @@ export function AIChatPanel(): React.JSX.Element | null {
             {boundEnv.name}
           </span>
         )}
-        <span className="ai-chat__status" data-status={ai.status}>
-          <span className="ai-chat__dot" aria-hidden="true" />
-          {ai.status === 'loading' && ai.progress !== null
-            ? `${statusLabel(ai.status)} %${ai.progress.percent}`
-            : statusLabel(ai.status)}
-        </span>
         <div className="ai-chat__meta">
           <button
             type="button"
