@@ -1111,18 +1111,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 6px 18px rgba(10, 132, 255, 0.35));
-  animation: ai-hero 3s ease-in-out infinite;
-}
-
-@keyframes ai-hero {
-  0%,
-  100% {
-    opacity: 0.85;
-  }
-  50% {
-    opacity: 1;
-  }
+  -webkit-text-fill-color: transparent;
 }
 
 .ai-chat__greet {

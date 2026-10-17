@@ -76,7 +76,6 @@
 .perf-reduced .ai-chat,
 .perf-reduced .ai-chat__message,
 .perf-reduced .ai-chat__dots i,
-.perf-reduced .ai-chat__hero,
 .perf-reduced .holo-status[data-status='active'] .holo-dot {
   animation: none !important;
 }
