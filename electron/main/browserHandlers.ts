@@ -43,7 +43,8 @@ async function flatpakHas(appId: string): Promise<boolean> {
 
 function trySpawn(candidate: Candidate, url: string): Promise<boolean> {
   return new Promise((resolve) => {
-    const child = spawn(candidate.cmd, [...candidate.prefix, url], { stdio: 'ignore', detached: true });
+    const args = url.length > 0 ? [...candidate.prefix, url] : [...candidate.prefix];
+    const child = spawn(candidate.cmd, args, { stdio: 'ignore', detached: true });
     child.on('spawn', () => {
       child.unref();
       resolve(true);
@@ -66,6 +67,7 @@ export async function launchBrowser(url: string, name?: string): Promise<string>
     if (await tryCandidate(candidate, url)) return candidate.label;
   }
   if (typeof name === 'string' && name.length > 0) return 'none';
+  if (url.length === 0) return 'none';
   try {
     await shell.openExternal(url);
     return 'default';
