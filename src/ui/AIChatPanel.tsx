@@ -14,10 +14,28 @@ import { useCore } from '../layout/AppShell';
 import { phaseLabel } from '../ai/format';
 import { AIKeyVault, AIModelToolbar, AIStopButton } from './AIControls';
 
-function roleLabel(role: string): string {
-  if (role === 'user') return 'SEN';
-  if (role === 'assistant') return 'YZ';
-  return 'SİS';
+const THINK_WORDS = ['Düşünüyor', 'Planlıyor', 'Bağlamı tarıyor', 'Kod üretiyor', 'Kontrol ediyor', 'Sentezliyor'];
+
+function ThinkingLine(): React.JSX.Element {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setTick((v) => v + 1), 1600);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+  return (
+    <div className="ai-chat__thinking" role="status">
+      <span className="ai-chat__dots" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </span>
+      <span className="ai-chat__thinkingword" key={tick}>
+        {THINK_WORDS[tick % THINK_WORDS.length]}
+      </span>
+    </div>
+  );
 }
 
 
@@ -222,9 +240,6 @@ export function AIChatPanel(): React.JSX.Element | null {
       <div className="ai-chat__messages" ref={messagesRef} aria-live="polite">
         {ai.chat.messages.map((message, index) => (
           <div key={index} className={`ai-chat__message ai-chat__message--${message.role}`}>
-            <span className="ai-chat__avatar" aria-hidden="true">
-              {roleLabel(message.role)}
-            </span>
             <span className="ai-chat__bubble">{message.content}</span>
             {message.role === 'assistant' &&
               shellBlocks(message.content).map((block, blockIndex) => {
@@ -279,18 +294,7 @@ export function AIChatPanel(): React.JSX.Element | null {
               })}
           </div>
         ))}
-        {ai.status === 'computing' && (
-          <div className="ai-chat__thinking" role="status">
-            <span className="ai-chat__avatar" aria-hidden="true">
-              YZ
-            </span>
-            <span className="ai-chat__dots" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-          </div>
-        )}
+        {ai.status === 'computing' && <ThinkingLine />}
         {ai.chat.messages.length === 0 && ai.status !== 'computing' && (
           <div className="ai-chat__empty">
             <span className="ai-chat__hero" aria-hidden="true">
