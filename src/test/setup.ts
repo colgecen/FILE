@@ -37,6 +37,8 @@ const api = {
   browserLayout: vi.fn().mockResolvedValue(true),
   browserState: vi.fn().mockResolvedValue(null),
   browserOpenExternal: vi.fn().mockResolvedValue(true),
+  agentExec: vi.fn().mockResolvedValue({ ok: true, stdout: '', stderr: '', code: 0 }),
+  webFetch: vi.fn().mockResolvedValue({ ok: true, text: '' }),
   onBrowserState: vi.fn(() => () => undefined),
   aiPing: vi.fn().mockResolvedValue({ ok: false, error: 'mock' }),
   aiModels: vi.fn().mockResolvedValue({ ok: true, models: [] }),

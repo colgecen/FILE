@@ -70,9 +70,25 @@ export function collectLiveProjectContext(): ProjectContext {
   });
 }
 
-/** Uzak modele giden sistem iletisi: kip kuralları + proje bağlamı. */
-export function renderContextBlock(ctx: ProjectContext, mode: PlanMode): string {
+/** Uzak modele gömülecek araç kullanımı kuralları (yalnız araç destekleyen köprülerde). */
+export function toolRules(rootPath: string | null): string {
+  return [
+    'ARAÇLAR: Uygulama, sahibinin makinesinde senin adına araç çalıştırır. Kullanmak için mesajının SONUNA her biri ayrı ```tool çiti içinde tek satır JSON ekle:',
+    '{"tool":"list_dir","path":"src"}',
+    '{"tool":"read_file","path":"src/main.ts"}',
+    '{"tool":"write_file","path":"notes.md","content":"..."}',
+    '{"tool":"run_command","cmd":"npm test","timeoutMs":60000}',
+    '{"tool":"web_fetch","url":"https://example.com"}',
+    `Kurallar: Dosya yolları proje köküne görelidir (${rootPath ?? 'kök yok'}); kök dışı yazma reddedilir. sudo/yıkıcı komutlar sahibine onay sorulur. Araç sonucu bir sonraki turda TOOL_RESULT mesajıyla gelir; sonucu ASLA uydurma — önce aracı çağır, sonra yaz. Gereksiz araç çağırma; araçsız cevap verebiliyorsan direkt cevapla. Nihai cevabında araç çiti (üç ters tırnak + tool) bırakma.`,
+  ].join('\n');
+}
+
+/** Uzak modele giden sistem iletisi: kip kuralları + araç kuralları + proje bağlamı. */
+export function renderContextBlock(ctx: ProjectContext, mode: PlanMode, withTools = false): string {
   const lines = [modeRules(mode), ''];
+  if (withTools) {
+    lines.push(toolRules(ctx.rootPath), '');
+  }
   lines.push(`Proje: ${ctx.projectName}${ctx.rootPath ? ` (${ctx.rootPath})` : ' (kök yok)'}`);
   if (ctx.openFiles.length > 0) {
     lines.push(`Açık dosyalar: ${ctx.openFiles.map((file) => file.name).join(', ')}`);

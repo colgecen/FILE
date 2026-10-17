@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { registerAppHandlers } from './appHandlers';
+import { registerAgentToolHandlers } from './agentTools';
 import { registerBrowserHandlers } from './browserHandlers';
 import { registerEmbeddedBrowser } from './embeddedBrowser';
 import { registerZenEmbed } from './zenEmbed';
@@ -96,6 +97,7 @@ void app.whenReady().then((): void => {
   registerDialogHandlers(getWindow);
   registerFsHandlers();
   registerGitHandlers();
+  registerAgentToolHandlers();
   registerAppHandlers(getWindow);
   registerBrowserHandlers();
   registerZenEmbed(getWindow);

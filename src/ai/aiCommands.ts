@@ -19,6 +19,8 @@ import { getRemoteClient } from './remoteClient';
 import { collectLiveProjectContext, renderContextBlock } from './context';
 import { applyEdits, clearPending, parseEditBlocks, stagePending, takePending } from './apply';
 import type { ApplyReport } from './apply';
+import { agentModel } from './agentModel';
+import { executeToolCall, parseToolCalls, requestToolApproval, toolLabel, toolNeedsApproval } from './tools';
 import type { CommandDef } from '../core/types';
 import type { ModelId } from './types';
 
@@ -199,70 +201,28 @@ async function generateSessionTitle(sessionId: string, ref: ActiveRef): Promise<
   );
 }
 
-async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset): Promise<void> {
-  if (engineBusy()) {
-    aiEngine.appendSystemMessage('Yanıt bekleniyor, bitince tekrar gönderin.');
-    syncSession(sessionId);
-    return;
-  }
-  const endpoint = resolveEndpoint(ref.provider);
-  if ('error' in endpoint) {
-    aiEngine.appendSystemMessage(endpoint.error);
-    syncSession(sessionId);
-    return;
-  }
-  const recent = aiEngine.getState().chat.messages.slice(-MAX_CONTEXT_MESSAGES);
-  aiEngine.beginRemote();
-  const client = getRemoteClient();
-  const session = sessionStore.getSnapshot().sessions.find((entry) => entry.id === sessionId);
-  const contextBlock = renderContextBlock(
-    collectLiveProjectContext(),
-    session?.mode ?? DEFAULT_MODE,
-  );
-  const history = recent
-    .filter((message) => message.role !== 'system')
-    .slice(-MAX_CONTEXT_MESSAGES)
-    .map((message) => ({ role: message.role, content: message.content }));
-  await new Promise<void>((resolve) => {
-    const callbacks = {
-      onToken: (text: string) => aiEngine.appendRemoteToken(text),
-      onDone: (text: string) => {
-        remoteAbort = null;
-        aiEngine.finishRemote(text);
-        syncSession(sessionId);
-        void generateSessionTitle(sessionId, ref);
-        resolve();
-      },
-      onError: (message: string) => {
-        remoteAbort = null;
-        aiEngine.setError(message);
-        syncSession(sessionId);
-        resolve();
-      },
-    };
-    if (ref.provider === 'opencode') {
-      // Yerel opencode CLI: auth ona ait, anahtar gerekmez; bağlam opencode oturumunda sürer.
-      const known = opencodeSessions.get(sessionId) ?? null;
-      const prompt =
-        known === null
-          ? [
-              contextBlock,
-              ...history.map(
-                (message) =>
-                  `${message.role === 'user' ? 'Kullanıcı' : 'Asistan'}: ${message.content}`,
-              ),
-            ].join('\n\n')
-          : (history[history.length - 1]?.content ?? '');
-      const handle = client.sendCli(
-        { model: ref.id, prompt, sessionId: known },
-        {
-          ...callbacks,
-          onSession: (id) => opencodeSessions.set(sessionId, id),
-        },
-      );
-      remoteAbort = handle.abort;
-      return;
-    }
+let agentStopped = false;
+
+export function stopAgent(): void {
+  agentStopped = true;
+  agentModel.clear();
+}
+
+function effortRounds(effort: EffortLevel | undefined): number {
+  if (effort === 'low') return 2;
+  if (effort === 'ultra') return 8;
+  return 4;
+}
+
+function remoteOnce(
+  ref: ActiveRef,
+  endpoint: { baseUrl: string; keyEnv: string | null; keyRequired: boolean },
+  preset: EffortPreset,
+  contextBlock: string,
+  history: readonly { role: 'user' | 'assistant'; content: string }[],
+): Promise<string | null> {
+  return new Promise<string | null>((resolve) => {
+    const client = getRemoteClient();
     const handle = client.send(
       {
         provider: ref.provider,
@@ -275,10 +235,124 @@ async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset
         temperature: preset.temperature,
         maxTokens: preset.maxTokens,
       },
-      callbacks,
+      {
+        onToken: (text: string) => aiEngine.appendRemoteToken(text),
+        onDone: (text: string) => {
+          remoteAbort = null;
+          aiEngine.finishRemote(text);
+          resolve(text);
+        },
+        onError: (message: string) => {
+          remoteAbort = null;
+          aiEngine.setError(message);
+          resolve(null);
+        },
+      },
     );
     remoteAbort = handle.abort;
   });
+}
+
+async function runRemote(sessionId: string, ref: ActiveRef, preset: EffortPreset): Promise<void> {
+  if (engineBusy()) {
+    aiEngine.appendSystemMessage('Yanıt bekleniyor, bitince tekrar gönderin.');
+    syncSession(sessionId);
+    return;
+  }
+  const endpoint = resolveEndpoint(ref.provider);
+  if ('error' in endpoint) {
+    aiEngine.appendSystemMessage(endpoint.error);
+    syncSession(sessionId);
+    return;
+  }
+  agentStopped = false;
+  const project = collectLiveProjectContext();
+  const session = sessionStore.getSnapshot().sessions.find((entry) => entry.id === sessionId);
+  const mode = session?.mode ?? DEFAULT_MODE;
+  const useTools = ref.provider !== 'opencode';
+  const contextBlock = renderContextBlock(project, mode, useTools);
+  aiEngine.beginRemote();
+  const buildHistory = (): { role: 'user' | 'assistant'; content: string }[] =>
+    aiEngine
+      .getState()
+      .chat.messages.filter((message) => message.role !== 'system')
+      .slice(-MAX_CONTEXT_MESSAGES)
+      .map((message) => ({ role: message.role as 'user' | 'assistant', content: message.content }));
+
+  if (ref.provider === 'opencode') {
+    // Yerel opencode CLI: auth ona ait, anahtar gerekmez; bağlam opencode oturumunda sürer.
+    const history = buildHistory();
+    const client = getRemoteClient();
+    const known = opencodeSessions.get(sessionId) ?? null;
+    const prompt =
+      known === null
+        ? [
+            contextBlock,
+            ...history.map(
+              (message) =>
+                `${message.role === 'user' ? 'Kullanıcı' : 'Asistan'}: ${message.content}`,
+            ),
+          ].join('\n\n')
+        : (history[history.length - 1]?.content ?? '');
+    await new Promise<void>((resolve) => {
+      const handle = client.sendCli(
+        { model: ref.id, prompt, sessionId: known },
+        {
+          onToken: (text: string) => aiEngine.appendRemoteToken(text),
+          onDone: (text: string) => {
+            remoteAbort = null;
+            aiEngine.finishRemote(text);
+            syncSession(sessionId);
+            void generateSessionTitle(sessionId, ref);
+            resolve();
+          },
+          onError: (message: string) => {
+            remoteAbort = null;
+            aiEngine.setError(message);
+            syncSession(sessionId);
+            resolve();
+          },
+          onSession: (id) => opencodeSessions.set(sessionId, id),
+        },
+      );
+      remoteAbort = handle.abort;
+    });
+    return;
+  }
+
+  let finalText = await remoteOnce(ref, endpoint, preset, contextBlock, buildHistory());
+  syncSession(sessionId);
+  const maxRounds = effortRounds(session?.effort);
+  let round = 0;
+  while (finalText !== null && !agentStopped && round < maxRounds) {
+    const calls = parseToolCalls(finalText);
+    if (calls.length === 0) break;
+    round += 1;
+    const results: string[] = [];
+    for (const call of calls) {
+      if (agentStopped) break;
+      if (toolNeedsApproval(call)) {
+        const decision = await requestToolApproval(call);
+        if (decision !== 'allow') {
+          results.push(`${toolLabel(call)}: REDDEDİLDİ — kullanıcı onaylamadı, tekrar deneme.`);
+          aiEngine.appendSystemMessage(`Onay reddedildi: ${toolLabel(call)}`);
+          continue;
+        }
+      }
+      const outcome = await executeToolCall(call, project.rootPath);
+      aiEngine.appendSystemMessage(`${outcome.ok ? '→' : '✗'} ${outcome.label}`);
+      results.push(`${outcome.label} (${outcome.ok ? 'ok' : 'fail'}):\n${outcome.result}`);
+    }
+    if (agentStopped) break;
+    aiEngine.appendUserMessage(`TOOL_RESULT (tur ${round}):\n${results.join('\n\n')}`);
+    syncSession(sessionId);
+    aiEngine.beginRemote();
+    finalText = await remoteOnce(ref, endpoint, preset, contextBlock, buildHistory());
+    syncSession(sessionId);
+  }
+  if (!agentStopped && finalText !== null) {
+    void generateSessionTitle(sessionId, ref);
+  }
 }
 
 export async function setActiveModel(modelId: ModelId): Promise<boolean> {
@@ -333,6 +407,7 @@ export function registerAICommands(register: (command: CommandDef) => void): voi
     category: 'ai',
     title: 'İndirmeyi İptal Et',
     run: () => {
+      stopAgent();
       if (remoteAbort !== null) {
         remoteAbort();
         remoteAbort = null;

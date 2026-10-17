@@ -180,6 +180,26 @@ export type EmbeddedLayout = {
   readonly height: number;
 };
 
+export type AgentExecArgs = {
+  readonly cmd: string;
+  readonly cwd: string | null;
+  readonly timeoutMs: number | null;
+};
+
+export type AgentExecResult = {
+  readonly ok: boolean;
+  readonly stdout: string;
+  readonly stderr: string;
+  readonly code: number | null;
+  readonly error?: string;
+};
+
+export type WebFetchResult = {
+  readonly ok: boolean;
+  readonly text: string;
+  readonly error?: string;
+};
+
 export type Api = {
   readonly version: string;
   readonly glass: boolean;
@@ -219,6 +239,8 @@ export type Api = {
   browserLayout(layout: EmbeddedLayout): Promise<boolean>;
   browserState(envId: string): Promise<EmbeddedState | null>;
   browserOpenExternal(url: string): Promise<boolean>;
+  agentExec(args: AgentExecArgs): Promise<AgentExecResult>;
+  webFetch(url: string): Promise<WebFetchResult>;
   onBrowserState(listener: (state: EmbeddedState) => void): () => void;
   zenEmbed(layout: EmbeddedLayout): Promise<boolean>;
   zenLayout(layout: EmbeddedLayout): Promise<boolean>;

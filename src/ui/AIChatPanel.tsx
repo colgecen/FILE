@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAIEngine } from '../ai/engine';
+import { agentModel, useAgentPending } from '../ai/agentModel';
+import { stripToolBlocks } from '../ai/tools';
 import { refreshCatalog } from '../ai/catalog';
 import { loadActiveRef } from '../ai/modelStore';
 import { closeSession, newSession, switchSession } from '../ai/aiCommands';
@@ -15,6 +17,39 @@ import { phaseLabel } from '../ai/format';
 import { AIKeyVault, AIModelToolbar, AIStopButton } from './AIControls';
 
 const THINK_WORDS = ['Düşünüyor', 'Planlıyor', 'Bağlamı tarıyor', 'Kod üretiyor', 'Kontrol ediyor', 'Sentezliyor'];
+
+function AgentApprovalCard(): React.JSX.Element | null {
+  const pending = useAgentPending();
+  const head = pending[0];
+  if (head === undefined) return null;
+  return (
+    <div className="ai-chat__approval" data-testid="agent-approval">
+      <div className="ai-chat__approval-head">
+        {head.danger ? '⚠ tehlikeli komut' : 'araç onayı'} · {head.name} {head.args.join(' ')}
+      </div>
+      <pre className="ai-chat__approval-preview">{head.preview}</pre>
+      <div className="ai-chat__termactions">
+        <span className="ai-chat__termhint">
+          {pending.length > 1 ? `+${pending.length - 1} araç sırada` : 'Yalnızca senin onayınla çalıştırılır.'}
+        </span>
+        <button
+          type="button"
+          className="ai-chat__termbtn ai-chat__termbtn--allow"
+          onClick={() => agentModel.decide(head.id, 'allow')}
+        >
+          Çalıştır
+        </button>
+        <button
+          type="button"
+          className="ai-chat__termbtn ai-chat__termbtn--deny"
+          onClick={() => agentModel.decide(head.id, 'deny')}
+        >
+          Reddet
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function ThinkingLine({ active = true }: { active?: boolean }): React.JSX.Element | null {
   const [tick, setTick] = useState(0);
@@ -49,11 +84,6 @@ export function ThinkingLine({ active = true }: { active?: boolean }): React.JSX
       className={leaving ? 'ai-chat__thinking ai-chat__thinking--out' : 'ai-chat__thinking'}
       role="status"
     >
-      <span className="ai-chat__dots" aria-hidden="true">
-        <i />
-        <i />
-        <i />
-      </span>
       <span className="ai-chat__thinkingword" key={tick}>
         {THINK_WORDS[tick % THINK_WORDS.length]}
       </span>
@@ -261,11 +291,16 @@ export function AIChatPanel(): React.JSX.Element | null {
       )}
 
       <div className="ai-chat__messages" ref={messagesRef} aria-live="polite">
-        {ai.chat.messages.map((message, index) => (
+        <AgentApprovalCard />
+        {ai.chat.messages
+          .filter((message) => !(message.role === 'user' && message.content.startsWith('TOOL_RESULT')))
+          .map((message, index) => (
           <div key={index} className={`ai-chat__message ai-chat__message--${message.role}`}>
-            <span className="ai-chat__bubble">{message.content}</span>
+            <span className="ai-chat__bubble">
+              {message.role === 'assistant' ? stripToolBlocks(message.content) : message.content}
+            </span>
             {message.role === 'assistant' &&
-              shellBlocks(message.content).map((block, blockIndex) => {
+              shellBlocks(stripToolBlocks(message.content)).map((block, blockIndex) => {
                 const blockKey = `${index}:${blockIndex}`;
                 const needsPermission = needsTerminalPermission(block.code);
                 const decision = terminalDecisions[blockKey] ?? (needsPermission ? 'pending' : 'idle');
