@@ -190,4 +190,16 @@ export const menuTree: readonly MenuTopLevel[] = [
     label: 'Yapay Zekâ',
     items: [command('ai.chat', 'Yapay Zekâ ile Sohbet')],
   },
+  {
+    id: 'menu-browser',
+    label: 'Tarayıcı',
+    items: [
+      command('env.browser.zen', 'Zen ile Aç'),
+      command('env.browser.google-chrome', 'Chrome ile Aç'),
+      command('env.browser.chromium', 'Chromium ile Aç'),
+      command('env.browser.firefox', 'Firefox ile Aç'),
+      separator('sep-browser-system'),
+      command('env.browser.default', 'Sistem Tarayıcısı ile Aç'),
+    ],
+  },
 ];

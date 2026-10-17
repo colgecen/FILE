@@ -5,8 +5,8 @@ import { menuTree } from './menuTree';
 import { collectMenuCommandIds, menuCommandsMatch } from './menuValidation';
 
 describe('menuTree', () => {
-  it('dokuz üst başlık içerir', () => {
-    expect(menuTree).toHaveLength(9);
+  it('on üst başlık içerir', () => {
+    expect(menuTree).toHaveLength(10);
     expect(menuTree.map((top) => top.label)).toEqual([
       'Dosya',
       'Düzenle',
@@ -17,6 +17,7 @@ describe('menuTree', () => {
       'Terminal',
       'Yardım',
       'Yapay Zekâ',
+      'Tarayıcı',
     ]);
   });
 

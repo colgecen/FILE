@@ -145,20 +145,46 @@ export function normalizeBrowserUrl(input: string): string | null {
   }
 }
 
-export async function openEnvironmentBrowser(id?: string): Promise<CommandResult> {
+export type BrowserKind = 'zen' | 'google-chrome' | 'chromium' | 'firefox' | 'default';
+
+export const BROWSER_LABELS: Record<BrowserKind, string> = {
+  zen: 'Zen',
+  'google-chrome': 'Chrome',
+  chromium: 'Chromium',
+  firefox: 'Firefox',
+  default: 'Sistem',
+};
+
+const BROWSER_BIN: Record<BrowserKind, string | undefined> = {
+  zen: 'zen',
+  'google-chrome': 'google-chrome',
+  chromium: 'chromium',
+  firefox: 'firefox',
+  default: undefined,
+};
+
+export async function openBrowserEnvironment(kind: BrowserKind): Promise<CommandResult> {
   const state = environmentsModel.getState();
-  const targetId = id ?? state.activeId;
-  if (targetId === null) return { ok: false, error: 'Aktif ortam yok' };
-  const env = state.environments.find((entry) => entry.id === targetId);
-  if (env === undefined) return { ok: false, error: 'Ortam bulunamadı' };
+  const label = BROWSER_LABELS[kind];
+  let env = state.environments.find((entry) => entry.id === `browser:${kind}`);
+  if (env === undefined) {
+    env = {
+      id: `browser:${kind}`,
+      name: label,
+      rootPath: `browser:${kind}`,
+      tabs: { files: [], activeId: null },
+      browserUrl: null,
+    };
+    environmentsModel.addExternal(env);
+  }
   const stored = normalizeBrowserUrl(env.browserUrl ?? '');
-  const raw = stored ?? window.prompt(`"${env.name}" için adres (https://… veya site alanı):`, 'https://');
+  const raw = stored ?? window.prompt(`${label} için adres (https://… veya site alanı):`, 'https://');
   if (raw === null) return { ok: true };
   const url = normalizeBrowserUrl(raw);
   if (url === null) return { ok: false, error: 'Geçersiz adres' };
-  const result = await window.api.openInBrowser(url);
+  const result = await window.api.openInBrowser(url, BROWSER_BIN[kind]);
   if (result === 'invalid' || result === 'none') {
-    return { ok: false, error: 'Tarayıcı başlatılamadı (zen/chrome/firefox yok)' };
+    return { ok: false, error: `${label} başlatılamadı (kurulu değil)` };
   }
   if (url !== env.browserUrl) environmentsModel.setBrowserUrl(env.id, url);
   return { ok: true };
@@ -183,12 +209,14 @@ export function registerEnvCommands(registry: CommandRegistry): void {
     category: 'view',
     run: () => cycleEnvironment(-1),
   });
-  registry.register({
-    id: 'env.browser.open',
-    title: 'Ortamı Tarayıcıda Aç',
-    category: 'view',
-    run: () => openEnvironmentBrowser(),
-  });
+  for (const kind of ['zen', 'google-chrome', 'chromium', 'firefox', 'default'] as const) {
+    registry.register({
+      id: `env.browser.${kind}`,
+      title: `${BROWSER_LABELS[kind]} ile Tarayıcı Ortamı`,
+      category: 'view',
+      run: () => openBrowserEnvironment(kind),
+    });
+  }
   registry.register({
     id: 'env.remove',
     title: 'Ortamı Kapat',

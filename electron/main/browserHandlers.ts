@@ -16,8 +16,9 @@ function normalizeUrl(input: string): string | null {
   }
 }
 
-export async function launchBrowser(url: string): Promise<string> {
-  for (const browser of BROWSERS) {
+export async function launchBrowser(url: string, name?: string): Promise<string> {
+  const list = typeof name === 'string' && name.length > 0 ? [name, ...BROWSERS.filter((b) => b !== name)] : BROWSERS;
+  for (const browser of list) {
     const ok = await new Promise<boolean>((resolve) => {
       const child = spawn(browser, [url], { stdio: 'ignore', detached: true });
       child.on('spawn', () => {
@@ -37,9 +38,9 @@ export async function launchBrowser(url: string): Promise<string> {
 }
 
 export function registerBrowserHandlers(): void {
-  ipcMain.handle('app:open-browser', async (_event, url: string): Promise<string> => {
+  ipcMain.handle('app:open-browser', async (_event, url: string, browser?: string): Promise<string> => {
     const target = normalizeUrl(String(url ?? ''));
     if (target === null) return 'invalid';
-    return launchBrowser(target);
+    return launchBrowser(target, browser);
   });
 }

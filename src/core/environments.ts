@@ -69,6 +69,18 @@ export class EnvironmentsModel {
     return true;
   }
 
+  /** Klasör kökü olmayan (tarayıcı vb.) hazır ortamı ekler ve aktif yapar. */
+  addExternal(env: Environment): string {
+    if (this.state.environments.some((entry) => entry.id === env.id)) {
+      this.state = { ...this.state, activeId: env.id };
+      this.emit();
+      return env.id;
+    }
+    this.state = { environments: [...this.state.environments, env], activeId: env.id };
+    this.emit();
+    return env.id;
+  }
+
   setActive(id: string): boolean {
     const exists = this.state.environments.some((env) => env.id === id);
     if (!exists || this.state.activeId === id) return exists;

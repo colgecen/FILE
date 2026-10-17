@@ -25,10 +25,10 @@ describe('MenuBar', () => {
 
   const renderShell = (): ReturnType<typeof render> => render(<AppShell />);
 
-  it('dokuz üst başlığı çizer', () => {
+  it('on üst başlığı çizer', () => {
     renderShell();
     const menubar = screen.getByRole('menubar');
-    expect(menubar.querySelectorAll('.menubar__item')).toHaveLength(9);
+    expect(menubar.querySelectorAll('.menubar__item')).toHaveLength(10);
     expect(screen.getByText('Dosya')).toBeInTheDocument();
     expect(screen.getByText('Yapay Zekâ')).toBeInTheDocument();
   });
@@ -84,7 +84,7 @@ describe('MenuBar', () => {
 
   it('yer tutucu komutlar Yakında rozeti taşır', () => {
     renderShell();
-    for (let index = 0; index < 9; index += 1) {
+    for (let index = 0; index < 10; index += 1) {
       act(() => {
         menuModel.openAt(index);
       });

@@ -1,4 +1,4 @@
-import { openEnvironmentBrowser, removeEnvironment, switchToEnvironment } from '../core/envCommands';
+import { openBrowserEnvironment, removeEnvironment, switchToEnvironment } from '../core/envCommands';
 import { useEnvironmentsState } from '../core/environments';
 
 export function EnvironmentsBar(): React.JSX.Element {
@@ -10,43 +10,46 @@ export function EnvironmentsBar(): React.JSX.Element {
         {environments.length === 0 && (
           <span className="env-bar__hint">Ortam yok</span>
         )}
-        {environments.map((env) => (
-          <span
-            key={env.id}
-            className={
-              env.id === activeId ? 'env-bar__chip env-bar__chip--active' : 'env-bar__chip'
-            }
-          >
-            <button
-              type="button"
-              title={env.rootPath}
-              aria-label={`Ortam: ${env.name}`}
-              aria-pressed={env.id === activeId}
-              className="env-bar__name"
-              onClick={() => void switchToEnvironment(env.id)}
+        {environments.map((env) => {
+          const browserEnv = env.id.startsWith('browser:');
+          return (
+            <span
+              key={env.id}
+              className={
+                env.id === activeId ? 'env-bar__chip env-bar__chip--active' : 'env-bar__chip'
+              }
             >
-              {env.name}
-            </button>
-            <button
-              type="button"
-              title={env.browserUrl === null ? 'Tarayıcıda aç (adres sorulur)' : `Tarayıcıda aç: ${env.browserUrl}`}
-              aria-label={`Tarayıcıda aç: ${env.name}`}
-              className="env-bar__browser"
-              onClick={() => void openEnvironmentBrowser(env.id)}
-            >
-              ⌾
-            </button>
-            <button
-              type="button"
-              title="Ortamı Kapat"
-              aria-label={`Ortamı kapat: ${env.name}`}
-              className="env-bar__close"
-              onClick={() => void removeEnvironment(env.id)}
-            >
-              ×
-            </button>
-          </span>
-        ))}
+              <button
+                type="button"
+                title={browserEnv ? (env.browserUrl === null ? 'Adres sorulur, tarayıcıda açılır' : `Açar: ${env.browserUrl}`) : env.rootPath}
+                aria-label={browserEnv ? `Tarayıcı ortamı: ${env.name}` : `Ortam: ${env.name}`}
+                aria-pressed={env.id === activeId}
+                className="env-bar__name"
+                onClick={() =>
+                  browserEnv
+                    ? void openBrowserEnvironment(env.id.slice('browser:'.length) as never)
+                    : void switchToEnvironment(env.id)
+                }
+              >
+                {browserEnv && (
+                  <span className="env-bar__globe" aria-hidden="true">
+                    ⌾{' '}
+                  </span>
+                )}
+                {env.name}
+              </button>
+              <button
+                type="button"
+                title="Ortamı Kapat"
+                aria-label={`Ortamı kapat: ${env.name}`}
+                className="env-bar__close"
+                onClick={() => void removeEnvironment(env.id)}
+              >
+                ×
+              </button>
+            </span>
+          );
+        })}
       </div>
     </div>
   );

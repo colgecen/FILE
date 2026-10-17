@@ -238,27 +238,9 @@ textarea {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.env-bar__browser {
-  appearance: none;
-  flex: none;
-  width: 22px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition:
-    color 140ms ease,
-    background-color 140ms ease;
-}
-
-.env-bar__browser:hover,
-.env-bar__browser:focus-visible {
-  outline: none;
+.env-bar__globe {
   color: var(--accent-hover);
-  background: rgba(255, 255, 255, 0.08);
+  font-size: 12px;
 }
 
 .env-bar__chip--active {
