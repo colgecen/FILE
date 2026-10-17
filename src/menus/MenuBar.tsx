@@ -41,18 +41,26 @@ export function MenuBar(): React.JSX.Element {
   const { registry } = useCore();
   const menubarActive = zone === 'menubar';
 
+  // Menü açıkken: menü çubuğu/panel dışına her tıklama ve pencere odağını
+  // kaybettiğinde menü otomatik kapanır (odak bölgesinden bağımsız).
   useEffect(() => {
-    if (!menubarActive) return;
-    const handler = (event: MouseEvent): void => {
+    if (state.openTop === null) return;
+    const onDown = (event: MouseEvent): void => {
       const target = event.target as HTMLElement | null;
-      if (target === null) return;
-      if (target.closest('.menubar') !== null || target.closest('.menu-panel') !== null) return;
+      if (target !== null && (target.closest('.menubar') !== null || target.closest('.menu-panel') !== null)) return;
       menuModel.close();
       focusManager.returnToPrevious();
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [menubarActive]);
+    const onBlur = (): void => {
+      menuModel.close();
+    };
+    document.addEventListener('mousedown', onDown, true);
+    window.addEventListener('blur', onBlur);
+    return () => {
+      document.removeEventListener('mousedown', onDown, true);
+      window.removeEventListener('blur', onBlur);
+    };
+  }, [state.openTop]);
 
   const items = [];
   for (let i = 0; i < menuModel.topCount(); i++) {

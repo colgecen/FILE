@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { recentFiles } from '../core/recentFiles';
 import { menuTree, type MenuItem } from './menuTree';
 
 export type MenuActivateResult = {
@@ -182,6 +183,17 @@ export class MenuModel {
       const item = level[idx];
       if (item?.kind !== 'submenu' || item.children === undefined) {
         return [];
+      }
+      if (item.id === 'file.open.recent') {
+        const recent = recentFiles.list().slice(0, 5);
+        if (recent.length > 0) {
+          return recent.map((entry, index) => ({
+            kind: 'command' as const,
+            id: `file.open.recent.item.${index}`,
+            commandId: `file.open.recent.${index}`,
+            label: entry.name,
+          }));
+        }
       }
       level = item.children;
     }
