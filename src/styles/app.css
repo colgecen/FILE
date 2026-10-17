@@ -1330,6 +1330,7 @@ textarea {
   width: 220px;
   height: auto;
   user-select: none;
+  border-radius: 68px;
 }
 
 .app-cover__tag {
