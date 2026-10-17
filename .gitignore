@@ -4,4 +4,4 @@ out
 coverage
 *.log
 .DS_Store
-.eslintcache
+.eslintcache__pycache__/

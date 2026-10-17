@@ -22,6 +22,8 @@ export function applyTabs(snapshot: EnvironmentTabs): void {
 }
 
 export async function switchToEnvironment(id: string): Promise<CommandResult> {
+  const t0 = performance.now();
+  console.log(`[env] switch-> ${id} @${Math.round(t0)}`);
   const target = environmentsModel.getState().environments.find((env) => env.id === id);
   if (target === undefined) return { ok: false, error: 'Ortam bulunamadı' };
   const current = environmentsModel.active();
@@ -34,11 +36,14 @@ export async function switchToEnvironment(id: string): Promise<CommandResult> {
   }
   applyTabs(target.tabs);
   environmentsModel.setActive(id);
-  const loaded = await explorerModel.loadRoot(target.rootPath, window.api.readDir);
-  if (!loaded) {
-    const message = 'Ortam kökü okunamadı';
-    reportError(message);
-    return { ok: false, error: message };
+  console.log(`[env] setActive done +${Math.round(performance.now() - t0)}ms`);
+  if (!isBrowserEnvId(target.rootPath)) {
+    const loaded = await explorerModel.loadRoot(target.rootPath, window.api.readDir);
+    if (!loaded) {
+      const message = 'Ortam kökü okunamadı';
+      reportError(message);
+      return { ok: false, error: message };
+    }
   }
   syncChatWithActiveEnv();
   session.remember();
@@ -118,11 +123,13 @@ export async function removeEnvironment(id?: string): Promise<CommandResult> {
   }
   if (!wasActive) return { ok: true };
   applyTabs(next.tabs);
-  const loaded = await explorerModel.loadRoot(next.rootPath, window.api.readDir);
-  if (!loaded) {
-    const message = 'Ortam kökü okunamadı';
-    reportError(message);
-    return { ok: false, error: message };
+  if (!isBrowserEnvId(next.rootPath)) {
+    const loaded = await explorerModel.loadRoot(next.rootPath, window.api.readDir);
+    if (!loaded) {
+      const message = 'Ortam kökü okunamadı';
+      reportError(message);
+      return { ok: false, error: message };
+    }
   }
   syncChatWithActiveEnv();
   return { ok: true };

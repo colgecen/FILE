@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
+import { openBrowserEnvironment } from '../core/envCommands';
 import { recentFiles } from '../core/recentFiles';
 import { useSaveFlash } from '../core/saveSignal';
 import { perfModel, usePerfPanelOpen, usePerfState } from '../core/perfModel';
@@ -14,6 +15,7 @@ import { MenuBar } from '../menus/MenuBar';
 import { AIChatPanel } from '../ui/AIChatPanel';
 import { Breadcrumb } from '../ui/Breadcrumb';
 import { BrowserView } from '../ui/BrowserView';
+import { ZenHost } from '../ui/ZenHost';
 import { CommandHUD } from '../ui/CommandHUD';
 import { ConfirmOverlay } from '../ui/ConfirmOverlay';
 import { EnvironmentsBar } from '../ui/EnvironmentsBar';
@@ -56,8 +58,31 @@ export function AppShell({
   const perfPanelOpen = usePerfPanelOpen();
   const envState = useEnvironmentsState();
   const browserEnvActive = envState.activeId !== null && envState.activeId.startsWith('browser:');
+  const zenEnvActive = envState.activeId === 'browser:zen';
   const [nativeFullscreen, setNativeFullscreen] = useState(false);
   useEffect(() => window.api.onWindowFullscreen(setNativeFullscreen), []);
+  useEffect(() => window.api.onZenExternal(() => {
+    // Dışarıdan başlatılan Zen algılandı: ortamı aç, embedZen pencereyi içeri alır.
+    void openBrowserEnvironment('zen');
+  }), []);
+  useEffect(() => {
+    if (!zenEnvActive) return undefined;
+    // X child pencere DOM üstüne her zaman çizilir: açık bir açılır menü/palet varsa
+    // zen'i geçici olarak ekran dışına al, kapanınca geri getir.
+    const POPUPS = '.menu-panel, .command-hud, .perf-sheet, .help-overlay, [role="dialog"]';
+    let popupOpen = false;
+    const sync = (): void => {
+      const now = document.querySelector(POPUPS) !== null;
+      if (now === popupOpen) return;
+      popupOpen = now;
+      void (now ? window.api.zenHide() : window.api.zenShow());
+    };
+    const observer = new MutationObserver(sync);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+    };
+  }, [zenEnvActive]);
   useIpcLifecycle(window.api);
   useEffect(() => perfModel.init(), []);
   useEffect(() => recentFiles.attach(window.localStorage), []);
@@ -71,6 +96,7 @@ export function AppShell({
     nativeFullscreen ? 'app-shell--fullscreen' : '',
     glass ? 'glass' : '',
     perf.reducedMotion ? 'perf-reduced' : '',
+    perf.liteFx ? 'perf-litefx' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -103,7 +129,9 @@ export function AppShell({
           {gitState.isOpen && <GitPanel />}
           <div className="app-shell__main">
             <div className="app-shell__editor">
-              {browserEnvActive ? (
+              {zenEnvActive ? (
+                <ZenHost />
+              ) : browserEnvActive ? (
                 <BrowserView />
               ) : (
                 <>

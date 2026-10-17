@@ -20,7 +20,7 @@ export function BrowserView(): React.JSX.Element {
   const [motorOk, setMotorOk] = useState(true);
   const [editing, setEditing] = useState<{ id: string; value: string } | null>(null);
   const hostRef = useRef<HTMLDivElement>(null);
-  const browserEnvs = environments.filter((env) => env.id.startsWith('browser:'));
+  const browserEnvs = environments.filter((env) => env.id.startsWith('browser:') && env.id !== 'browser:zen');
   const activeBrowser =
     activeId !== null && activeId.startsWith('browser:') ? browserEnvs.find((env) => env.id === activeId) ?? null : null;
   const ids = browserEnvs.map((env) => env.id).join(',');

@@ -220,6 +220,12 @@ export type Api = {
   browserState(envId: string): Promise<EmbeddedState | null>;
   browserOpenExternal(url: string): Promise<boolean>;
   onBrowserState(listener: (state: EmbeddedState) => void): () => void;
+  zenEmbed(layout: EmbeddedLayout): Promise<boolean>;
+  zenLayout(layout: EmbeddedLayout): Promise<boolean>;
+  zenShow(): Promise<boolean>;
+  zenHide(): Promise<boolean>;
+  zenClose(): Promise<boolean>;
+  onZenExternal(listener: () => void): () => void;
   openInBrowser(url: string, browser?: string): Promise<'zen' | 'google-chrome' | 'chromium' | 'firefox' | 'default' | 'none' | 'invalid'>;
   ptySpawn(options: PtySpawnOptions): Promise<{ id: string } | null>;
   ptyWrite(id: string, data: string): Promise<boolean>;

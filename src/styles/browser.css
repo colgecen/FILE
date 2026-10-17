@@ -98,3 +98,27 @@
   border-bottom: 1px solid rgba(224, 201, 120, 0.25);
   font-size: 12px;
 }
+
+.zen-host {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: #101014;
+}
+
+.zen-host__page {
+  flex: 1;
+  min-height: 0;
+}
+
+.zen-host__status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a8f98;
+  font-size: 13px;
+  pointer-events: none;
+}

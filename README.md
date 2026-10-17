@@ -12,6 +12,15 @@ Klavye-öncelikli, masaüstünde çalışan kod editörü.
 - npm
 - İlk kurulumda Electron binary'si indirilir (internet gereklidir)
 
+### Zen Tarayıcı Gömme (isteğe bağlı)
+
+`Görünüm → Zen'i Aç`, gerçek Zen Browser penceresini uygulama içine gömer. Bunun için:
+
+- Linux + X11 veya XWayland (saf Wayland oturumunda XWayland gerekir)
+- flatpak ve Zen: `flatpak install flathub app.zen_browser.zen`
+- Python 3 + `python3-xlib` (Pacman: `python-xlib`, DNF: `python3-Xlib`, APT: `python3-xlib`)
+- X11/XWayland zorlaması uygulamanın ilk çalıştırmada otomatik uyguladığı tek seferlik bir ayarla yapılır: `flatpak override --user --nosocket=wayland --socket=x11 --env=MOZ_ENABLE_WAYLAND=0 app.zen_browser.zen` (Böylece dışarıdan açılan Zen de yakalanıp uygulama içine alınır; normal Zen'in görünümü/dekorasyonu değişmez — `GTK_CSD=0` yalnızca uygulama içi örneğe verilir)
+
 ## Kurulum ve Çalıştırma
 
 ```bash

@@ -113,6 +113,9 @@ export class ExplorerModel {
   }
 
   async loadRoot(path: string, readDir: ReadDir): Promise<boolean> {
+    if (this.state.rootPath === path && this.state.error === null && this.state.files.length > 0) {
+      return true;
+    }
     this.state = { ...this.state, loading: true, error: null };
     this.emit();
     try {

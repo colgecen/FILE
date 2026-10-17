@@ -58,6 +58,20 @@ const api: Api = {
   browserLayout: (layout) => ipcRenderer.invoke('browser:layout', layout),
   browserState: (envId) => ipcRenderer.invoke('browser:state', envId),
   browserOpenExternal: (url) => ipcRenderer.invoke('browser:open-external', url),
+  zenEmbed: (layout) => ipcRenderer.invoke('zen:embed', layout),
+  zenLayout: (layout) => ipcRenderer.invoke('zen:layout', layout),
+  zenShow: () => ipcRenderer.invoke('zen:show'),
+  zenHide: () => ipcRenderer.invoke('zen:hide'),
+  zenClose: () => ipcRenderer.invoke('zen:close'),
+  onZenExternal: (listener) => {
+    const handler = (): void => {
+      listener();
+    };
+    ipcRenderer.on('zen:external', handler);
+    return () => {
+      ipcRenderer.removeListener('zen:external', handler);
+    };
+  },
   onBrowserState: (listener) => {
     const handler = (_event: unknown, state: Parameters<typeof listener>[0]): void => {
       listener(state);
