@@ -33,6 +33,15 @@ const api: Api = {
     };
   },
   setFullscreen: (enabled) => ipcRenderer.invoke('window:set-fullscreen', enabled),
+  onWindowFullscreen: (listener) => {
+    const handler = (_event: unknown, fullscreen: boolean): void => {
+      listener(fullscreen);
+    };
+    ipcRenderer.on('window:fullscreen', handler);
+    return () => {
+      ipcRenderer.removeListener('window:fullscreen', handler);
+    };
+  },
   winMinimize: () => ipcRenderer.invoke('window:minimize'),
   winToggleMaximize: () => ipcRenderer.invoke('window:toggle-maximize'),
   appExit: () => ipcRenderer.invoke('app:exit'),

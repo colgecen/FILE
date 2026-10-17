@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
@@ -52,6 +52,8 @@ export function AppShell({
   const gitState = useGitPanelState();
   const perf = usePerfState();
   const perfPanelOpen = usePerfPanelOpen();
+  const [nativeFullscreen, setNativeFullscreen] = useState(false);
+  useEffect(() => window.api.onWindowFullscreen(setNativeFullscreen), []);
   useIpcLifecycle(window.api);
   useEffect(() => perfModel.init(), []);
   useEffect(() => recentFiles.attach(window.localStorage), []);
@@ -62,6 +64,7 @@ export function AppShell({
     'app-shell',
     savedFlash ? 'app-shell--saved' : '',
     viewMode.zen ? 'app-shell--zen' : '',
+    nativeFullscreen ? 'app-shell--fullscreen' : '',
     glass ? 'glass' : '',
     perf.reducedMotion ? 'perf-reduced' : '',
   ]
@@ -69,6 +72,7 @@ export function AppShell({
     .join(' ');
   return (
     <CoreContext.Provider value={core}>
+      <div className={`app-backdrop${nativeFullscreen ? ' app-backdrop--fullscreen' : ''}`} aria-hidden="true" />
       <div className={className}>
         <MenuBar />
         <ErrorIndicator />

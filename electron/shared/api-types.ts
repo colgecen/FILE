@@ -189,6 +189,7 @@ export type Api = {
   sysStop(): Promise<void>;
   onMetrics(listener: (snapshot: TelemetrySnapshot) => void): () => void;
   setFullscreen(enabled: boolean): Promise<boolean>;
+  onWindowFullscreen(listener: (fullscreen: boolean) => void): () => void;
   winMinimize(): Promise<boolean>;
   winToggleMaximize(): Promise<boolean>;
   appExit(): Promise<void>;

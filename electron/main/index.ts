@@ -8,7 +8,7 @@ import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
 import { registerTelemetry } from './telemetry';
-import { registerWindowHandlers, WINDOW_CHROME } from './windowHandlers';
+import { attachFullscreenEvents, registerWindowHandlers, WINDOW_CHROME } from './windowHandlers';
 import { registerAiNetHandlers } from './aiNet';
 import { registerAiKeyHandlers, resolveApiKey } from './aiKeys';
 import { readLocalApiKey, registerOpencodeLocalHandlers } from './opencodeLocal';
@@ -54,6 +54,10 @@ function createMainWindow(): void {
       preload: join(__dirname, '../preload/index.cjs'),
     },
   });
+
+  if (mainWindow !== null) {
+    attachFullscreenEvents(mainWindow);
+  }
 
   mainWindow.on('closed', (): void => {
     mainWindow = null;

@@ -73,6 +73,29 @@ textarea {
     linear-gradient(180deg, #202024 0%, #16171b 100%);
 }
 
+/* ---------- pencere arkasi: siyah yuvarlak köşe maskesi ---------- */
+.app-backdrop {
+  position: fixed;
+  inset: -2px;
+  z-index: -1;
+  border-radius: 18px;
+  background: #000000;
+  opacity: 0.92;
+  pointer-events: none;
+  transition:
+    opacity 180ms ease,
+    border-radius 180ms ease;
+}
+
+.app-backdrop--fullscreen {
+  opacity: 1;
+}
+
+.app-shell--fullscreen {
+  border-radius: 18px;
+  clip-path: inset(0 round 18px);
+}
+
 .app-shell::after {
   content: '';
   position: absolute;
