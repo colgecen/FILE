@@ -198,9 +198,9 @@ export function AIStopButton(): React.JSX.Element {
     <button
       type="button"
       className={busy ? 'ai-chat__stop ai-chat__stop--busy' : 'ai-chat__stop ai-chat__stop--idle'}
-      aria-label="Durdur"
-      title="Durdur"
-      onClick={() => registry.run('ai.models.cancel')}
+      aria-label={busy ? 'Durdur' : 'Gönder'}
+      title={busy ? 'Durdur' : 'Gönder'}
+      onClick={() => registry.run(busy ? 'ai.models.cancel' : 'ai.chat.send')}
     />
   );
 }
