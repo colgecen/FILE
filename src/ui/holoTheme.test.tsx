@@ -21,7 +21,6 @@ describe('holo tema birliği (Ctrl+P paleti hariç)', () => {
       perfPanelModel.closePanel();
       perfModel.set({
         telemetry: true,
-        explorerVirtual: true,
         modelLimit: 20,
         aiLazy: true,
         reducedMotion: false,

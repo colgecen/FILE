@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from 'react';
-import { perfModel } from '../core/perfModel';
 import { useExplorerState, explorerModel } from '../core/explorer';
 import { focusManager } from '../core/focus';
 import { gitModel, useGitPanelState } from '../core/gitModel';
@@ -37,8 +36,7 @@ export function ExplorerView(): React.JSX.Element | null {
 
   if (!state.isOpen) return null;
 
-  const allRows = explorerModel.rows();
-  const rows = perfModel.getState().explorerVirtual ? allRows.slice(0, 80) : allRows;
+  const rows = explorerModel.rows();
 
   return (
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">

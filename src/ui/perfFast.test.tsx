@@ -15,7 +15,6 @@ describe('Hızlı Mod', () => {
     act(() => {
       perfModel.set({
         telemetry: true,
-        explorerVirtual: true,
         modelLimit: 20,
         aiLazy: true,
         reducedMotion: false,

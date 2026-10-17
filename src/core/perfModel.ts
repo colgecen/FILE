@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 
 export type PerfState = {
   readonly telemetry: boolean;
-  readonly explorerVirtual: boolean;
   readonly modelLimit: number;
   readonly aiLazy: boolean;
   readonly reducedMotion: boolean;
@@ -12,7 +11,6 @@ const STORAGE_KEY = 'perf:state';
 
 const DEFAULT: PerfState = {
   telemetry: true,
-  explorerVirtual: true,
   modelLimit: 20,
   aiLazy: true,
   reducedMotion: false,

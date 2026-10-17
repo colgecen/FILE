@@ -14,14 +14,6 @@ export function PerfSettings(): React.JSX.Element {
         <span>Telemetri (CPU/RAM)</span>
       </label>
       <label className="perf-panel__row">
-        <input
-          type="checkbox"
-          checked={perf.explorerVirtual}
-          onChange={(event) => perfModel.set({ explorerVirtual: event.target.checked })}
-        />
-        <span>Gezgin sanal liste</span>
-      </label>
-      <label className="perf-panel__row">
         <span>Model limiti</span>
         <select
           value={perf.modelLimit}
