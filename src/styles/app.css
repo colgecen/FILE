@@ -1306,3 +1306,35 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+.app-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: #000;
+  opacity: 1;
+  transition: opacity 600ms ease;
+}
+
+.app-cover--fade {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-cover__logo {
+  width: 220px;
+  height: auto;
+  user-select: none;
+}
+
+.app-cover__tag {
+  color: #8a8f98;
+  font-size: 12px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}

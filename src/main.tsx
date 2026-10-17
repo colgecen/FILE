@@ -18,6 +18,7 @@ import './styles/ai.css';
 import './styles/perf.css';
 import 'xterm/css/xterm.css';
 import { AppShell } from './layout/AppShell';
+import { AppCover } from './ui/AppCover';
 import { hydrateRestoredFiles, restoreSession, session } from './core/session';
 import { tabsModel } from './core/tabs';
 import { cursorModel } from './core/cursor';
@@ -39,5 +40,6 @@ if (!container) {
 createRoot(container).render(
   <StrictMode>
     <AppShell glass={window.api.glass} />
+    <AppCover />
   </StrictMode>,
 );

@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, nativeImage } from 'electron';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
@@ -60,6 +60,7 @@ function createMainWindow(): void {
     minHeight: 500,
     backgroundColor: TRANSPARENT ? '#00000000' : BG_BASE,
     title: 'File',
+    icon: nativeImage.createFromPath(join(app.getAppPath(), 'public', 'FILE.png')),
     autoHideMenuBar: true,
     transparent: TRANSPARENT,
     ...WINDOW_CHROME,
