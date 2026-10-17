@@ -4,6 +4,7 @@ import { clipboardHistory } from '../core/clipboardHistory';
 import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { historyModel } from '../core/history';
+import { session } from '../core/session';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
 import { viewModeModel } from '../core/viewMode';
@@ -109,8 +110,24 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     if (editor === null) return;
     const path = file === null ? null : file.path;
     if (loadedPathRef.current === path && editor.getModel()?.uri.path === path) return;
+    const previous = loadedPathRef.current;
+    if (previous !== null && typeof editor.getScrollTop === 'function') {
+      session.updateMemory(previous, { viewportTop: editor.getScrollTop() });
+    }
     loadedPathRef.current = path;
     editor.setModel(file === null ? null : resolveModel(file));
+    if (path !== null) {
+      const memory = session.fileMemory(path);
+      if (memory !== null) {
+        window.setTimeout(() => {
+          if (typeof editor.revealLineInCenterIfOutsideViewport === 'function') {
+            editor.revealLineInCenterIfOutsideViewport(memory.line);
+          }
+          editor.setPosition({ lineNumber: memory.line, column: memory.column });
+          if (typeof editor.setScrollTop === 'function') editor.setScrollTop(memory.viewportTop);
+        }, 40);
+      }
+    }
   }, [file]);
 
   return (

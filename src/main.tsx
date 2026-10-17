@@ -18,6 +18,18 @@ import './styles/ai.css';
 import './styles/perf.css';
 import 'xterm/css/xterm.css';
 import { AppShell } from './layout/AppShell';
+import { hydrateRestoredFiles, restoreSession, session } from './core/session';
+import { tabsModel } from './core/tabs';
+import { cursorModel } from './core/cursor';
+
+restoreSession();
+void hydrateRestoredFiles((path) => window.api.readFile(path));
+tabsModel.subscribe(() => session.schedule());
+cursorModel.subscribe(() => {
+  const cursor = cursorModel.getState();
+  if (cursor.path !== null) session.updateMemory(cursor.path, { line: cursor.line, column: cursor.column });
+});
+window.addEventListener('beforeunload', () => session.remember());
 
 const container = document.getElementById('root');
 if (!container) {

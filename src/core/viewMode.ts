@@ -25,6 +25,12 @@ export class ViewModeModel {
     this.emit();
   }
 
+  setWordWrap(enabled: 'on' | 'off'): void {
+    if (this.state.wordWrap === enabled) return;
+    this.state = { ...this.state, wordWrap: enabled };
+    this.emit();
+  }
+
   toggleWordWrap(): void {
     this.state = {
       ...this.state,

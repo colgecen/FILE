@@ -1,4 +1,5 @@
 import { reportError } from './appErrors';
+import { session } from './session';
 import type { CommandRegistry } from './commands';
 import { environmentsModel, type EnvironmentTabs } from './environments';
 import { explorerModel } from './explorer';
@@ -40,6 +41,7 @@ export async function switchToEnvironment(id: string): Promise<CommandResult> {
     return { ok: false, error: message };
   }
   syncChatWithActiveEnv();
+  session.remember();
   return { ok: true };
 }
 
@@ -71,6 +73,7 @@ export function adoptFolderAsEnvironment(
     openFilesModel.set([]);
   }
   syncChatWithActiveEnv();
+  session.remember();
 }
 
 export async function addEnvironmentViaDialog(): Promise<CommandResult> {
@@ -93,10 +96,12 @@ export async function addEnvironmentViaDialog(): Promise<CommandResult> {
   explorerModel.open();
   focusManager.set('explorer');
   syncChatWithActiveEnv();
+  session.remember();
   return { ok: true };
 }
 
 export async function removeEnvironment(id?: string): Promise<CommandResult> {
+  session.remember();
   const state = environmentsModel.getState();
   const targetId = id ?? state.activeId;
   if (targetId === null) return { ok: false, error: 'Kapatılacak ortam yok' };
