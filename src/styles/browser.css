@@ -89,3 +89,12 @@
   opacity: 0.3;
   cursor: default;
 }
+
+.browser-view__offline {
+  flex: none;
+  padding: 10px 14px;
+  color: #ffd97a;
+  background: rgba(224, 201, 120, 0.1);
+  border-bottom: 1px solid rgba(224, 201, 120, 0.25);
+  font-size: 12px;
+}

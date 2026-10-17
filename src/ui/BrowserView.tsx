@@ -17,6 +17,7 @@ function normalizeInput(raw: string): string {
 export function BrowserView(): React.JSX.Element {
   const { environments, activeId } = useEnvironmentsState();
   const [states, setStates] = useState<Record<string, EmbeddedState>>({});
+  const [motorOk, setMotorOk] = useState(true);
   const [editing, setEditing] = useState<{ id: string; value: string } | null>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const browserEnvs = environments.filter((env) => env.id.startsWith('browser:'));
@@ -25,6 +26,13 @@ export function BrowserView(): React.JSX.Element {
   const ids = browserEnvs.map((env) => env.id).join(',');
 
   const knownRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    void window.api
+      .browserActivate(null)
+      .then(() => setMotorOk(true))
+      .catch(() => setMotorOk(false));
+  }, []);
 
   useEffect(() => {
     const current = new Set(ids.length === 0 ? [] : ids.split(','));
@@ -143,6 +151,11 @@ export function BrowserView(): React.JSX.Element {
           ↗
         </button>
       </div>
+      {!motorOk && (
+        <div className="browser-view__offline" role="status">
+          Tarayıcı motoru bağlı değil — uygulamayı tamamen kapatıp yeniden başlat (npm run dev).
+        </div>
+      )}
       <div className="browser-view__page" ref={hostRef} />
     </div>
   );
