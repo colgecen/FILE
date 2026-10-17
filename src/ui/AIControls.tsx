@@ -121,9 +121,9 @@ export function AIModelToolbar(): React.JSX.Element {
           <div className="ai-chat__effortmenu" role="listbox" aria-label="Efor seç">
             {(
               [
-                ['low', 'Düşük'],
-                ['medium', 'Orta'],
                 ['ultra', 'Ultra'],
+                ['medium', 'Orta'],
+                ['low', 'Düşük'],
               ] as const
             ).map(([level, label]) => (
               <button
