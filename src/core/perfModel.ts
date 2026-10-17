@@ -5,6 +5,7 @@ export type PerfState = {
   readonly modelLimit: number;
   readonly aiLazy: boolean;
   readonly reducedMotion: boolean;
+  readonly liteFx: boolean;
 };
 
 const STORAGE_KEY = 'perf:state';
@@ -14,6 +15,7 @@ const DEFAULT: PerfState = {
   modelLimit: 20,
   aiLazy: true,
   reducedMotion: false,
+  liteFx: true,
 };
 
 function load(): PerfState {

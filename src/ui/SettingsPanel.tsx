@@ -40,6 +40,14 @@ export function PerfSettings(): React.JSX.Element {
         />
         <span>Animasyon azalt</span>
       </label>
+      <label className="perf-panel__row">
+        <input
+          type="checkbox"
+          checked={perf.liteFx}
+          onChange={(event) => perfModel.set({ liteFx: event.target.checked })}
+        />
+        <span>Hafif efektler (cam/blur kapalı)</span>
+      </label>
       <button type="button" className="perf-panel__close holo-btn" onClick={() => perfPanelModel.closePanel()}>
         Kapat
       </button>

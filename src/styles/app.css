@@ -92,8 +92,8 @@ textarea {
 }
 
 .app-shell--fullscreen {
-  border-radius: 18px;
-  clip-path: inset(0 round 18px);
+  border-radius: 0;
+  clip-path: inset(0);
 }
 
 .app-shell::after {

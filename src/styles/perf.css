@@ -93,3 +93,17 @@
   transform: none !important;
   filter: none !important;
 }
+
+/* ================= Hafif efektler (liteFx) =================
+   Yazılım kompozisyonunda en pahalı kalem backdrop-filter. Kapatınca
+   cam yüzeyler düz yarı-saydam olur; belirgin hız artışı sağlar. */
+.perf-litefx *,
+.perf-litefx *::before,
+.perf-litefx *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.perf-litefx .app-shell {
+  background: var(--bg-deep, #0b0d12);
+}
