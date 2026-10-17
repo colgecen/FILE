@@ -15,6 +15,8 @@ export function AIModelToolbar(): React.JSX.Element {
   const catalog = useModelCatalog();
   const sessions = useSessions();
   const [open, setOpen] = useState(false);
+  const [effortOpen, setEffortOpen] = useState(false);
+  const effortRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
   const ref = loadActiveRef();
@@ -22,6 +24,22 @@ export function AIModelToolbar(): React.JSX.Element {
   const mode = activeSession?.mode ?? 'build';
   const effort = activeSession?.effort ?? 'medium';
   const value = `${ref.provider}:${ref.id}`;
+
+  useEffect(() => {
+    if (!effortOpen) return;
+    const onDown = (event: MouseEvent): void => {
+      if (effortRef.current !== null && !effortRef.current.contains(event.target as Node)) setEffortOpen(false);
+    };
+    const onKey = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') setEffortOpen(false);
+    };
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('mousedown', onDown);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [effortOpen]);
 
   useEffect(() => {
     if (open) {
@@ -85,22 +103,47 @@ export function AIModelToolbar(): React.JSX.Element {
       >
         {catalog.entries.find((entry) => `${entry.provider}:${entry.id}` === value)?.name ?? value}
       </button>
-      <select
-        className="ai-chat__effortsel"
-        aria-label="Efor"
-        title="Efor"
-        value={effort}
-        onChange={(event) => {
-          const level = event.currentTarget.value;
-          if (level === 'low' || level === 'medium' || level === 'ultra') {
-            void registry.run(`ai.effort.${level}`);
-          }
-        }}
-      >
-        <option value="low">Düşük</option>
-        <option value="medium">Orta</option>
-        <option value="ultra">Ultra</option>
-      </select>
+      <div className="ai-chat__effortwrap" ref={effortRef}>
+        <button
+          type="button"
+          className={effortOpen ? 'ai-chat__effortsel ai-chat__effortsel--open' : 'ai-chat__effortsel'}
+          aria-label="Efor"
+          title="Efor"
+          aria-haspopup="listbox"
+          aria-expanded={effortOpen}
+          onClick={() => setEffortOpen((v) => !v)}
+        >
+          <span className="ai-chat__effortlabel">
+            {effort === 'low' ? 'Düşük' : effort === 'ultra' ? 'Ultra' : 'Orta'}
+          </span>
+        </button>
+        {effortOpen && (
+          <div className="ai-chat__effortmenu" role="listbox" aria-label="Efor seç">
+            {(
+              [
+                ['low', 'Düşük'],
+                ['medium', 'Orta'],
+                ['ultra', 'Ultra'],
+              ] as const
+            ).map(([level, label]) => (
+              <button
+                key={level}
+                type="button"
+                role="option"
+                aria-selected={effort === level}
+                className={effort === level ? 'ai-chat__effortopt ai-chat__effortopt--active' : 'ai-chat__effortopt'}
+                onClick={() => {
+                  void registry.run(`ai.effort.${level}`);
+                  setEffortOpen(false);
+                }}
+              >
+                <span className="ai-chat__effortdot" aria-hidden="true" />
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       {open && (
         <div
           className="ai-chat__centermodal"
