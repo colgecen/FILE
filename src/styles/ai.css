@@ -76,8 +76,9 @@
   white-space: nowrap;
   user-select: none;
   transition:
-    background-color 140ms ease,
-    color 140ms ease;
+    background-color 130ms ease,
+    color 130ms ease,
+    box-shadow 130ms ease;
 }
 
 .ai-chat__tab:hover {

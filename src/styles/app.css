@@ -160,8 +160,8 @@ textarea {
   padding: 0;
   overflow: hidden;
   transition:
-    border-color 140ms ease,
-    background-color 140ms ease;
+    border-color 130ms ease,
+    background-color 130ms ease;
 }
 
 .env-bar__chip:hover,
@@ -254,9 +254,10 @@ textarea {
   color: var(--text-muted);
   background: transparent;
   transition:
-    background-color 140ms ease,
-    color 140ms ease,
-    border-color 140ms ease;
+    background-color 130ms ease,
+    color 130ms ease,
+    border-color 130ms ease,
+    box-shadow 130ms ease;
 }
 
 .tab-bar__item:hover {
@@ -270,20 +271,8 @@ textarea {
   border-color: var(--border);
   border-bottom-color: var(--bg-panel);
   box-shadow:
-    0 -2px 0 0 var(--accent),
-    0 6px 18px rgba(0, 0, 0, 0.25);
-}
-
-.tab-bar__item--active::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 0;
-  right: 0;
-  height: 5px;
-  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
-  opacity: 0.9;
+    inset 0 2px 0 0 rgba(10, 132, 255, 0.45),
+    0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
 .tab-bar__select {
@@ -435,6 +424,36 @@ textarea {
 .breadcrumb__item:not(.breadcrumb__item--active):hover {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.05);
+}
+
+.breadcrumb__reveal {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: text;
+}
+
+.breadcrumb__fullpath {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 1px 8px;
+  outline: none;
+  user-select: text;
+}
+
+.breadcrumb__fullpath:focus {
+  border-color: var(--accent);
 }
 
 /* ================= Workspace ================= */

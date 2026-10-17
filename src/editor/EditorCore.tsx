@@ -24,11 +24,14 @@ const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   cursorBlinking: 'smooth',
   cursorSmoothCaretAnimation: 'off',
   glyphMargin: true,
+  lineNumbersMinChars: 2,
+  lineDecorationsWidth: 5,
 };
 
 export function EditorCore({ file }: { readonly file: OpenFile | null }): React.JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const loadedPathRef = useRef<string | null>(null);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -103,6 +106,9 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
   useEffect(() => {
     const editor = editorRef.current;
     if (editor === null) return;
+    const path = file === null ? null : file.path;
+    if (loadedPathRef.current === path && editor.getModel()?.uri.path === path) return;
+    loadedPathRef.current = path;
     editor.setModel(file === null ? null : resolveModel(file));
   }, [file]);
 
