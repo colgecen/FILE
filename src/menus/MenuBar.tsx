@@ -91,6 +91,7 @@ export function MenuBar(): React.JSX.Element {
         if (window.api.platform !== 'darwin') void window.api.winToggleMaximize();
       }}
     >
+      <img className="menubar__logo" src="./FILE-app.png" alt="" draggable={false} />
       {items}
       <div className="menubar__trailing">
         <Clock />
