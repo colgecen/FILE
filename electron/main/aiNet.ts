@@ -35,6 +35,7 @@ export type AiChatJob = {
 
 const PING_TIMEOUT_MS = 4000;
 const LIST_TIMEOUT_MS = 8000;
+const CHAT_IDLE_TIMEOUT_MS = 75000;
 
 function withTimeout(signal: AbortSignal | undefined, ms: number): {
   signal: AbortSignal;
@@ -175,7 +176,19 @@ async function readStream(
       callbacks.onError('İptal edildi');
       return;
     }
-    const chunk = await reader.read().catch(() => null);
+    // Model sessiz kalırsa işlem sonsuza kadar beklemesin: hareketsizlik zaman aşımı.
+    let idleTimer: NodeJS.Timeout | null = null;
+    const idleGuard = new Promise<'idle'>((resolve) => {
+      idleTimer = setTimeout(() => resolve('idle'), CHAT_IDLE_TIMEOUT_MS);
+    });
+    const raced = await Promise.race([reader.read().catch(() => null), idleGuard]);
+    if (idleTimer !== null) clearTimeout(idleTimer);
+    if (raced === 'idle') {
+      await reader.cancel().catch(() => undefined);
+      callbacks.onError('Model yanıt vermedi — işlem durduruldu');
+      return;
+    }
+    const chunk = raced as ReadableStreamReadResult<Uint8Array> | null;
     if (chunk === null || chunk.done) break;
     buffer += decoder.decode(chunk.value, { stream: true });
     const split = splitSSE(buffer);
@@ -283,6 +296,24 @@ export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
   const startChat = (job: AiChatJob, callbacks: AiChatStreamCallbacks): (() => void) => {
     const controller = new AbortController();
     const run = async (): Promise<void> => {
+      let idleTimer: NodeJS.Timeout | null = null;
+      type ChatFetchInit = {
+        method?: string;
+        headers?: Record<string, string>;
+        body?: string;
+        signal?: AbortSignal;
+      };
+      const fetchIdle = async (url: string, init: ChatFetchInit): Promise<Response | 'idle'> => {
+        const guard = new Promise<'idle'>((resolve) => {
+          idleTimer = setTimeout(() => resolve('idle'), CHAT_IDLE_TIMEOUT_MS);
+        });
+        const result = await Promise.race([
+          fetchFn(url, { ...init, signal: controller.signal }),
+          guard,
+        ]);
+        if (idleTimer !== null) clearTimeout(idleTimer);
+        return result;
+      };
       try {
         const url = `${job.baseUrl.replace(/\/+$/, '')}/chat/completions`;
         const headers = headersFor(job.baseUrl, job.apiKey);
@@ -294,12 +325,16 @@ export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
         if (job.temperature !== undefined) body['temperature'] = job.temperature;
         if (job.maxTokens !== undefined) body['max_tokens'] = job.maxTokens;
 
-        let response = await fetchFn(url, {
+        let response = await fetchIdle(url, {
           method: 'POST',
           headers,
           body: JSON.stringify(body),
-          signal: controller.signal,
         });
+        if (response === 'idle') {
+          controller.abort();
+          callbacks.onError('Model yanıt vermedi — işlem durduruldu');
+          return;
+        }
         if (response.status === 400) {
           // Bazı modeller (ör. reasoning ailesi) belirli parametreleri reddeder.
           // Hata mesajına göre desteklenen biçime uyarla ve tek kez yeniden dene.
@@ -323,12 +358,17 @@ export function createAiNet(fetchFn: FetchFn = fetch): AiNet {
             changed = true;
           }
           if (changed) {
-            response = await fetchFn(url, {
+            const retry = await fetchIdle(url, {
               method: 'POST',
               headers,
               body: JSON.stringify(body),
-              signal: controller.signal,
             });
+            if (retry === 'idle') {
+              controller.abort();
+              callbacks.onError('Model yanıt vermedi — işlem durduruldu');
+              return;
+            }
+            response = retry;
           }
         }
         if (!response.ok) {

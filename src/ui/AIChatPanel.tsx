@@ -22,7 +22,7 @@ export function ThinkingLine({ active = true }: { active?: boolean }): React.JSX
   const [leaving, setLeaving] = useState(false);
   useEffect(() => {
     if (!shown) return;
-    const timer = setInterval(() => setTick((v) => v + 1), 1600);
+    const timer = setInterval(() => setTick((v) => v + 1), 2400);
     return () => {
       clearInterval(timer);
     };

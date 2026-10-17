@@ -301,7 +301,6 @@ export function selectModel(ref: ModelRef): void {
     return;
   }
   saveActiveRef(refFromModel(ref));
-  aiEngine.appendSystemMessage(`Model: ${displayName(ref)} — hazır.`);
 }
 
 function reportText(report: ApplyReport): string {

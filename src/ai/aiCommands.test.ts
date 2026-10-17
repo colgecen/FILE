@@ -183,7 +183,7 @@ describe('aiCommands — birleşik katalog', () => {
     focusManager.returnToPrevious();
   });
 
-  it('uzak model seçimi kasaya yazılır, worker başlatılmaz', async () => {
+  it('uzak model seçimi kasaya yazılır, worker başlatılmaz ve sohbete mesaj basılmaz', async () => {
     const { selectModel } = await import('./aiCommands');
     selectModel({ id: 'llama3', name: 'llama3', provider: 'ollama', source: 'ollama' });
     expect(ensureSpy).not.toHaveBeenCalled();
@@ -192,7 +192,7 @@ describe('aiCommands — birleşik katalog', () => {
     );
     expect(
       aiEngine.getState().chat.messages.some((message) => message.content.includes('llama3')),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it('uzak modelde gönderim köprüye gider ve yayınlanır', async () => {
