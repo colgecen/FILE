@@ -1188,9 +1188,9 @@
 
 .ai-chat__input:focus {
   outline: none;
-  border-color: var(--accent);
-  background: rgba(10, 132, 255, 0.05);
-  box-shadow: var(--focus-ring);
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 
 .ai-chat__send {
