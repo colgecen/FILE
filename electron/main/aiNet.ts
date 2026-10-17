@@ -191,10 +191,10 @@ async function readStream(
       if (piece === null) continue;
       if (piece.content.length > 0) answer += piece.content;
       if (piece.reasoning.length > 0) reasoning += piece.reasoning;
-      const visible = answer.length > 0 ? answer : reasoning;
-      if (visible.length > 0 && visible !== shown) {
-        shown = visible;
-        callbacks.onToken(visible);
+      // Düşünce metni arayüze asla akıtılmaz; yalnız cevap metni gösterilir.
+      if (answer.length > 0 && answer !== shown) {
+        shown = answer;
+        callbacks.onToken(answer);
       }
     }
     if (split.done) break;

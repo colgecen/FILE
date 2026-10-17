@@ -162,7 +162,7 @@ describe('aiNet startChat', () => {
     await expect(done).resolves.toBe('tam metin');
   });
 
-  it('yalnız reasoning akan modelde metni reasoning ile tamamlar', async () => {
+  it('yalnız reasoning akan modelde düşünceyi akıtmaz, yalnız tamamlamada kullanır', async () => {
     const reasoning = (text: string): string =>
       `data: ${JSON.stringify({ choices: [{ delta: { content: '', reasoning: text } }] })}\n\n`;
     const fetchFn: FetchFn = vi.fn(async () =>
@@ -178,7 +178,7 @@ describe('aiNet startChat', () => {
       });
     });
     await expect(done).resolves.toBe('Düşünüyorum...');
-    expect(tokens[tokens.length - 1]).toBe('Düşünüyorum...');
+    expect(tokens).toHaveLength(0);
   });
 
   it('reasoning sonrası içerik gelince yalnız cevap metnini döner', async () => {
