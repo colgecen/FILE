@@ -16,16 +16,39 @@ import { AIKeyVault, AIModelToolbar, AIStopButton } from './AIControls';
 
 const THINK_WORDS = ['Düşünüyor', 'Planlıyor', 'Bağlamı tarıyor', 'Kod üretiyor', 'Kontrol ediyor', 'Sentezliyor'];
 
-function ThinkingLine(): React.JSX.Element {
+export function ThinkingLine({ active = true }: { active?: boolean }): React.JSX.Element | null {
   const [tick, setTick] = useState(0);
+  const [shown, setShown] = useState(active);
+  const [leaving, setLeaving] = useState(false);
   useEffect(() => {
+    if (!shown) return;
     const timer = setInterval(() => setTick((v) => v + 1), 1600);
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, [shown]);
+  useEffect(() => {
+    if (active) {
+      setShown(true);
+      setLeaving(false);
+      return;
+    }
+    if (!shown) return;
+    setLeaving(true);
+    const fade = setTimeout(() => {
+      setShown(false);
+      setLeaving(false);
+    }, 180);
+    return () => {
+      clearTimeout(fade);
+    };
+  }, [active, shown]);
+  if (!shown) return null;
   return (
-    <div className="ai-chat__thinking" role="status">
+    <div
+      className={leaving ? 'ai-chat__thinking ai-chat__thinking--out' : 'ai-chat__thinking'}
+      role="status"
+    >
       <span className="ai-chat__dots" aria-hidden="true">
         <i />
         <i />
@@ -294,8 +317,12 @@ export function AIChatPanel(): React.JSX.Element | null {
               })}
           </div>
         ))}
-        {ai.status === 'computing' &&
-          ai.chat.messages[ai.chat.messages.length - 1]?.role !== 'assistant' && <ThinkingLine />}
+        <ThinkingLine
+          active={
+            ai.status === 'computing' &&
+            ai.chat.messages[ai.chat.messages.length - 1]?.role !== 'assistant'
+          }
+        />
         {ai.chat.messages.length === 0 && ai.status !== 'computing' && (
           <div className="ai-chat__empty">
             <span className="ai-chat__hero" aria-hidden="true">

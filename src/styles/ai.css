@@ -1151,6 +1151,28 @@
   gap: 12px;
   align-items: center;
   padding: 2px 2px;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 170ms ease,
+    transform 170ms ease;
+  animation: ai-think-in 220ms ease;
+}
+
+.ai-chat__thinking--out {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+@keyframes ai-think-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .ai-chat__thinkingword {
@@ -1183,26 +1205,27 @@
   height: 5px;
   border-radius: 50%;
   background: var(--accent);
-  animation: ai-dot 1.8s ease-in-out infinite;
+  animation: ai-dot 1.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 .ai-chat__dots i:nth-child(2) {
-  animation-delay: 0.22s;
+  animation-delay: 0.18s;
 }
 
 .ai-chat__dots i:nth-child(3) {
-  animation-delay: 0.44s;
+  animation-delay: 0.36s;
 }
 
 @keyframes ai-dot {
   0%,
+  55%,
   100% {
-    opacity: 0.4;
-    transform: scale(0.85);
+    transform: translateY(1.5px);
+    opacity: 0.45;
   }
-  50% {
+  25% {
+    transform: translateY(-3px);
     opacity: 1;
-    transform: scale(1.1);
   }
 }
 
