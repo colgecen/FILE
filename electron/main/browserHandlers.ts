@@ -88,7 +88,9 @@ function normalizeUrl(input: string): string | null {
 
 export function registerBrowserHandlers(): void {
   ipcMain.handle('app:open-browser', async (_event, url: string, browser?: string): Promise<string> => {
-    const target = normalizeUrl(String(url ?? ''));
+    const raw = String(url ?? '').trim();
+    if (raw.length === 0) return launchBrowser('', browser);
+    const target = normalizeUrl(raw);
     if (target === null) return 'invalid';
     return launchBrowser(target, browser);
   });

@@ -194,12 +194,12 @@ export const menuTree: readonly MenuTopLevel[] = [
     id: 'menu-browser',
     label: 'Tarayıcı',
     items: [
-      command('env.browser.zen', 'Zen ile Aç'),
-      command('env.browser.google-chrome', 'Chrome ile Aç'),
-      command('env.browser.chromium', 'Chromium ile Aç'),
-      command('env.browser.firefox', 'Firefox ile Aç'),
+      command('env.browser.zen', "Zen'i Aç"),
+      command('env.browser.google-chrome', "Chrome'u Aç"),
+      command('env.browser.chromium', "Chromium'u Aç"),
+      command('env.browser.firefox', "Firefox'u Aç"),
       separator('sep-browser-system'),
-      command('env.browser.default', 'Sistem Tarayıcısı ile Aç'),
+      command('env.browser.default', "Sistem Tarayıcısını Aç"),
     ],
   },
 ];
