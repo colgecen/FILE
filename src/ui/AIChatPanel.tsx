@@ -294,7 +294,8 @@ export function AIChatPanel(): React.JSX.Element | null {
               })}
           </div>
         ))}
-        {ai.status === 'computing' && <ThinkingLine />}
+        {ai.status === 'computing' &&
+          ai.chat.messages[ai.chat.messages.length - 1]?.role !== 'assistant' && <ThinkingLine />}
         {ai.chat.messages.length === 0 && ai.status !== 'computing' && (
           <div className="ai-chat__empty">
             <span className="ai-chat__hero" aria-hidden="true">
