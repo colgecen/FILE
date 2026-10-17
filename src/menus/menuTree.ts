@@ -188,27 +188,6 @@ export const menuTree: readonly MenuTopLevel[] = [
   {
     id: 'menu-ai',
     label: 'Yapay Zekâ',
-    items: [
-      command('ai.chat', 'Yapay Zekâ ile Sohbet'),
-      command('ai.session.new', 'Yeni Sohbet'),
-      command('ai.session.close', 'Sekmeyi Kapat'),
-      command('ai.inline.complete', 'Satır İçi Tamamlama'),
-      command('ai.explain', 'Kodu Açıkla'),
-      separator('sep-ai-models'),
-      command('ai.model.select', 'Model Seç'),
-      command('ai.models.refresh', 'Modelleri Yenile'),
-      command('ai.model.status', 'Model Durumu'),
-      command('ai.models.download', 'Model İndir'),
-      command('ai.apply', 'Öneriyi Uygula'),
-      command('ai.prefs', 'Yapay Zekâ Tercihleri'),
-      separator('sep-ai-mode'),
-      command('ai.mode.plan', 'Plan Modu'),
-      command('ai.mode.build', 'Yapım Modu'),
-      submenu('ai.effort.menu', 'Efor', [
-        command('ai.effort.low', 'Düşük'),
-        command('ai.effort.medium', 'Orta'),
-        command('ai.effort.ultra', 'Ultra'),
-      ]),
-    ],
+    items: [command('ai.chat', 'Yapay Zekâ ile Sohbet')],
   },
 ];

@@ -28,7 +28,7 @@ describe('MenuModel', () => {
 
   it('alt menü gezinmesi ayıraçları atlar ve sarar', () => {
     const model = new MenuModel();
-    model.openAt(8);
+    model.openAt(1);
     const initial = model.getState().activeItem ?? 0;
     for (let i = 0; i < 4; i++) {
       model.moveItem(1);
