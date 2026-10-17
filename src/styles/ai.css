@@ -1179,8 +1179,11 @@
 }
 
 .ai-chat__hero {
-  font-size: 44px;
+  font-size: 36px;
+  font-weight: 900;
   line-height: 1;
+  letter-spacing: 0.08em;
+  text-indent: 0.08em;
   background: linear-gradient(135deg, #6fb1ff 0%, #0a84ff 55%, #b48cff 110%);
   -webkit-background-clip: text;
   background-clip: text;

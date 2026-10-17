@@ -300,7 +300,7 @@ export function AIChatPanel(): React.JSX.Element | null {
         {ai.chat.messages.length === 0 && ai.status !== 'computing' && (
           <div className="ai-chat__empty">
             <span className="ai-chat__hero" aria-hidden="true">
-              ◈
+              FILE
             </span>
             <p className="ai-chat__greet">Seni dinliyorum, efendim.</p>
             <p className="ai-chat__hint">
