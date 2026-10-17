@@ -1,4 +1,4 @@
-import { removeEnvironment, switchToEnvironment } from '../core/envCommands';
+import { openEnvironmentBrowser, removeEnvironment, switchToEnvironment } from '../core/envCommands';
 import { useEnvironmentsState } from '../core/environments';
 
 export function EnvironmentsBar(): React.JSX.Element {
@@ -26,6 +26,15 @@ export function EnvironmentsBar(): React.JSX.Element {
               onClick={() => void switchToEnvironment(env.id)}
             >
               {env.name}
+            </button>
+            <button
+              type="button"
+              title={env.browserUrl === null ? 'Tarayıcıda aç (adres sorulur)' : `Tarayıcıda aç: ${env.browserUrl}`}
+              aria-label={`Tarayıcıda aç: ${env.name}`}
+              className="env-bar__browser"
+              onClick={() => void openEnvironmentBrowser(env.id)}
+            >
+              ⌾
             </button>
             <button
               type="button"

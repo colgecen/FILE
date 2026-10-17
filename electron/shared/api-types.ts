@@ -193,6 +193,7 @@ export type Api = {
   winToggleMaximize(): Promise<boolean>;
   appExit(): Promise<void>;
   newWindow(): Promise<void>;
+  openInBrowser(url: string): Promise<'zen' | 'zen-browser' | 'google-chrome' | 'google-chrome-stable' | 'chromium' | 'chromium-browser' | 'firefox' | 'default' | 'none' | 'invalid'>;
   ptySpawn(options: PtySpawnOptions): Promise<{ id: string } | null>;
   ptyWrite(id: string, data: string): Promise<boolean>;
   ptyResize(id: string, cols: number, rows: number): Promise<boolean>;

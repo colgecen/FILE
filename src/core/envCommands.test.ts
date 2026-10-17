@@ -3,6 +3,7 @@ import {
   addEnvironmentViaDialog,
   adoptFolderAsEnvironment,
   cycleEnvironment,
+  openEnvironmentBrowser,
   removeEnvironment,
   switchToEnvironment,
 } from './envCommands';
@@ -158,5 +159,26 @@ describe('envCommands', () => {
     adoptFolderAsEnvironment('/proj/a', 'a', 'ensure');
     expect(tabsModel.getState().tabs).toHaveLength(1);
     expect(environmentsModel.active()?.tabs.files).toHaveLength(1);
+  });
+
+  it('ortam tarayıcısı kayıtlı adresi zen/chrome üzerinden açar', async () => {
+    environmentsModel.add('/proj/a', 'a');
+    environmentsModel.setBrowserUrl('/proj/a', 'https://docs.example.com/x');
+    vi.mocked(window.api.openInBrowser).mockResolvedValueOnce('zen');
+    const result = await openEnvironmentBrowser('/proj/a');
+    expect(result.ok).toBe(true);
+    expect(window.api.openInBrowser).toHaveBeenCalledWith('https://docs.example.com/x');
+  });
+
+  it('kayıtsız ortamda geçersiz adres hata verir, tarayıcı yoksa hata döner', async () => {
+    environmentsModel.add('/proj/a', 'a');
+    environmentsModel.setBrowserUrl('/proj/a', 'ftp://olmaz');
+    vi.spyOn(window, 'prompt').mockReturnValue(null);
+    const bad = await openEnvironmentBrowser('/proj/a');
+    expect(bad.ok).toBe(true); // geçersiz kayıtlı adres prompt'u tetikler, iptal sessiz geçerdir
+    environmentsModel.setBrowserUrl('/proj/a', 'https://olmaz.com');
+    vi.mocked(window.api.openInBrowser).mockResolvedValueOnce('none');
+    const missing = await openEnvironmentBrowser('/proj/a');
+    expect(missing.ok).toBe(false);
   });
 });

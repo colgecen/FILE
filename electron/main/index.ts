@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { registerAppHandlers } from './appHandlers';
+import { registerBrowserHandlers } from './browserHandlers';
 import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
@@ -75,6 +76,7 @@ void app.whenReady().then((): void => {
   registerFsHandlers();
   registerGitHandlers();
   registerAppHandlers(getWindow);
+  registerBrowserHandlers();
   registerTelemetry(getWindow);
   registerWindowHandlers(getWindow);
   registerAiKeyHandlers();

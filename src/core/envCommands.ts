@@ -133,6 +133,37 @@ export function cycleEnvironment(delta: 1 | -1): Promise<CommandResult> {
   return switchToEnvironment(next.id);
 }
 
+export function normalizeBrowserUrl(input: string): string | null {
+  const trimmed = input.trim();
+  if (trimmed.length === 0) return null;
+  const candidate = /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const url = new URL(candidate);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function openEnvironmentBrowser(id?: string): Promise<CommandResult> {
+  const state = environmentsModel.getState();
+  const targetId = id ?? state.activeId;
+  if (targetId === null) return { ok: false, error: 'Aktif ortam yok' };
+  const env = state.environments.find((entry) => entry.id === targetId);
+  if (env === undefined) return { ok: false, error: 'Ortam bulunamadı' };
+  const stored = normalizeBrowserUrl(env.browserUrl ?? '');
+  const raw = stored ?? window.prompt(`"${env.name}" için adres (https://… veya site alanı):`, 'https://');
+  if (raw === null) return { ok: true };
+  const url = normalizeBrowserUrl(raw);
+  if (url === null) return { ok: false, error: 'Geçersiz adres' };
+  const result = await window.api.openInBrowser(url);
+  if (result === 'invalid' || result === 'none') {
+    return { ok: false, error: 'Tarayıcı başlatılamadı (zen/chrome/firefox yok)' };
+  }
+  if (url !== env.browserUrl) environmentsModel.setBrowserUrl(env.id, url);
+  return { ok: true };
+}
+
 export function registerEnvCommands(registry: CommandRegistry): void {
   registry.register({
     id: 'env.add',
@@ -151,6 +182,12 @@ export function registerEnvCommands(registry: CommandRegistry): void {
     title: 'Önceki Ortam',
     category: 'view',
     run: () => cycleEnvironment(-1),
+  });
+  registry.register({
+    id: 'env.browser.open',
+    title: 'Ortamı Tarayıcıda Aç',
+    category: 'view',
+    run: () => openEnvironmentBrowser(),
   });
   registry.register({
     id: 'env.remove',

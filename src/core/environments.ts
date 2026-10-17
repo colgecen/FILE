@@ -11,6 +11,7 @@ export type Environment = {
   readonly name: string;
   readonly rootPath: string;
   readonly tabs: EnvironmentTabs;
+  readonly browserUrl: string | null;
 };
 
 export type EnvironmentsState = {
@@ -52,10 +53,20 @@ export class EnvironmentsModel {
       return existing.id;
     }
     const label = name.trim().length === 0 ? baseNameOf(rootPath) : name;
-    const env: Environment = { id: rootPath, name: label, rootPath, tabs: EMPTY_TABS };
+    const env: Environment = { id: rootPath, name: label, rootPath, tabs: EMPTY_TABS, browserUrl: null };
     this.state = { environments: [...this.state.environments, env], activeId: env.id };
     this.emit();
     return env.id;
+  }
+
+  setBrowserUrl(id: string, url: string | null): boolean {
+    if (!this.state.environments.some((env) => env.id === id)) return false;
+    const environments = this.state.environments.map((env) =>
+      env.id === id ? { ...env, browserUrl: url } : env,
+    );
+    this.state = { ...this.state, environments };
+    this.emit();
+    return true;
   }
 
   setActive(id: string): boolean {

@@ -37,6 +37,7 @@ const api: Api = {
   winToggleMaximize: () => ipcRenderer.invoke('window:toggle-maximize'),
   appExit: () => ipcRenderer.invoke('app:exit'),
   newWindow: () => ipcRenderer.invoke('app:new-window'),
+  openInBrowser: (url) => ipcRenderer.invoke('app:open-browser', url),
   ptySpawn: (options) => ipcRenderer.invoke('pty:spawn', options),
   ptyWrite: (id, data) => ipcRenderer.invoke('pty:write', id, data),
   ptyResize: (id, cols, rows) => ipcRenderer.invoke('pty:resize', id, cols, rows),

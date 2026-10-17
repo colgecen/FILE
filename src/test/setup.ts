@@ -18,6 +18,7 @@ const api = {
   winMinimize: vi.fn().mockResolvedValue(true),
   winToggleMaximize: vi.fn().mockResolvedValue(true),
   appExit: vi.fn().mockResolvedValue(undefined),
+  openInBrowser: vi.fn().mockResolvedValue('default'),
   aiPing: vi.fn().mockResolvedValue({ ok: false, error: 'mock' }),
   aiModels: vi.fn().mockResolvedValue({ ok: true, models: [] }),
   aiLocalModels: vi.fn().mockResolvedValue({ ok: true, models: [] }),
