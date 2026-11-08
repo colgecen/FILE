@@ -64,8 +64,8 @@ textarea {
   flex-direction: column;
   color: var(--text-primary);
   overflow: hidden;
-  border-radius: 0;
-  clip-path: inset(0);
+  border-radius: 14px;
+  clip-path: inset(0 round 14px);
   background:
     radial-gradient(1100px 620px at 18% -14%, rgba(120, 140, 200, 0.09), transparent 55%),
     radial-gradient(900px 560px at 84% -12%, rgba(10, 132, 255, 0.07), transparent 55%),
@@ -78,11 +78,13 @@ textarea {
   position: fixed;
   inset: -2px;
   z-index: -1;
-  border-radius: 0;
+  border-radius: 18px;
   background: #000000;
   opacity: 0.92;
   pointer-events: none;
-  transition: opacity 180ms ease;
+  transition:
+    opacity 180ms ease,
+    border-radius 180ms ease;
 }
 
 .app-backdrop--fullscreen {
@@ -1077,49 +1079,80 @@ textarea {
   -webkit-app-region: no-drag;
 }
 
-/* ---------- pencere düğmeleri (altta, yan yana, kare) ---------- */
+/* ---------- pencere düğmeleri (sağ üst, yan yana) ---------- */
 .traffic-lights {
   display: flex;
   align-items: center;
-  gap: 2px;
-  padding: 0 6px;
+  gap: 6px;
+  padding: 0 13px 0 14px;
   flex: none;
 }
 
 .traffic {
   appearance: none;
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
   padding: 0;
   border: none;
-  border-radius: 0;
+  border-radius: 4px;
   cursor: default;
-  background: transparent;
-  color: #ffffff;
   display: grid;
   place-items: center;
+  color: #ffffff;
   font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   line-height: 1;
-  transition: background-color 120ms ease;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.16),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
-.traffic:hover {
-  background: rgba(255, 255, 255, 0.12);
+.traffic--close {
+  background: #ff5f57;
 }
 
-.traffic--close:hover {
-  background: #e81123;
+.traffic--min {
+  background: #febc2e;
 }
 
-.traffic--fullscreen {
+.traffic--max {
+  background: #28c840;
+}
+
+.traffic::before {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
   font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  opacity: 1;
+}
+
+.traffic--close::before {
+  content: '\00d7';
+}
+
+.traffic--min::before {
+  content: '\2212';
+}
+
+.traffic--max::before {
+  content: '+';
+}
+
+.traffic-lights:hover .traffic::before {
+  opacity: 1;
 }
 
 .traffic:focus-visible {
-  box-shadow: var(--focus-ring);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.16),
+    var(--focus-ring);
 }
 
 

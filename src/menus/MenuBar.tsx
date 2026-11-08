@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { exitController } from '../core/exit';
-import { viewModeModel } from '../core/viewMode';
 import { useCore } from '../layout/AppShell';
 import { focusManager, useFocusZone } from '../core/focus';
 import { MenuPanel } from './MenuPanel';
@@ -28,19 +27,6 @@ export function WindowControls(): React.JSX.Element | null {
         onClick={() => void window.api.winToggleMaximize()}
       >
         □
-      </button>
-      <button
-        type="button"
-        className="traffic traffic--fullscreen"
-        title="Tam Ekran"
-        aria-label="Tam Ekran"
-        onClick={() => {
-          const next = !viewModeModel.getState().fullscreen;
-          viewModeModel.setFullscreen(next);
-          void window.api.setFullscreen(next);
-        }}
-      >
-        ⛶
       </button>
       <button
         type="button"
@@ -123,6 +109,7 @@ export function MenuBar(): React.JSX.Element {
       {items}
       <div className="menubar__trailing">
         <Clock />
+        <WindowControls />
       </div>
     </nav>
   );
