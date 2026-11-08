@@ -113,17 +113,20 @@ export function restoreSession(): void {
   const active = environmentsModel.active();
   if (active !== null) {
     for (const file of active.tabs.files) {
-      tabsModel.open({ path: file.path, name: file.name, content: '', language: file.language });
+      tabsModel.open(file.kind === undefined
+        ? { path: file.path, name: file.name, content: '', language: file.language }
+        : { path: file.path, name: file.name, content: '', language: file.language, kind: file.kind });
     }
     if (active.tabs.activeId !== null) tabsModel.activate(active.tabs.activeId);
   }
   viewModeModel.setWordWrap(saved.wordWrap);
 }
 
-export async function hydrateRestoredFiles(readFile: (path: string) => Promise<{ content: string } | null>): Promise<void> {
+export async function hydrateRestoredFiles(readFile: (path: string) => Promise<{ content: string; kind?: string } | null>): Promise<void> {
   const active = environmentsModel.active();
   if (active === null) return;
   for (const tab of tabsModel.getState().tabs) {
+    if (tab.file.kind !== undefined && tab.file.kind !== 'text') continue;
     const result = await readFile(tab.file.path);
     if (result !== null) {
       tabsModel.updateContent(tab.file.path, result.content);

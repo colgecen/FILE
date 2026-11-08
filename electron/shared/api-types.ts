@@ -11,6 +11,7 @@ export type OpenFileResult = {
   readonly name: string;
   readonly content: string;
   readonly language: string;
+  readonly kind?: 'text' | 'image' | 'video' | 'audio';
 };
 
 export type GitBranchInfo = {

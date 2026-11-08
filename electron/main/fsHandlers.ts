@@ -3,10 +3,11 @@ import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, isAbsolute, join, normalize } from 'node:path';
 import type { DirEntry, OpenFileResult, WriteFileResult } from '../shared/api-types';
 import { languageForPath } from './fileUtils';
+import { mediaKindForPath } from './mediaKinds';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
-function safePath(raw: string): string | null {
+export function safePath(raw: string): string | null {
   if (typeof raw !== 'string' || raw.length === 0) return null;
   const normalized = normalize(raw);
   return isAbsolute(normalized) ? normalized : null;
@@ -24,9 +25,13 @@ export function registerFsHandlers(): void {
   ipcMain.handle('fs:read-file', async (_event, rawPath: string): Promise<OpenFileResult | null> => {
     const path = safePath(rawPath);
     if (!path) return null;
+    const mediaKind = mediaKindForPath(path);
+    if (mediaKind !== null) {
+      return { path, name: basename(path), content: '', language: 'plaintext', kind: mediaKind };
+    }
     const content = await readFileOrNull(path);
     if (content === null || content.length > MAX_FILE_BYTES) return null;
-    return { path, name: basename(path), content, language: languageForPath(path) };
+    return { path, name: basename(path), content, language: languageForPath(path), kind: 'text' };
   });
 
   ipcMain.handle(

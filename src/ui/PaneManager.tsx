@@ -3,6 +3,8 @@ import { useErrorFlash } from '../core/errorFlash';
 import { usePanes } from '../core/panes';
 import { EditorBoundary } from '../editor/EditorBoundary';
 import { EditorCore } from '../editor/EditorCore';
+import { MediaView } from './MediaView';
+import { mediaKindForPath } from '../core/media';
 
 function PaneNode({
   layout,
@@ -15,11 +17,16 @@ function PaneNode({
 }): React.JSX.Element {
   if (layout.children === undefined) {
     const isActive = layout.id === activePaneId;
+    const isMedia = file !== null && (file.kind !== undefined ? file.kind !== 'text' : mediaKindForPath(file.path) !== null);
     return (
       <div className={isActive ? 'pane pane--active' : 'pane'}>
-        <EditorBoundary>
-          <EditorCore file={file} />
-        </EditorBoundary>
+        {isMedia && file !== null ? (
+          <MediaView file={file} />
+        ) : (
+          <EditorBoundary>
+            <EditorCore file={file} />
+          </EditorBoundary>
+        )}
       </div>
     );
   }

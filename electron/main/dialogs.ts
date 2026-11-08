@@ -2,6 +2,7 @@ import { dialog, type BrowserWindow } from 'electron';
 import { ipcMain } from 'electron';
 import type { FolderResult, OpenFileResult } from '../shared/api-types';
 import { languageForPath, readTextFile } from './fileUtils';
+import { mediaKindForPath, MEDIA_EXTENSIONS } from './mediaKinds';
 
 export function registerDialogHandlers(getWindow: () => BrowserWindow | null): void {
   ipcMain.handle('dialog:open-file', async (): Promise<OpenFileResult | null> => {
@@ -18,15 +19,21 @@ export function registerDialogHandlers(getWindow: () => BrowserWindow | null): v
                 'toml', 'xml', 'sql',
               ],
             },
+            { name: 'Medya dosyaları', extensions: MEDIA_EXTENSIONS },
+            { name: 'Tüm dosyalar', extensions: ['*'] },
           ],
         })
       : await dialog.showOpenDialog({ properties: ['openFile'] });
 
     if (result.canceled || result.filePaths.length === 0) return null;
     const path = result.filePaths[0]!;
+    const kind = mediaKindForPath(path);
+    if (kind !== null) {
+      return { path, name: path.split(/[\\/]/).pop() ?? path, content: '', language: 'plaintext', kind };
+    }
     const content = await readTextFile(path);
     if (content === null) return null;
-    return { path, name: path.split(/[\\/]/).pop() ?? path, content, language: languageForPath(path) };
+    return { path, name: path.split(/[\\/]/).pop() ?? path, content, language: languageForPath(path), kind: 'text' };
   });
 
   ipcMain.handle('dialog:open-folder', async (): Promise<FolderResult | null> => {

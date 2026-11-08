@@ -6,6 +6,7 @@ import { registerAppHandlers } from './appHandlers';
 import { registerAgentToolHandlers } from './agentTools';
 import { registerAiLocalHandlers } from './aiLocal';
 import { registerEmbeddedBrowser } from './embeddedBrowser';
+import { registerMediaSchemePrivileges, registerMediaProtocol } from './mediaProtocol';
 import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
@@ -29,6 +30,8 @@ const TRANSPARENT = process.env['TRANSPARENT'] === '1';
 // Haswell-era drivers on this class of machine intermittently fail to spawn the GPU
 // process (error_code=1002), which is fatal for Electron. Compositing a text editor in
 // software costs nothing; opt back in with FILE_GPU=1 if the GPU path is healthy.
+registerMediaSchemePrivileges();
+
 if (process.env['FILE_GPU'] !== '1') {
   app.disableHardwareAcceleration();
   app.commandLine.appendSwitch('disable-gpu-sandbox');
@@ -95,6 +98,7 @@ void app.whenReady().then((): void => {
   const getWindow = (): BrowserWindow | null => mainWindow;
   registerDialogHandlers(getWindow);
   registerFsHandlers();
+  registerMediaProtocol();
   registerGitHandlers();
   registerAgentToolHandlers();
   registerAppHandlers(getWindow);

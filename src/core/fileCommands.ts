@@ -1,4 +1,5 @@
 import type { Api, OpenFileResult } from '../../electron/shared/api-types';
+import { mediaKindForPath } from './media';
 import { reportError } from './appErrors';
 import { dirtyTracker } from './dirty';
 import { focusManager } from './focus';
@@ -27,6 +28,7 @@ export async function runSave(
   path: string,
   content: string,
 ): Promise<CommandResult> {
+  if (mediaKindForPath(path) !== null) return { ok: true };
   const result = await api.writeFile(path, content);
   if (!result.ok) {
     reportError(result.error ?? 'Dosya kaydedilemedi');
@@ -40,6 +42,8 @@ export async function runSave(
 export async function runSaveActive(api: Pick<Api, 'writeFile'>): Promise<CommandResult> {
   const tab = activeTab();
   if (tab === null) return { ok: true };
+  if (tab.file.kind !== undefined && tab.file.kind !== 'text') return { ok: true };
+  if (mediaKindForPath(tab.file.path) !== null) return { ok: true };
   return runSave(api, tab.file.path, tab.file.content);
 }
 
@@ -48,6 +52,8 @@ export async function runSaveAs(
 ): Promise<CommandResult> {
   const tab = activeTab();
   if (tab === null) return { ok: true };
+  if (tab.file.kind !== undefined && tab.file.kind !== 'text') return { ok: true };
+  if (mediaKindForPath(tab.file.path) !== null) return { ok: true };
   const target = await api.saveFileAs(tab.file.path);
   if (target === null) return { ok: true };
   const result = await runSave(api, target, tab.file.content);
@@ -62,7 +68,8 @@ export async function runSaveAs(
 export async function runSaveAll(api: Pick<Api, 'writeFile'>): Promise<CommandResult> {
   const dirtyTabs = tabsModel
     .getState()
-    .tabs.filter((tab) => dirtyTracker.isDirty(tab.id));
+    .tabs.filter((tab) => dirtyTracker.isDirty(tab.id))
+    .filter((tab) => (tab.file.kind ?? 'text') === 'text' && mediaKindForPath(tab.file.path) === null);
   const results = await Promise.all(
     dirtyTabs.map((tab) => runSave(api, tab.file.path, tab.file.content)),
   );

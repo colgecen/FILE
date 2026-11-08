@@ -9,6 +9,7 @@ import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import './theme/tokens.css';
 import './styles/app.css';
+import './styles/media.css';
 import './styles/holo.css';
 import './styles/pane.css';
 import './styles/statusbar.css';

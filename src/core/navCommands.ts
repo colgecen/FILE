@@ -301,6 +301,7 @@ export function registerNavCommands(registry: CommandRegistry): void {
         name: result.name,
         content: result.content,
         language: result.language,
+        kind: result.kind,
       });
       openFilesModel.set(
         tabsModel.getState().tabs.map((tab) => ({ name: tab.file.name, path: tab.file.path })),
