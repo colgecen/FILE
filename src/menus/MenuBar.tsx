@@ -16,27 +16,21 @@ export function WindowControls(): React.JSX.Element | null {
         title="Küçült"
         aria-label="Küçült"
         onClick={() => void window.api.winMinimize()}
-      >
-        −
-      </button>
+      />
       <button
         type="button"
         className="traffic traffic--max"
         title="Ekranı Doldur"
         aria-label="Ekranı Doldur"
         onClick={() => void window.api.winToggleMaximize()}
-      >
-        □
-      </button>
+      />
       <button
         type="button"
         className="traffic traffic--close"
         title="Pencereyi Kapat"
         aria-label="Pencereyi Kapat"
         onClick={() => exitController.request()}
-      >
-        ×
-      </button>
+      />
     </div>
   );
 }
