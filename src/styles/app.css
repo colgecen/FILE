@@ -107,12 +107,6 @@ textarea {
   background-size: 140px 140px;
 }
 
-.app-shell--zen .app-shell__envbar,
-.app-shell--zen .explorer-view,
-.app-shell--zen .status-bar {
-  display: none;
-}
-
 .app-shell--saved {
   animation: saved-glow 700ms ease-out;
 }

@@ -47,8 +47,7 @@ const api: Api = {
   winToggleMaximize: () => ipcRenderer.invoke('window:toggle-maximize'),
   appExit: () => ipcRenderer.invoke('app:exit'),
   newWindow: () => ipcRenderer.invoke('app:new-window'),
-  openInBrowser: (url, browser) => ipcRenderer.invoke('app:open-browser', url, browser),
-  browserAdd: (envId) => ipcRenderer.invoke('browser:add', envId),
+  browserAdd: (envId, url) => ipcRenderer.invoke('browser:add', envId, url),
   browserActivate: (envId) => ipcRenderer.invoke('browser:activate', envId),
   browserRemove: (envId) => ipcRenderer.invoke('browser:remove', envId),
   browserNavigate: (envId, url) => ipcRenderer.invoke('browser:navigate', envId, url),
@@ -60,20 +59,6 @@ const api: Api = {
   browserOpenExternal: (url) => ipcRenderer.invoke('browser:open-external', url),
   agentExec: (args) => ipcRenderer.invoke('agent:exec', args),
   webFetch: (url) => ipcRenderer.invoke('web:fetch', url),
-  zenEmbed: (layout) => ipcRenderer.invoke('zen:embed', layout),
-  zenLayout: (layout) => ipcRenderer.invoke('zen:layout', layout),
-  zenShow: () => ipcRenderer.invoke('zen:show'),
-  zenHide: () => ipcRenderer.invoke('zen:hide'),
-  zenClose: () => ipcRenderer.invoke('zen:close'),
-  onZenExternal: (listener) => {
-    const handler = (): void => {
-      listener();
-    };
-    ipcRenderer.on('zen:external', handler);
-    return () => {
-      ipcRenderer.removeListener('zen:external', handler);
-    };
-  },
   onEnvKey: (listener) => {
     const handler = (_event: unknown, delta: number): void => {
       listener(delta);

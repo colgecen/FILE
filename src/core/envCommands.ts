@@ -1,7 +1,7 @@
 import { reportError } from './appErrors';
 import { session } from './session';
 import type { CommandRegistry } from './commands';
-import { environmentsModel, type EnvironmentTabs } from './environments';
+import { createBrowserTab, environmentsModel, type EnvironmentTabs } from './environments';
 import { explorerModel } from './explorer';
 import { focusManager } from './focus';
 import { openFilesModel } from './openFiles';
@@ -157,30 +157,15 @@ export function normalizeBrowserUrl(input: string): string | null {
   }
 }
 
-export type BrowserKind = 'zen' | 'google-chrome' | 'chromium' | 'firefox' | 'default';
-
-export const BROWSER_LABELS: Record<BrowserKind, string> = {
-  zen: 'Zen',
-  'google-chrome': 'Chrome',
-  chromium: 'Chromium',
-  firefox: 'Firefox',
-  default: 'Sistem',
-};
-
 export function isBrowserEnvId(id: string): boolean {
   return id.startsWith('browser:');
 }
 
-export function openBrowserEnvironment(kind: BrowserKind): CommandResult {
-  const label = BROWSER_LABELS[kind];
-  environmentsModel.addExternal({
-    id: `browser:${kind}`,
-    name: label,
-    rootPath: `browser:${kind}`,
-    tabs: { files: [], activeId: null },
-    browserUrl: null,
-  });
+export function openBrowserTab(url: string | null = null): CommandResult {
+  const id = createBrowserTab(url);
+  environmentsModel.setActive(id);
   syncChatWithActiveEnv();
+  session.remember();
   return { ok: true };
 }
 
@@ -203,14 +188,12 @@ export function registerEnvCommands(registry: CommandRegistry): void {
     category: 'view',
     run: () => cycleEnvironment(-1),
   });
-  for (const kind of ['zen', 'google-chrome', 'chromium', 'firefox', 'default'] as const) {
-    registry.register({
-      id: `env.browser.${kind}`,
-      title: `${BROWSER_LABELS[kind]} Tarayıcısını Aç`,
-      category: 'view',
-      run: () => openBrowserEnvironment(kind),
-    });
-  }
+  registry.register({
+    id: 'env.browser.new',
+    title: 'Yeni Tarayıcı Sekmesi',
+    category: 'view',
+    run: () => openBrowserTab(),
+  });
   registry.register({
     id: 'env.remove',
     title: 'Ortamı Kapat',

@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { useEnvironmentsState } from '../core/environments';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  createBrowserTab,
+  environmentsModel,
+  useEnvironmentsState,
+} from '../core/environments';
 import type { EmbeddedState } from '../../electron/preload/index';
 import '../styles/browser.css';
 
@@ -20,11 +24,14 @@ export function BrowserView(): React.JSX.Element {
   const [motorOk, setMotorOk] = useState(true);
   const [editing, setEditing] = useState<{ id: string; value: string } | null>(null);
   const hostRef = useRef<HTMLDivElement>(null);
-  const browserEnvs = environments.filter((env) => env.id.startsWith('browser:') && env.id !== 'browser:zen');
-  const activeBrowser =
-    activeId !== null && activeId.startsWith('browser:') ? browserEnvs.find((env) => env.id === activeId) ?? null : null;
-  const ids = browserEnvs.map((env) => env.id).join(',');
 
+  // Uygulama içi tarayıcı sekmeleri: her biri tek bir env (browser:<n>) ile sürülür.
+  const browserEnvs = useMemo(
+    () => environments.filter((env) => env.id.startsWith('browser:')),
+    [environments],
+  );
+  const activeBrowser =
+    activeId !== null ? browserEnvs.find((env) => env.id === activeId) ?? null : null;
   const knownRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -35,15 +42,17 @@ export function BrowserView(): React.JSX.Element {
   }, []);
 
   useEffect(() => {
-    const current = new Set(ids.length === 0 ? [] : ids.split(','));
+    const current = new Set(browserEnvs.map((env) => env.id));
     for (const id of knownRef.current) {
       if (!current.has(id)) void window.api.browserRemove(id);
     }
-    for (const id of current) {
-      if (!knownRef.current.has(id)) void window.api.browserAdd(id);
+    for (const env of browserEnvs) {
+      if (knownRef.current.has(env.id)) continue;
+      // Yeni sekme: kayıtlı URL varsa ondan, yoksa başlangıç sayfasından açılır.
+      void window.api.browserAdd(env.id, env.browserUrl ?? undefined);
     }
     knownRef.current = current;
-  }, [ids]);
+  }, [browserEnvs]);
 
   useEffect(() => {
     void window.api.browserActivate(activeId !== null && activeId.startsWith('browser:') ? activeId : null);
@@ -86,8 +95,15 @@ export function BrowserView(): React.JSX.Element {
 
   const submit = (): void => {
     if (activeBrowser === null) return;
-    void window.api.browserNavigate(activeBrowser.id, normalizeInput(editing?.value ?? ''));
+    const target = normalizeInput(editing?.value ?? '');
+    void window.api.browserNavigate(activeBrowser.id, target);
+    environmentsModel.setBrowserUrl(activeBrowser.id, target);
     setEditing(null);
+  };
+
+  const openTab = (): void => {
+    // Yeni sekme etiketindeki adresten ya da boş sekmeden açılır.
+    createBrowserTab(state?.url ?? null);
   };
 
   return (
@@ -121,6 +137,15 @@ export function BrowserView(): React.JSX.Element {
           onClick={() => activeBrowser !== null && void window.api.browserReload(activeBrowser.id)}
         >
           ⟳
+        </button>
+        <button
+          type="button"
+          className="browser-view__nav"
+          title="Yeni Sekme"
+          aria-label="Yeni tarayıcı sekmesi"
+          onClick={openTab}
+        >
+          +
         </button>
         <input
           className="browser-view__address"

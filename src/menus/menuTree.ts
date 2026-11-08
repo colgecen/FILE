@@ -115,7 +115,6 @@ export const menuTree: readonly MenuTopLevel[] = [
       command('pane.close', 'Panel Kapat'),
       separator('sep-view-modes'),
       command('view.fullscreen', 'Tam Ekran'),
-      command('view.zen', 'Zen Modu'),
       command('view.wordwrap', 'Kelime Sarmalama'),
       command('view.clock.toggle', 'Saat Göster/Gizle'),
       separator('sep-view-perf'),
@@ -194,12 +193,7 @@ export const menuTree: readonly MenuTopLevel[] = [
     id: 'menu-browser',
     label: 'Tarayıcı',
     items: [
-      command('env.browser.zen', "Zen'i Aç"),
-      command('env.browser.google-chrome', "Chrome'u Aç"),
-      command('env.browser.chromium', "Chromium'u Aç"),
-      command('env.browser.firefox', "Firefox'u Aç"),
-      separator('sep-browser-system'),
-      command('env.browser.default', "Sistem Tarayıcısını Aç"),
+      command('env.browser.new', 'Yeni Tarayıcı Sekmesi'),
     ],
   },
 ];

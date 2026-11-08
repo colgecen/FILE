@@ -33,16 +33,6 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
   });
 
   register({
-    id: 'view.zen',
-    category: 'view',
-    title: 'Zen Modu',
-    run: () => {
-      viewModeModel.toggleZen();
-      return { ok: true };
-    },
-  });
-
-  register({
     id: 'view.wordwrap',
     category: 'view',
     title: 'Kelime Sarmalama',

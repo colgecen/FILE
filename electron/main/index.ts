@@ -4,9 +4,7 @@ import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { registerAppHandlers } from './appHandlers';
 import { registerAgentToolHandlers } from './agentTools';
-import { registerBrowserHandlers } from './browserHandlers';
 import { registerEmbeddedBrowser } from './embeddedBrowser';
-import { registerZenEmbed } from './zenEmbed';
 import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
 import { registerGitHandlers } from './gitHandlers';
@@ -35,8 +33,8 @@ if (process.env['FILE_GPU'] !== '1') {
   app.commandLine.appendSwitch('disable-gpu-sandbox');
 }
 
-// Gömülü yabancı pencere (Zen) ana pencerenin büyük bölümünü kapladığında Chromium
-// pencereyi "occluded" sayıp render'ı/input'u geciktiriyor; bunu kapat.
+// Uygulama içi tarayıcı görünümü (WebContentsView) pencereye çocuk olarak çizilir; Chromium
+// bu görünümü gizli/occluded sayıp render'ı/input'u geciktirebiliyor; bunu kapat.
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 app.commandLine.appendSwitch('disable-background-timer-throttling');
@@ -99,8 +97,6 @@ void app.whenReady().then((): void => {
   registerGitHandlers();
   registerAgentToolHandlers();
   registerAppHandlers(getWindow);
-  registerBrowserHandlers();
-  registerZenEmbed(getWindow);
   registerEmbeddedBrowser(getWindow, (state) => {
     const win = getWindow();
     if (win !== null && !win.isDestroyed()) {

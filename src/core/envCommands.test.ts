@@ -3,11 +3,12 @@ import {
   addEnvironmentViaDialog,
   adoptFolderAsEnvironment,
   cycleEnvironment,
-  openBrowserEnvironment,
+  isBrowserEnvId,
+  openBrowserTab,
   removeEnvironment,
   switchToEnvironment,
 } from './envCommands';
-import { environmentsModel } from './environments';
+import { createBrowserTab, environmentsModel } from './environments';
 import { explorerModel } from './explorer';
 import { openFilesModel } from './openFiles';
 import { tabsModel } from './tabs';
@@ -159,15 +160,39 @@ describe('envCommands', () => {
     adoptFolderAsEnvironment('/proj/a', 'a', 'ensure');
     expect(tabsModel.getState().tabs).toHaveLength(1);
     expect(environmentsModel.active()?.tabs.files).toHaveLength(1);
-  });  it('tarayıcı ortamı uygulama içinde açılır ve tek kalır', () => {
+  });
+
+  it('yeni tarayıcı sekmesi uygulama içinde açılır ve adresini korur', () => {
     environmentsModel.add('/proj/a', 'a');
-    const result = openBrowserEnvironment('zen');
+    const result = openBrowserTab('https://ornek.test/dokumantasyon');
     expect(result.ok).toBe(true);
     const state = environmentsModel.getState();
-    expect(state.activeId).toBe('browser:zen');
-    expect(state.environments.find((entry) => entry.id === 'browser:zen')?.name).toBe('Zen');
-    openBrowserEnvironment('zen');
-    expect(state.environments.filter((entry) => entry.id === 'browser:zen')).toHaveLength(1);
-    expect(environmentsModel.getState().environments.filter((entry) => entry.id === 'browser:zen')).toHaveLength(1);
+    const tab = state.environments.find((entry) => entry.browserUrl !== null);
+    expect(state.activeId).toBe(tab?.id);
+    expect(tab?.browserUrl).toBe('https://ornek.test/dokumantasyon');
+    expect(tab?.name).toBe('ornek.test');
+  });
+
+  it('her sekme ayrı ortamdır ve URL olmadan boş açılır', () => {
+    const first = createBrowserTab();
+    const second = createBrowserTab('https://site.test');
+    expect(second).not.toBe(first);
+    const envs = environmentsModel.getState().environments;
+    expect(envs.find((entry) => entry.id === first)?.browserUrl).toBeNull();
+    expect(envs.find((entry) => entry.id === second)?.browserUrl).toBe('https://site.test');
+  });
+
+  it('tarayıcı sekmeleri klasör ortamlarından ayırt edilir', () => {
+    environmentsModel.add('/proj/a', 'a');
+    const tabId = createBrowserTab();
+    expect(isBrowserEnvId(tabId)).toBe(true);
+    expect(isBrowserEnvId('/proj/a')).toBe(false);
+  });
+
+  it('tarayıcı sekmesi kapanınca ortam listeden düşer', async () => {
+    const tabId = createBrowserTab();
+    const result = await removeEnvironment(tabId);
+    expect(result.ok).toBe(true);
+    expect(environmentsModel.getState().environments.some((entry) => entry.id === tabId)).toBe(false);
   });
 });

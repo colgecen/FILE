@@ -122,6 +122,40 @@ export class EnvironmentsModel {
 
 export const environmentsModel = new EnvironmentsModel();
 
+let browserTabSeq = 0;
+
+/**
+ * Uygulama içi tarayıcı için yeni bir sekme ortamı (browser:<n>) oluşturur.
+ * URL verilirse o sayfadan, yoksa boş sekmeden başlar.
+ */
+export function createBrowserTab(url: string | null = null): string {
+  const max = environmentsModel.getState().environments.reduce((acc, env) => {
+    const match = /^browser:(\d+)$/.exec(env.id);
+    if (match === null) return acc;
+    return Math.max(acc, Number(match[1]));
+  }, browserTabSeq);
+  browserTabSeq = max + 1;
+  const id = `browser:${browserTabSeq}`;
+  const trimmed = url === null ? '' : url.trim();
+  let name = `Sekme ${browserTabSeq}`;
+  if (trimmed.length > 0) {
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.hostname.length > 0) name = parsed.hostname;
+    } catch {
+      // geçersiz URL — varsayılan sekme adıyla devam et
+    }
+  }
+  environmentsModel.addExternal({
+    id,
+    name,
+    rootPath: id,
+    tabs: EMPTY_TABS,
+    browserUrl: trimmed.length > 0 ? trimmed : null,
+  });
+  return id;
+}
+
 export function useEnvironmentsState(): EnvironmentsState {
   const [state, setState] = useState<EnvironmentsState>(() => environmentsModel.getState());
   useEffect(() => environmentsModel.subscribe(() => setState(environmentsModel.getState())), []);

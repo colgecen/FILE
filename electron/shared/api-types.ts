@@ -229,7 +229,7 @@ export type Api = {
   winToggleMaximize(): Promise<boolean>;
   appExit(): Promise<void>;
   newWindow(): Promise<void>;
-  browserAdd(envId: string): Promise<boolean>;
+  browserAdd(envId: string, url?: string): Promise<boolean>;
   browserActivate(envId: string | null): Promise<boolean>;
   browserRemove(envId: string): Promise<boolean>;
   browserNavigate(envId: string, url: string): Promise<boolean>;
@@ -242,14 +242,7 @@ export type Api = {
   agentExec(args: AgentExecArgs): Promise<AgentExecResult>;
   webFetch(url: string): Promise<WebFetchResult>;
   onBrowserState(listener: (state: EmbeddedState) => void): () => void;
-  zenEmbed(layout: EmbeddedLayout): Promise<boolean>;
-  zenLayout(layout: EmbeddedLayout): Promise<boolean>;
-  zenShow(): Promise<boolean>;
-  zenHide(): Promise<boolean>;
-  zenClose(): Promise<boolean>;
-  onZenExternal(listener: () => void): () => void;
   onEnvKey(listener: (delta: number) => void): () => void;
-  openInBrowser(url: string, browser?: string): Promise<'zen' | 'google-chrome' | 'chromium' | 'firefox' | 'default' | 'none' | 'invalid'>;
   ptySpawn(options: PtySpawnOptions): Promise<{ id: string } | null>;
   ptyWrite(id: string, data: string): Promise<boolean>;
   ptyResize(id: string, cols: number, rows: number): Promise<boolean>;

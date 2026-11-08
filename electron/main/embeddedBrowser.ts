@@ -84,7 +84,7 @@ export function registerEmbeddedBrowser(
   getWindow = getWin;
   push = pushState;
 
-  ipcMain.handle('browser:add', (_event, envId: string): boolean => {
+  ipcMain.handle('browser:add', (_event, envId: string, url?: string): Promise<boolean> => {
     const id = String(envId);
     if (!views.has(id)) {
       const view = new WebContentsView({
@@ -94,10 +94,12 @@ export function registerEmbeddedBrowser(
       getWindow()?.contentView.addChildView(view);
       view.setVisible(false);
       views.set(id, view);
-      void view.webContents.loadURL(HOME_URL);
+      // Yeni sekmede: env browserUrl'i varsa onu aç, yoksa başlangıç sayfası.
+      const target = typeof url === 'string' ? url.trim() : '';
+      void view.webContents.loadURL(target.length > 0 ? target : HOME_URL);
     }
     show(id);
-    return true;
+    return Promise.resolve(true);
   });
 
   ipcMain.handle('browser:activate', (_event, envId: string | null): boolean => {
@@ -168,7 +170,7 @@ export function registerEmbeddedBrowser(
   ipcMain.handle('browser:state', (_event, envId: string): EmbeddedState | null => stateOf(String(envId)));
 
   ipcMain.handle('browser:open-external', async (_event, url: string): Promise<boolean> => {
-    const target = String(url).trim();
+    const target = String(url ?? '').trim();
     if (!/^https?:\/\//i.test(target)) return false;
     await shell.openExternal(target);
     return true;

@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react';
 
 export type ViewModeState = {
   readonly fullscreen: boolean;
-  readonly zen: boolean;
   readonly wordWrap: 'on' | 'off';
 };
 
 export class ViewModeModel {
-  private state: ViewModeState = { fullscreen: false, zen: false, wordWrap: 'on' };
+  private state: ViewModeState = { fullscreen: false, wordWrap: 'on' };
   private readonly listeners = new Set<() => void>();
 
   getState(): ViewModeState {
@@ -17,11 +16,6 @@ export class ViewModeModel {
   setFullscreen(enabled: boolean): void {
     if (enabled === this.state.fullscreen) return;
     this.state = { ...this.state, fullscreen: enabled };
-    this.emit();
-  }
-
-  toggleZen(): void {
-    this.state = { ...this.state, zen: !this.state.zen };
     this.emit();
   }
 
@@ -40,7 +34,7 @@ export class ViewModeModel {
   }
 
   reset(): void {
-    this.state = { fullscreen: false, zen: false, wordWrap: 'on' };
+    this.state = { fullscreen: false, wordWrap: 'on' };
     this.emit();
   }
 

@@ -28,15 +28,6 @@ describe('görünüm modu komutları', () => {
     }
   });
 
-  it('view.zen zen modunu açar ve kapatır', () => {
-    const list = commands();
-    const command = list.find((entry) => entry.id === 'view.zen');
-    expect(command?.run()).toEqual({ ok: true });
-    expect(viewModeModel.getState().zen).toBe(true);
-    expect(command?.run()).toEqual({ ok: true });
-    expect(viewModeModel.getState().zen).toBe(false);
-  });
-
   it('view.wordwrap sarmalamayı kapatır ve açar', () => {
     const list = commands();
     const command = list.find((entry) => entry.id === 'view.wordwrap');
