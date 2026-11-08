@@ -64,8 +64,8 @@ textarea {
   flex-direction: column;
   color: var(--text-primary);
   overflow: hidden;
-  border-radius: 14px;
-  clip-path: inset(0 round 14px);
+  border-radius: 0;
+  clip-path: inset(0);
   background:
     radial-gradient(1100px 620px at 18% -14%, rgba(120, 140, 200, 0.09), transparent 55%),
     radial-gradient(900px 560px at 84% -12%, rgba(10, 132, 255, 0.07), transparent 55%),
@@ -78,13 +78,11 @@ textarea {
   position: fixed;
   inset: -2px;
   z-index: -1;
-  border-radius: 18px;
+  border-radius: 0;
   background: #000000;
   opacity: 0.92;
   pointer-events: none;
-  transition:
-    opacity 180ms ease,
-    border-radius 180ms ease;
+  transition: opacity 180ms ease;
 }
 
 .app-backdrop--fullscreen {
