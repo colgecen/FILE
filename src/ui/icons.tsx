@@ -24,6 +24,8 @@ function Svg({
 
 export function FolderIcon({ open = false }: { readonly open?: boolean }): React.JSX.Element {
   // macOS tarzı dolu klasör: gövde dolu, ortasında dosyaların açıldığı boşluk (yarık).
+  // Kapalı ve açık durumlar farklı silüet: kapalıda dar yarık, açıkta kapak yukarı kalkar
+  // ve içerik (bir belge) yarıkta görünür.
   if (open) {
     return (
       <svg
@@ -34,10 +36,11 @@ export function FolderIcon({ open = false }: { readonly open?: boolean }): React
         aria-hidden="true"
         focusable="false"
       >
-        <path d="M2 3a1 1 0 0 1 1-1h3l1.2 1.5H13a1 1 0 0 1 1 1v1.5H2z" />
-        <path d="M2 6h12v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6z" />
-        <rect x={2} y={5} width={12} height={1.6} fill="rgba(0,0,0,0.22)" />
-        <rect x={3} y={8.5} width={10} height={1} fill="rgba(255,255,255,0.35)" />
+        <path d="M2 2.2a1 1 0 0 1 1-1h3l1.2 1.5H13a1 1 0 0 1 1 1v1.5H2z" />
+        <path d="M2 5h12v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
+        <rect x={2} y={4.2} width={12} height={1.6} fill="rgba(0,0,0,0.22)" />
+        <rect x={4} y={7} width={8} height={1} fill="rgba(255,255,255,0.45)" />
+        <rect x={4} y={9} width={6} height={1} fill="rgba(255,255,255,0.45)" />
       </svg>
     );
   }
