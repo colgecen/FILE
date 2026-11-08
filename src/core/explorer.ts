@@ -47,9 +47,17 @@ const DEFAULT_STATE: ExplorerState = {
 export class ExplorerModel {
   private state: ExplorerState = DEFAULT_STATE;
   private readonly listeners = new Set<() => void>();
+  // readDir sonuçlarını önbelleğe al: aynı klasörü yeniden açmak anında olur.
+  private readonly dirCache = new Map<string, readonly DirEntry[]>();
 
   getState(): ExplorerState {
     return this.state;
+  }
+
+  /** Önbelleği temizler (tazeleme için). */
+  invalidateCache(path?: string): void {
+    if (path === undefined) this.dirCache.clear();
+    else this.dirCache.delete(path);
   }
 
   subscribe(listener: () => void): () => void {
@@ -112,14 +120,16 @@ export class ExplorerModel {
     this.emit();
   }
 
-  async loadRoot(path: string, readDir: ReadDir): Promise<boolean> {
-    if (this.state.rootPath === path && this.state.error === null && this.state.files.length > 0) {
+  async loadRoot(path: string, readDir: ReadDir, force: boolean = false): Promise<boolean> {
+    if (!force && this.state.rootPath === path && this.state.error === null && this.state.files.length > 0) {
       return true;
     }
     this.state = { ...this.state, loading: true, error: null };
     this.emit();
     try {
+      this.dirCache.delete(path);
       const entries = await readDir(path);
+      this.dirCache.set(path, [...entries]);
       const root = buildTree(path, entries);
       this.settle([root], path);
       return true;
@@ -142,21 +152,25 @@ export class ExplorerModel {
   async expandDirectory(path: string, readDir: ReadDir): Promise<boolean> {
     const files = this.state.files;
     if (files.length === 0) return false;
-    try {
-      const entries = await readDir(path);
-      this.state = {
-        ...this.state,
-        files: replaceChildren(files, path, entries),
-        expanded: new Set(this.state.expanded).add(path),
-        error: null,
-      };
-      this.emit();
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      this.setError(message);
-      return false;
+    let entries = this.dirCache.get(path);
+    if (entries === undefined) {
+      try {
+        entries = await readDir(path);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        this.setError(message);
+        return false;
+      }
+      this.dirCache.set(path, [...entries]);
     }
+    this.state = {
+      ...this.state,
+      files: replaceChildren(files, path, entries),
+      expanded: new Set(this.state.expanded).add(path),
+      error: null,
+    };
+    this.emit();
+    return true;
   }
 
   rows(): readonly ExplorerRow[] {

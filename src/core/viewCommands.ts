@@ -169,7 +169,7 @@ export function registerViewCommands(register: (command: CommandDef) => void): v
       const state = explorerModel.getState();
       const root = state.rootPath;
       if (root === null) return { ok: false, error: 'Kök klasör yok' };
-      const ok = await explorerModel.loadRoot(root, (path) => window.api.readDir(path));
+      const ok = await explorerModel.loadRoot(root, (path) => window.api.readDir(path), true);
       return ok ? { ok: true } : { ok: false, error: 'Yenileme başarısız' };
     },
   });

@@ -34,9 +34,9 @@ export function ExplorerView(): React.JSX.Element | null {
     return map;
   }, [state.rootPath, git.files]);
 
-  if (!state.isOpen) return null;
+  const rows = useMemo(() => explorerModel.rows(), [state.files, state.expanded]);
 
-  const rows = explorerModel.rows();
+  if (!state.isOpen) return null;
 
   return (
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
