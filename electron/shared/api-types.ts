@@ -267,4 +267,33 @@ export type Api = {
   aiKeySet(args: AiKeySetArgs): Promise<{ ok: boolean; error?: string }>;
   aiKeyDelete(args: AiKeyDeleteArgs): Promise<{ ok: boolean }>;
   aiEnvScan(candidates: readonly AiEnvCandidate[]): Promise<readonly AiEnvEntry[]>;
+  aiLocalSetModelDir(dir: string): Promise<void>;
+  aiLocalStatus(): Promise<{
+    ok: boolean;
+    state?: string;
+    model?: string | null;
+    modelPath?: string | null;
+    threads?: number;
+    ctx?: number;
+    message?: string;
+    error?: string;
+  }>;
+  aiLocalLoad(args: { modelId: string; threads?: number; ctx?: number }): Promise<{
+    ok: boolean;
+    model?: string | null;
+    modelPath?: string | null;
+    threads?: number;
+    ctx?: number;
+    error?: string;
+  }>;
+  aiLocalGenerate(
+    requestId: string,
+    prompt: string,
+    maxTokens: number,
+    temperature?: number,
+  ): Promise<{ started: boolean; error?: string }>;
+  aiLocalCancel(requestId: string): Promise<void>;
+  aiLocalUnload(): Promise<void>;
+  aiLocalBench(modelId: string, tokens?: number): Promise<{ ok: boolean; result?: string; error?: string }>;
+  onAiLocalEvent(listener: (event: unknown) => void): () => void;
 };

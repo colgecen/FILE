@@ -38,11 +38,26 @@ const STALL_CHECK_MS = 10_000;
 
 export class AIEngine {
   private state: EngineState = INITIAL;
-  private worker: Worker | null = null;
   private pending: Pending | null = null;
+  private currentRequestId: string | null = null;
   private loadGen = 0;
   private lastActivityAt = 0;
   private readonly listeners = new Set<(state: EngineState) => void>();
+  private listenerFn: ((listener: (event: unknown) => void) => (() => void)) | null = null;
+
+  private ensureListener(): void {
+    if (typeof window === 'undefined' || !window.api || typeof window.api.onAiLocalEvent !== 'function') return;
+    const current = window.api.onAiLocalEvent;
+    if (this.listenerFn === current) return;
+    this.listenerFn = current;
+    current((raw: unknown) => {
+      this.handle(raw as AIWorkerEvent);
+    });
+  }
+
+  constructor() {
+    this.ensureListener();
+  }
 
   getState(): EngineState {
     return this.state;
@@ -56,23 +71,26 @@ export class AIEngine {
   }
 
   init(modelId: ModelId): void {
-    this.terminateWorker();
+    this.ensureListener();
     this.loadGen += 1;
     this.lastActivityAt = Date.now();
     this.patch({ status: 'loading', modelId, progress: null, error: null });
-    const worker = new Worker(new URL('./ai.worker.ts', import.meta.url), {
-      type: 'module',
-    });
-    this.worker = worker;
-    worker.onmessage = (event: MessageEvent<AIWorkerEvent>): void => {
-      this.handle(event.data);
-    };
-    worker.postMessage({ type: 'init', modelId });
+    void window.api
+      .aiLocalLoad({ modelId })
+      .then((result: { ok: boolean; error?: string }) => {
+        if (!result.ok) {
+          this.patch({ status: 'error', error: result.error ?? 'Model yüklenemedi', progress: null });
+        }
+      })
+      .catch((error: unknown) => {
+        const message = error instanceof Error ? error.message : String(error);
+        this.patch({ status: 'error', error: message, progress: null });
+      });
   }
 
   async ensureModel(modelId: ModelId, stallMs: number = LOAD_STALL_MS): Promise<void> {
-    if (perfModel.getState().aiLazy && this.worker === null && this.state.status === 'idle') {
-      // lazy: only init when actually needed via ensureModel — already here
+    if (perfModel.getState().aiLazy && this.state.modelId === null && this.state.status === 'idle') {
+      // lazy: sadece gerektiğinde yüklenir — zaten buradayız
     }
     if (this.state.modelId === modelId && this.state.status !== 'loading') return;
     this.init(modelId);
@@ -127,35 +145,47 @@ export class AIEngine {
   }
 
   async generate(request: CompletionRequest): Promise<string> {
+    this.ensureListener();
     const modelId = this.state.modelId;
     if (modelId === null) {
       throw new Error('Önce model seçilmelidir');
     }
-    if (this.worker === null) {
-      throw new Error('AI worker hazır değil');
-    }
     this.patch({ status: 'computing', error: null, progress: null });
+    const requestId = `gen-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    this.currentRequestId = requestId;
     return new Promise<string>((resolve, reject) => {
       this.pending = { resolve, reject };
-      this.worker?.postMessage({ type: 'generate', modelId, request });
+      void window.api
+        .aiLocalGenerate(requestId, request.prompt, request.maxNewTokens, request.temperature)
+        .then((result: { started: boolean; error?: string }) => {
+          if (!result.started) {
+            const pending = this.pending;
+            this.pending = null;
+            if (pending !== null) pending.reject(new Error(result.error ?? 'Üretim başlatılamadı'));
+            this.patch({ status: 'error', error: result.error ?? 'Üretim başlatılamadı' });
+          }
+        })
+        .catch((error: unknown) => {
+          const pending = this.pending;
+          this.pending = null;
+          const message = error instanceof Error ? error.message : String(error);
+          if (pending !== null) pending.reject(new Error(message));
+          this.patch({ status: 'error', error: message });
+        });
     });
   }
 
   cancel(): void {
-    this.terminateWorker();
+    const requestId = this.currentRequestId;
+    if (requestId !== null) void window.api.aiLocalCancel(requestId);
     const pending = this.pending;
     this.pending = null;
-    if (pending !== null) {
-      pending.reject(new Error('İptal edildi'));
-    }
+    if (pending !== null) pending.reject(new Error('İptal edildi'));
     this.patch({ status: 'idle', progress: null, error: null });
   }
 
-  private terminateWorker(): void {
-    if (this.worker !== null) {
-      this.worker.terminate();
-      this.worker = null;
-    }
+  terminateWorker(): void {
+    void window.api.aiLocalUnload();
   }
 
   resetChat(): void {
@@ -220,25 +250,33 @@ export class AIEngine {
       case 'token':
         this.appendRemoteToken(event.text);
         break;
-      case 'done':
-        {
-          const pending = this.pending;
-          this.pending = null;
-          if (pending !== null) {
-            pending.resolve(event.text);
-          }
-          this.finishRemote(event.text);
+      case 'done': {
+        const pending = this.pending;
+        this.pending = null;
+        if (pending !== null) pending.resolve(event.text);
+        this.finishRemote(event.text);
+        break;
+      }
+      case 'error': {
+        const pending = this.pending;
+        this.pending = null;
+        if (pending !== null) pending.reject(new Error(event.message));
+        this.patch({ status: 'error', error: event.message });
+        break;
+      }
+      case 'status': {
+        const state = (event as unknown as { state?: string }).state;
+        if (state === 'ready' || state === 'ok') {
+          this.lastActivityAt = Date.now();
+          this.patch({ status: 'idle', progress: null, error: null });
+        } else if (state === 'loading') {
+          this.patch({ status: 'loading', error: null });
+        } else if (state === 'error') {
+          this.patch({ status: 'error', error: (event as unknown as { message?: string }).message ?? 'Hata' });
         }
         break;
-      case 'error':
-        {
-          const pending = this.pending;
-          this.pending = null;
-          if (pending !== null) {
-            pending.reject(new Error(event.message));
-          }
-          this.patch({ status: 'error', error: event.message });
-        }
+      }
+      default:
         break;
     }
   }

@@ -26,7 +26,11 @@
     "files": [
       "out/**/*",
       "public/FILE.png",
-      "package.json"
+      "package.json",
+      "!**/node_modules/onnxruntime-node${/*}",
+      "!**/node_modules/onnxruntime-web${/*}",
+      "!**/node_modules/monaco-editor${/*}",
+      "!**/node_modules/@img/${/*}"
     ],
     "linux": {
       "icon": "build/icon.png",
@@ -103,7 +107,13 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
-    }
+    },
+    "extraResources": [
+      {
+        "from": "native/ai-helper/target/release/ai-helper",
+        "to": "ai-helper"
+      }
+    ]
   },
   "scripts": {
     "dev": "electron-vite dev",
@@ -121,7 +131,8 @@
     "typecheck:web": "tsc --noEmit",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:ai": "cd native/ai-helper && cargo build --release"
   },
   "devDependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
@@ -150,7 +161,6 @@
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
     "@homebridge/node-pty-prebuilt-multiarch": "^0.14.1",
-    "@huggingface/transformers": "^4.2.0",
     "monaco-editor": "^0.52.2",
     "xterm": "^5.3.0"
   },

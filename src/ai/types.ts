@@ -44,4 +44,13 @@ export type AIWorkerEvent =
   | { readonly kind: 'computing' }
   | { readonly kind: 'token'; readonly text: string }
   | { readonly kind: 'done'; readonly text: string; readonly tokensPerSecond: number }
-  | { readonly kind: 'error'; readonly message: string };
+  | { readonly kind: 'error'; readonly message: string }
+  | {
+      readonly kind: 'status';
+      readonly state?: string;
+      readonly model?: string | null;
+      readonly modelPath?: string | null;
+      readonly threads?: number;
+      readonly ctx?: number;
+      readonly message?: string;
+    };

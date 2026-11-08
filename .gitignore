@@ -4,4 +4,8 @@ out
 coverage
 *.log
 .DS_Store
-.eslintcache__pycache__/
+.eslintcache
+__pycache__/
+
+# Rust yan süreç derleme çıktıları
+native/ai-helper/target/

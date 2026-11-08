@@ -147,6 +147,23 @@ const api: Api = {
   aiKeySet: (args) => ipcRenderer.invoke('ai:key:set', args),
   aiKeyDelete: (args) => ipcRenderer.invoke('ai:key:delete', args),
   aiEnvScan: (candidates) => ipcRenderer.invoke('ai:env:scan', candidates),
+  aiLocalSetModelDir: (dir) => ipcRenderer.invoke('ai:local:set-model-dir', dir),
+  aiLocalStatus: () => ipcRenderer.invoke('ai:local:status'),
+  aiLocalLoad: (args) => ipcRenderer.invoke('ai:local:load', args),
+  aiLocalGenerate: (requestId, prompt, maxTokens, temperature) =>
+    ipcRenderer.invoke('ai:local:generate', { requestId, prompt, maxTokens, temperature }),
+  aiLocalCancel: (requestId) => ipcRenderer.invoke('ai:local:cancel', requestId),
+  aiLocalUnload: () => ipcRenderer.invoke('ai:local:unload'),
+  aiLocalBench: (modelId, tokens) => ipcRenderer.invoke('ai:local:bench', { modelId, tokens }),
+  onAiLocalEvent: (listener) => {
+    const handler = (_event: unknown, payload: unknown): void => {
+      listener(payload);
+    };
+    ipcRenderer.on('ai:local:event', handler);
+    return () => {
+      ipcRenderer.removeListener('ai:local:event', handler);
+    };
+  },
 };
 
 export type WindowApi = typeof api;

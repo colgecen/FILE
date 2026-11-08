@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { registerAppHandlers } from './appHandlers';
 import { registerAgentToolHandlers } from './agentTools';
+import { registerAiLocalHandlers } from './aiLocal';
 import { registerEmbeddedBrowser } from './embeddedBrowser';
 import { registerDialogHandlers } from './dialogs';
 import { registerFsHandlers } from './fsHandlers';
@@ -107,6 +108,7 @@ void app.whenReady().then((): void => {
   registerWindowHandlers(getWindow);
   registerAiKeyHandlers();
   registerOpencodeLocalHandlers();
+  registerAiLocalHandlers(getWindow);
   registerAiNetHandlers(async (provider, keyEnv, override) => {
     const key = await resolveApiKey(provider, keyEnv, override);
     if (key !== null) return key;

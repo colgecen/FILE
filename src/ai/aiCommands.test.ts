@@ -460,14 +460,18 @@ describe('aiCommands — indirme akışı', () => {
     registry = buildRegistry();
     resetAI();
     ensureSpy = vi.spyOn(aiEngine, 'ensureModel').mockResolvedValue(undefined);
-    vi.stubGlobal(
-      'Worker',
-      class {
-        postMessage = () => {};
-        terminate = () => {};
-        onmessage: unknown = null;
-      } as unknown as typeof Worker,
-    );
+    Object.defineProperty(window, 'api', {
+      value: {
+        ...window.api,
+        aiLocalLoad: vi.fn().mockResolvedValue({ ok: true }),
+        aiLocalGenerate: vi.fn().mockResolvedValue({ started: true }),
+        aiLocalCancel: vi.fn().mockResolvedValue(undefined),
+        aiLocalUnload: vi.fn().mockResolvedValue(undefined),
+        onAiLocalEvent: vi.fn(() => () => undefined),
+      },
+      configurable: true,
+      writable: true,
+    });
   });
 
   afterEach(() => {

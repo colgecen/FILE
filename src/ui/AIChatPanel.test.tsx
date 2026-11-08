@@ -164,34 +164,28 @@ describe('AIChatPanel', () => {
 });
 
 describe('AIChatPanel indirme akışı', () => {
-  let fake: {
-    onmessage: ((event: MessageEvent<{ kind: 'download' }>) => void) | null;
-    postMessage: () => void;
-    terminate: () => void;
-  };
+  let deliver: ((event: unknown) => void) | null = null;
 
   beforeEach(() => {
     vi.clearAllMocks();
     aiChatModel.reset();
     focusManager.set('editor');
-    fake = {
-      onmessage: null,
-      postMessage: () => {},
-      terminate: () => {},
-    };
-    vi.stubGlobal(
-      'Worker',
-      class {
-        postMessage = fake.postMessage;
-        terminate = fake.terminate;
-        set onmessage(handler: ((event: MessageEvent<{ kind: 'download' }>) => void) | null) {
-          fake.onmessage = handler;
-        }
-        get onmessage(): ((event: MessageEvent<{ kind: 'download' }>) => void) | null {
-          return fake.onmessage;
-        }
-      } as unknown as typeof Worker,
-    );
+    deliver = null;
+    Object.defineProperty(window, 'api', {
+      value: {
+        ...window.api,
+        aiLocalLoad: vi.fn().mockResolvedValue({ ok: true }),
+        aiLocalGenerate: vi.fn().mockResolvedValue({ started: true }),
+        aiLocalCancel: vi.fn().mockResolvedValue(undefined),
+        aiLocalUnload: vi.fn().mockResolvedValue(undefined),
+        onAiLocalEvent: vi.fn((listener: (event: unknown) => void) => {
+          deliver = listener;
+          return () => undefined;
+        }),
+      },
+      configurable: true,
+      writable: true,
+    });
   });
 
   afterEach(() => {
@@ -203,19 +197,17 @@ describe('AIChatPanel indirme akışı', () => {
   it('indirme sırasında ilerleme çubuğu ve durdur butonu görünür', async () => {
     const { aiEngine } = await import('../ai/engine');
     aiEngine.init('Qwen/Qwen2.5-0.5B-Instruct');
-    if (fake.onmessage !== null) {
-      fake.onmessage({
-        data: {
-          kind: 'download',
-          progress: {
-            phase: 'downloading',
-            loaded: 40,
-            total: 100,
-            percent: 40,
-            modelId: 'Qwen/Qwen2.5-0.5B-Instruct',
-          },
+    if (deliver !== null) {
+      deliver({
+        kind: 'download',
+        progress: {
+          phase: 'downloading',
+          loaded: 40,
+          total: 100,
+          percent: 40,
+          modelId: 'Qwen/Qwen2.5-0.5B-Instruct',
         },
-      } as unknown as MessageEvent<{ kind: 'download' }>);
+      });
     }
     aiChatModel.open();
     render(<AIChatPanel />);

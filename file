@@ -175,6 +175,16 @@ build_target() {
   fi
   echo
   verify
+  # Rust yan süreç (yerel AI) binary'si yoksa derle.
+  if [ ! -x "$ROOT/native/ai-helper/target/release/ai-helper" ]; then
+    echo "==> Rust yan süreç (ai-helper) derleniyor..."
+    if ! (cd "$ROOT/native/ai-helper" && cargo build --release) >>"$log" 2>&1; then
+      echo "HATA: Rust yan süreç derlenemedi. Tam çıktı:"
+      tail -n 60 "$log"
+      exit 1
+    fi
+    echo "==> Rust yan süreç hazır."
+  fi
   echo "==> Derleniyor..."
   local start=$SECONDS
   if ! (cd "$ROOT" && npm --silent run build) >>"$log" 2>&1; then
@@ -184,11 +194,27 @@ build_target() {
   fi
   echo "==> Derlendi ($((SECONDS - start))sn). Paketleniyor..."
   start=$SECONDS
-  if ! (cd "$ROOT" && npx electron-builder "${args[@]}") >>"$log" 2>&1; then
-    echo "HATA: paketleme başarısız. Son 80 satır:"
-    tail -n 80 "$log"
-    exit 1
-  fi
+  # Eski/yarım kalmış paketleme sahnesi app-builder'ın sağlıksız duruma
+  # düşmesine yol açabilir (AppImage sahnesinde "dosya yok" hatası); paketlemeye
+  # temiz bir sahne ile başla.
+  clean_pkg_stage() {
+    rm -rf "$ROOT"/dist/__* "$ROOT"/dist/*-unpacked 2>/dev/null || true
+  }
+  clean_pkg_stage
+  local attempt=1
+  # DEBUG=1: app-builder'ın (mksquashfs komutu, sahne adımları) tam izi loga düşer.
+  while ! (cd "$ROOT" && DEBUG=1 npx electron-builder "${args[@]}") >>"$log" 2>&1; do
+    if [ "$attempt" -ge 2 ]; then
+      echo "HATA: paketleme başarısız. Son 80 satır:"
+      tail -n 80 "$log"
+      echo "(Tam log: $log)"
+      exit 1
+    fi
+    attempt=$((attempt + 1))
+    echo "==> Paketleme turu başarısız oldu; sahne temizlenip bir kez daha deneniyor..."
+    clean_pkg_stage
+    : > "$log"
+  done
   echo "==> Bitti ($((SECONDS - start))sn). Paketler: $ROOT/dist/"
 }
 

@@ -4,70 +4,49 @@ import type { AIWorkerEvent } from './types';
 
 type EventData = AIWorkerEvent;
 
-function createFakeWorker(): {
-  postMessage: () => void;
-  terminate: () => void;
-  onmessage: ((event: MessageEvent<EventData>) => void) | null;
-  deliver: (event: EventData) => void;
-} {
-  const fake = {
-    postMessage: () => {},
-    terminate: () => {
-      fake.onmessage = null;
-    },
-    onmessage: null as ((event: MessageEvent<EventData>) => void) | null,
-    deliver: (event: EventData): void => {
-      if (fake.onmessage !== null) {
-        fake.onmessage({ data: event } as unknown as MessageEvent<EventData>);
-      }
-    },
-  };
-  return fake;
-}
-
 describe('AIEngine', () => {
   let engine: AIEngine;
-  let fake: ReturnType<typeof createFakeWorker>;
-  let originalWorker: typeof Worker;
+  let deliver: (event: EventData) => void;
+  let api: {
+    aiLocalLoad: ReturnType<typeof vi.fn>;
+    aiLocalGenerate: ReturnType<typeof vi.fn>;
+    aiLocalCancel: ReturnType<typeof vi.fn>;
+    aiLocalUnload: ReturnType<typeof vi.fn>;
+    onAiLocalEvent: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
-    fake = createFakeWorker();
-    originalWorker = globalThis.Worker;
-    vi.spyOn(fake, 'terminate');
-    vi.stubGlobal(
-      'Worker',
-      class {
-        postMessage = fake.postMessage;
-        terminate = fake.terminate;
-        set onmessage(handler: ((event: MessageEvent<EventData>) => void) | null) {
-          fake.onmessage = handler;
-        }
-        get onmessage(): ((event: MessageEvent<EventData>) => void) | null {
-          return fake.onmessage;
-        }
-      } as unknown as typeof Worker,
-    );
+    api = {
+      aiLocalLoad: vi.fn().mockResolvedValue({ ok: true }),
+      aiLocalGenerate: vi.fn().mockResolvedValue({ started: true }),
+      aiLocalCancel: vi.fn().mockResolvedValue(undefined),
+      aiLocalUnload: vi.fn().mockResolvedValue(undefined),
+      onAiLocalEvent: vi.fn((listener: (event: unknown) => void) => {
+        deliver = (event: EventData): void => {
+          listener(event);
+        };
+        return () => undefined;
+      }),
+    };
+    Object.defineProperty(window, 'api', { value: { ...window.api, ...api }, configurable: true, writable: true });
     engine = new AIEngine();
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
-    if (originalWorker !== undefined) {
-      globalThis.Worker = originalWorker;
-    }
+    vi.restoreAllMocks();
   });
 
   it('init anında loading, ready ulaştığında idle olur', () => {
     engine.init('Qwen/Qwen2.5-0.5B-Instruct');
     expect(engine.getState().status).toBe('loading');
-    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
     expect(engine.getState().status).toBe('idle');
     expect(engine.getState().modelId).toBe('Qwen/Qwen2.5-0.5B-Instruct');
   });
 
   it('indirme ilerlemesi loading ve yüzde ile izlenir', () => {
     engine.init('Qwen/Qwen2.5-0.5B-Instruct');
-    fake.deliver({
+    deliver({
       kind: 'download',
       progress: {
         phase: 'downloading',
@@ -84,18 +63,18 @@ describe('AIEngine', () => {
 
   it('generate worker çalışırken computing olur', () => {
     engine.init('Qwen/Qwen2.5-0.5B-Instruct');
-    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
     void engine.generate({ prompt: 'x', maxNewTokens: 8 });
     expect(engine.getState().status).toBe('computing');
   });
 
   it('token olayı sohbet akışını günceller, done ile tamamlanır', async () => {
     engine.init('Qwen/Qwen2.5-0.5B-Instruct');
-    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
     const promise = engine.generate({ prompt: 'x', maxNewTokens: 8 });
-    fake.deliver({ kind: 'token', text: 'Mer' });
-    fake.deliver({ kind: 'token', text: 'Merhaba' });
-    fake.deliver({ kind: 'done', text: 'Merhaba', tokensPerSecond: 5.2 });
+    deliver({ kind: 'token', text: 'Mer' });
+    deliver({ kind: 'token', text: 'Merhaba' });
+    deliver({ kind: 'done', text: 'Merhaba', tokensPerSecond: 5.2 });
     await expect(promise).resolves.toBe('Merhaba');
     const messages = engine.getState().chat.messages;
     expect(messages).toHaveLength(1);
@@ -115,41 +94,41 @@ describe('AIEngine', () => {
 
   it('hata olayı error durumuna geçirir ve generate reddeder', async () => {
     engine.init('Qwen/Qwen2.5-0.5B-Instruct');
-    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
     const promise = engine.generate({ prompt: 'x', maxNewTokens: 8 });
-    fake.deliver({ kind: 'error', message: 'Model dosyası bulunamadı' });
+    deliver({ kind: 'error', message: 'Model dosyası bulunamadı' });
     await expect(promise).rejects.toThrow('Model dosyası bulunamadı');
     expect(engine.getState().status).toBe('error');
     expect(engine.getState().error).toBe('Model dosyası bulunamadı');
   });
 
-  it('cancel workerı sonlandırır, bekleyen isteği reddeder ve idle döner', async () => {
+  it('cancel isteği gönderir, bekleyen isteği reddeder ve idle döner', async () => {
     engine.init('Qwen/Qwen2.5-0.5B-Instruct');
-    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
     const promise = engine.generate({ prompt: 'x', maxNewTokens: 8 });
     engine.cancel();
     await expect(promise).rejects.toThrow('İptal edildi');
-    expect(fake.terminate).toHaveBeenCalled();
+    expect(api.aiLocalCancel).toHaveBeenCalled();
     expect(engine.getState().status).toBe('idle');
     expect(engine.getState().progress).toBeNull();
   });
 
-  it('yeniden init eski workerı sonlandırır', () => {
+  it('yeniden init eski modeli bellekten çıkarır', () => {
     engine.init('Qwen/Qwen2.5-0.5B-Instruct');
     engine.init('Qwen/Qwen2.5-1.5B-Instruct');
-    expect(fake.terminate).toHaveBeenCalledTimes(1);
+    expect(api.aiLocalUnload).not.toHaveBeenCalled(); // unload sidecar'a gitmez; model değiştirilir
     expect(engine.getState().modelId).toBe('Qwen/Qwen2.5-1.5B-Instruct');
   });
 
   it('ensureModel ready gelince çözülür', async () => {
     const pending = engine.ensureModel('Qwen/Qwen2.5-0.5B-Instruct', 5000);
-    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
     await expect(pending).resolves.toBeUndefined();
   });
 
   it('ilerleme durursa ensureModel takılma hatasıyla reddeder', async () => {
     const pending = engine.ensureModel('Qwen/Qwen2.5-0.5B-Instruct', 40);
-    fake.deliver({
+    deliver({
       kind: 'download',
       progress: {
         phase: 'downloading',
@@ -172,12 +151,19 @@ describe('AIEngine', () => {
       percent: 100,
       modelId: 'Qwen/Qwen2.5-0.5B-Instruct' as const,
     };
-    fake.deliver({ kind: 'download', progress });
+    deliver({ kind: 'download', progress });
     await new Promise((resolve) => setTimeout(resolve, 60));
-    fake.deliver({ kind: 'download', progress });
+    deliver({ kind: 'download', progress });
     await new Promise((resolve) => setTimeout(resolve, 60));
     expect(engine.getState().status).toBe('loading');
-    fake.deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
+    deliver({ kind: 'ready', modelId: 'Qwen/Qwen2.5-0.5B-Instruct' });
     await expect(pending).resolves.toBeUndefined();
+  });
+
+  it('load hatası ensureModel reddeder', async () => {
+    api.aiLocalLoad.mockResolvedValueOnce({ ok: false, error: 'Model yüklenemedi' });
+    const pending = engine.ensureModel('Qwen/Qwen2.5-0.5B-Instruct', 5000);
+    await expect(pending).rejects.toThrow('Model yüklenemedi');
+    expect(engine.getState().status).toBe('error');
   });
 });
