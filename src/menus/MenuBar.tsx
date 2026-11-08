@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { exitController } from '../core/exit';
+import { viewModeModel } from '../core/viewMode';
 import { useCore } from '../layout/AppShell';
 import { focusManager, useFocusZone } from '../core/focus';
 import { MenuPanel } from './MenuPanel';
 import { menuModel, useMenuModelState } from './menuModel';
 import { Clock } from '../ui/Clock';
 
-export function TrafficLights(): React.JSX.Element | null {
+export function WindowControls(): React.JSX.Element | null {
   if (window.api.platform === 'darwin') return null;
   return (
     <div className="traffic-lights" data-testid="traffic-lights">
@@ -16,21 +17,40 @@ export function TrafficLights(): React.JSX.Element | null {
         title="Küçült"
         aria-label="Küçült"
         onClick={() => void window.api.winMinimize()}
-      />
+      >
+        −
+      </button>
       <button
         type="button"
         className="traffic traffic--max"
         title="Ekranı Doldur"
         aria-label="Ekranı Doldur"
         onClick={() => void window.api.winToggleMaximize()}
-      />
+      >
+        □
+      </button>
+      <button
+        type="button"
+        className="traffic traffic--fullscreen"
+        title="Tam Ekran"
+        aria-label="Tam Ekran"
+        onClick={() => {
+          const next = !viewModeModel.getState().fullscreen;
+          viewModeModel.setFullscreen(next);
+          void window.api.setFullscreen(next);
+        }}
+      >
+        ⛶
+      </button>
       <button
         type="button"
         className="traffic traffic--close"
         title="Pencereyi Kapat"
         aria-label="Pencereyi Kapat"
         onClick={() => exitController.request()}
-      />
+      >
+        ×
+      </button>
     </div>
   );
 }
@@ -103,7 +123,6 @@ export function MenuBar(): React.JSX.Element {
       {items}
       <div className="menubar__trailing">
         <Clock />
-        <TrafficLights />
       </div>
     </nav>
   );

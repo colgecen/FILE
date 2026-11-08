@@ -36,9 +36,10 @@ describe('MenuBar', () => {
   it('pencere düğmeleri (traffic lights) çizilir', () => {
     renderShell();
     const lights = screen.getByTestId('traffic-lights');
-    expect(lights.querySelectorAll('.traffic')).toHaveLength(3);
+    expect(lights.querySelectorAll('.traffic')).toHaveLength(4);
     expect(within(lights).getByRole('button', { name: 'Pencereyi Kapat' })).toBeInTheDocument();
     expect(within(lights).getByRole('button', { name: 'Küçült' })).toBeInTheDocument();
+    expect(within(lights).getByRole('button', { name: 'Tam Ekran' })).toBeInTheDocument();
   });
 
   it('açılan alt menü öğelerini panoda gösterir', () => {

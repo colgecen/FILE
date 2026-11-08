@@ -5,6 +5,7 @@ import { useCursorState } from '../core/cursor';
 import { errorStore, useErrorStore } from '../core/errorStore';
 import { dirOf, useGitBranch } from '../core/gitInfo';
 import { useTabsState } from '../core/tabs';
+import { WindowControls } from '../menus/MenuBar';
 import { useTelemetry } from '../core/telemetry';
 import { perfModel, usePerfState } from '../core/perfModel';
 
@@ -80,6 +81,7 @@ export function StatusBar(): React.JSX.Element {
         <span className="status-bar__cell status-bar__version" data-testid="status-version">
           {window.api.version}
         </span>
+        <WindowControls />
       </div>
     </footer>
   );

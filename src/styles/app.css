@@ -1077,76 +1077,51 @@ textarea {
   -webkit-app-region: no-drag;
 }
 
-/* ---------- pencere düğmeleri (sağda, ters sıralı) ---------- */
+/* ---------- pencere düğmeleri (altta, yan yana, kare) ---------- */
 .traffic-lights {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 13px 0 14px;
+  gap: 2px;
+  padding: 0 6px;
   flex: none;
 }
 
 .traffic {
   appearance: none;
   position: relative;
-  width: 12px;
-  height: 12px;
+  width: 22px;
+  height: 22px;
   padding: 0;
   border: none;
-  border-radius: 50%;
+  border-radius: 0;
   cursor: default;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.16),
-    inset 0 1px 1px rgba(255, 255, 255, 0.3);
-}
-
-.traffic--close {
-  background: #ff5f57;
-}
-
-.traffic--min {
-  background: #febc2e;
-}
-
-.traffic--max {
-  background: #28c840;
-}
-
-.traffic::before {
-  position: absolute;
-  inset: 0;
+  background: transparent;
+  color: #ffffff;
   display: grid;
   place-items: center;
   font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1;
-  color: rgba(0, 0, 0, 0.55);
-  opacity: 0;
-  transition: opacity 120ms ease;
+  transition: background-color 120ms ease;
 }
 
-.traffic--close::before {
-  content: '\00d7';
+.traffic:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.traffic--min::before {
-  content: '\2212';
+.traffic--close:hover {
+  background: #e81123;
 }
 
-.traffic--max::before {
-  content: '+';
-}
-
-.traffic-lights:hover .traffic::before {
-  opacity: 1;
+.traffic--fullscreen {
+  font-size: 13px;
 }
 
 .traffic:focus-visible {
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.16),
-    var(--focus-ring);
+  box-shadow: var(--focus-ring);
 }
+
 
 .menubar__cell {
   position: relative;
