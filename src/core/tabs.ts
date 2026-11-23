@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import type { OpenFile } from './types';
 
 export type Tab = {
@@ -78,8 +78,11 @@ export class TabsModel {
 
 export const tabsModel = new TabsModel();
 
+const subscribeTabs = (listener: () => void): (() => void) => tabsModel.subscribe(listener);
+const getTabsSnapshot = (): TabsState => tabsModel.getState();
+
 export function useTabsState(): TabsState {
-  const [state, setState] = useState<TabsState>(() => tabsModel.getState());
-  useEffect(() => tabsModel.subscribe(() => setState(tabsModel.getState())), []);
-  return state;
+  // useSyncExternalStore also catches updates that happen between the first
+  // render and the effect subscription (for example session hydration).
+  return useSyncExternalStore(subscribeTabs, getTabsSnapshot, getTabsSnapshot);
 }

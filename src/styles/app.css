@@ -901,6 +901,7 @@ textarea {
 
 .command-hud--closing {
   animation: hud-out 0.16s ease-in forwards;
+  pointer-events: none;
 }
 
 @keyframes hud-in {

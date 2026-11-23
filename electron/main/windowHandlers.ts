@@ -1,10 +1,19 @@
 import { ipcMain, type BrowserWindow } from 'electron';
 
 const IS_MAC = process.platform === 'darwin';
+const TRANSPARENT = process.env['TRANSPARENT'] === '1';
 
+// Linux/Windows use a frameless custom title bar. Keep the window opaque
+// unless transparency was explicitly requested; transparent surfaces make the
+// compositor pay for an extra blending pass on every frame.
 export const WINDOW_CHROME: Electron.BrowserWindowConstructorOptions = IS_MAC
   ? { titleBarStyle: 'hiddenInset' }
-  : ({ frame: false, transparent: true, backgroundColor: '#00000000', shadow: false } as Electron.BrowserWindowConstructorOptions);
+  : ({
+      frame: false,
+      transparent: TRANSPARENT,
+      backgroundColor: TRANSPARENT ? '#00000000' : '#000000',
+      shadow: false,
+    } as Electron.BrowserWindowConstructorOptions);
 
 export function attachFullscreenEvents(window: BrowserWindow): void {
   window.on('enter-full-screen', () => {
