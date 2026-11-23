@@ -1,6 +1,5 @@
 import { ipcMain, type BrowserWindow } from 'electron';
-import { dirname } from 'node:path';
-import { existsSync } from 'node:fs';
+import { statSync } from 'node:fs';
 import type { PtyManager } from './manager';
 
 const MAX_DATA_LENGTH = 64 * 1024;
@@ -23,8 +22,12 @@ export function registerPtyIpc(getWindow: () => BrowserWindow | null, pty: PtyMa
     const dims = sanitizeDims(raw.cols, raw.rows);
     if (dims === null) return null;
     let cwd: string | undefined;
-    if (typeof raw.cwd === 'string' && raw.cwd.length <= 4096 && existsSync(raw.cwd)) {
-      cwd = dirname(raw.cwd);
+    if (typeof raw.cwd === 'string' && raw.cwd.length <= 4096) {
+      try {
+        if (statSync(raw.cwd).isDirectory()) cwd = raw.cwd;
+      } catch {
+        // klasör yoksa varsayılan çalışma dizininde aç
+      }
     }
     const id = pty.spawnSession(cwd === undefined ? { ...dims } : { ...dims, cwd });
     return { id };

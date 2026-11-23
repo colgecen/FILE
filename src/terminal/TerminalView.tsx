@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
 import { setActivePtyId, getActivePtyId } from '../core/terminalRegistry';
 
 const THEME = {
@@ -9,19 +10,16 @@ const THEME = {
   selectionBackground: 'rgba(10, 132, 255, 0.35)',
 };
 
-function generatePtyId(): string {
-  return `pty-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`;
-}
+export type TerminalViewProps = {
+  readonly cwd: string | null;
+  readonly active: boolean;
+};
 
-export function TerminalView(): React.JSX.Element {
+export function TerminalView({ cwd, active }: TerminalViewProps): React.JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null);
-  const terminalRef = useRef<Terminal | null>(null);
+  const activeRef = useRef(active);
   const ptyIdRef = useRef<string | null>(null);
-  const disposeDataRef = useRef<(() => void) | null>(null);
-  const disposeExitRef = useRef<(() => void) | null>(null);
-  const colsRef = useRef<number>(80);
-  const rowsRef = useRef<number>(24);
-  const initializedRef = useRef<boolean>(false);
+  activeRef.current = active;
 
   useEffect(() => {
     const host = hostRef.current;
@@ -29,103 +27,111 @@ export function TerminalView(): React.JSX.Element {
     return mountTerminal(host);
   }, []);
 
+  useEffect(() => {
+    if (!active || ptyIdRef.current === null) return;
+    setActivePtyId(ptyIdRef.current);
+  }, [active]);
+
   return <div className="terminal-view__host" ref={hostRef} data-testid="terminal-view" />;
 
   function mountTerminal(host: HTMLDivElement): () => void {
-    if (initializedRef.current) {
-      return () => {};
-    }
-    initializedRef.current = true;
-
     const terminal = new Terminal({
       theme: THEME,
       fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
       fontSize: 13,
       cursorBlink: false,
       cursorStyle: 'block',
-      cols: colsRef.current,
-      rows: rowsRef.current,
     });
+    const fit = new FitAddon();
+    terminal.loadAddon(fit);
     terminal.open(host);
-    terminalRef.current = terminal;
 
-    const ptyId = generatePtyId();
-    ptyIdRef.current = ptyId;
+    const cleanupFlags = { data: null as (() => void) | null, exit: null as (() => void) | null };
+    let disposed = false;
+    let resizeFrame = 0;
 
-    const cols = colsRef.current;
-    const rows = rowsRef.current;
+    const safeFit = (): void => {
+      if (disposed) return;
+      const rect = host.getBoundingClientRect();
+      if (rect.width < 24 || rect.height < 24) return;
+      try {
+        fit.fit();
+      } catch {
+        // görünmeyen panelde boyut hesaplanamaz; görününce tekrar denenir
+      }
+    };
 
     const api = window.api;
     if (!api) {
       console.warn('window.api not available; terminal running in mock mode');
       return () => {
         terminal.dispose();
+        fit.dispose();
       };
     }
 
-    api.ptySpawn({ cols, rows }).then((result: { id: string } | null) => {
-      if (result && result.id) {
-        ptyIdRef.current = result.id;
-        setActivePtyId(result.id);
-      }
+    requestAnimationFrame(safeFit);
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(() => {
+            if (resizeFrame !== 0) return;
+            resizeFrame = window.requestAnimationFrame(() => {
+              resizeFrame = 0;
+              safeFit();
+            });
+          });
+    observer?.observe(host);
+
+    const spawnOptions = {
+      cols: Math.max(20, terminal.cols),
+      rows: Math.max(5, terminal.rows),
+      ...(cwd === null ? {} : { cwd }),
+    };
+    void api.ptySpawn(spawnOptions).then((result: { id: string } | null) => {
+      if (disposed || result === null) return;
+      ptyIdRef.current = result.id;
+      if (activeRef.current) setActivePtyId(result.id);
     });
 
     const handleData = (id: string, data: string): void => {
-      if (id === ptyIdRef.current) {
-        terminal.write(data);
-      }
+      if (id === ptyIdRef.current) terminal.write(data);
     };
 
     const handleExit = (id: string, exitCode: number): void => {
-      if (id === ptyIdRef.current) {
-        terminal.write(`\r\n[Process exited with code ${exitCode}]\r\n`);
-        cleanup();
-      }
+      if (id !== ptyIdRef.current) return;
+      terminal.write(`\r\n[Process exited with code ${exitCode}]\r\n`);
     };
 
-    disposeDataRef.current = api.onPtyData(handleData);
-    disposeExitRef.current = api.onPtyExit(handleExit);
+    cleanupFlags.data = api.onPtyData(handleData);
+    cleanupFlags.exit = api.onPtyExit(handleExit);
 
-    const handleResize = ({ cols: newCols, rows: newRows }: { cols: number; rows: number }): void => {
-      colsRef.current = newCols;
-      rowsRef.current = newRows;
-      const currentPtyId = ptyIdRef.current;
-      if (currentPtyId) {
-        api.ptyResize(currentPtyId, newCols, newRows);
-      }
-    };
-    terminal.onResize(handleResize);
+    const resizeDisposable = terminal.onResize(({ cols, rows }) => {
+      const current = ptyIdRef.current;
+      if (current !== null) void api.ptyResize(current, cols, rows);
+    });
 
-    const handleDataFromTerminal = (data: string): void => {
-      const currentPtyId = ptyIdRef.current;
-      if (currentPtyId) {
-        api.ptyWrite(currentPtyId, data);
-      }
-    };
-    const disposableData = terminal.onData(handleDataFromTerminal);
+    const dataDisposable = terminal.onData((data) => {
+      const current = ptyIdRef.current;
+      if (current !== null) void api.ptyWrite(current, data);
+    });
 
-    const cleanup = (): void => {
-      const currentPtyId = ptyIdRef.current;
-      if (currentPtyId) {
-        api.ptyKill(currentPtyId);
+    return () => {
+      disposed = true;
+      if (resizeFrame !== 0) window.cancelAnimationFrame(resizeFrame);
+      observer?.disconnect();
+      const current = ptyIdRef.current;
+      if (current !== null) {
+        void api.ptyKill(current);
+        if (current === getActivePtyId()) setActivePtyId(null);
       }
-      if (currentPtyId === getActivePtyId()) {
-        setActivePtyId(null);
-      }
-      if (disposeDataRef.current) {
-        disposeDataRef.current();
-        disposeDataRef.current = null;
-      }
-      if (disposeExitRef.current) {
-        disposeExitRef.current();
-        disposeExitRef.current = null;
-      }
-      disposableData.dispose();
+      ptyIdRef.current = null;
+      cleanupFlags.data?.();
+      cleanupFlags.exit?.();
+      resizeDisposable.dispose();
+      dataDisposable.dispose();
+      fit.dispose();
       terminal.dispose();
-      terminalRef.current = null;
-      initializedRef.current = false;
     };
-
-    return cleanup;
   }
 }

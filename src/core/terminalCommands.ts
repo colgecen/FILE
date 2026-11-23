@@ -1,5 +1,10 @@
 import type { CommandDef, CommandResult } from './types';
-import { terminalModel } from './terminalModel';
+import {
+  closeActiveTerminalPanel,
+  newActiveTerminal,
+  openActiveTerminal,
+  splitActiveTerminal,
+} from './terminalModel';
 import { taskModel, type Task } from './taskModel';
 import { writeToActiveTerminal } from './terminalRegistry';
 
@@ -37,7 +42,7 @@ export function registerTerminalCommands(register: (command: CommandDef) => void
     category: 'terminal',
     title: 'Yeni Terminal',
     run: (): CommandResult => {
-      terminalModel.open();
+      openActiveTerminal();
       return { ok: true };
     },
   });
@@ -46,7 +51,7 @@ export function registerTerminalCommands(register: (command: CommandDef) => void
     category: 'terminal',
     title: 'Yeni Terminal',
     run: (): CommandResult => {
-      terminalModel.open();
+      newActiveTerminal();
       return { ok: true };
     },
   });
@@ -55,7 +60,7 @@ export function registerTerminalCommands(register: (command: CommandDef) => void
     category: 'terminal',
     title: 'Terminali Böl',
     run: (): CommandResult => {
-      terminalModel.open();
+      splitActiveTerminal();
       return { ok: true };
     },
   });
@@ -64,7 +69,7 @@ export function registerTerminalCommands(register: (command: CommandDef) => void
     category: 'terminal',
     title: 'Terminali Kapat',
     run: (): CommandResult => {
-      terminalModel.close();
+      closeActiveTerminalPanel();
       return { ok: true };
     },
   });

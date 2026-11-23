@@ -9,7 +9,6 @@ import { perfModel, usePerfPanelOpen, usePerfState } from '../core/perfModel';
 import { useGitPanelState } from '../core/gitModel';
 import { useTabsState } from '../core/tabs';
 import { useEnvironmentsState } from '../core/environments';
-import { useTerminalOpen } from '../core/terminalModel';
 import { MenuBar } from '../menus/MenuBar';
 import { AIChatPanel } from '../ui/AIChatPanel';
 import { Breadcrumb } from '../ui/Breadcrumb';
@@ -24,7 +23,7 @@ import { HelpOverlay } from '../ui/HelpOverlay';
 import { PaneManager } from '../ui/PaneManager';
 import { StatusBar } from '../ui/StatusBar';
 import { TabBar } from '../ui/TabBar';
-import { TerminalView } from '../terminal/TerminalView';
+import { TerminalDock } from '../terminal/TerminalDock';
 import { PerfSettings } from '../ui/SettingsPanel';
 import '../styles/git.css';
 
@@ -40,7 +39,7 @@ const MemoEnvironmentsBar = memo(EnvironmentsBar);
 const MemoExplorerView = memo(ExplorerView);
 const MemoGitPanel = memo(GitPanel);
 const MemoAIChatPanel = memo(AIChatPanel);
-const MemoTerminalView = memo(TerminalView);
+const MemoTerminalDock = memo(TerminalDock);
 const MemoStatusBar = memo(StatusBar);
 const MemoBrowserView = memo(BrowserView);
 const MemoTabBar = memo(TabBar);
@@ -65,7 +64,6 @@ export function AppShell({
   const exitPending = useExitPending();
   const { tabs, activeId } = useTabsState();
   const savedFlash = useSaveFlash();
-  const terminalOpen = useTerminalOpen();
   const gitState = useGitPanelState();
   const perf = usePerfState();
   const perfPanelOpen = usePerfPanelOpen();
@@ -130,7 +128,7 @@ export function AppShell({
                 </>
               )}
             </div>
-            {terminalOpen && <MemoTerminalView />}
+            <MemoTerminalDock />
           </div>
           <MemoAIChatPanel />
           {children}

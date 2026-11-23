@@ -127,6 +127,47 @@ export function CollapseAllIcon(): React.JSX.Element {
   );
 }
 
+export function TrashIcon(): React.JSX.Element {
+  return (
+    <Svg size={13}>
+      <path d="M2.8 4.5h10.4" />
+      <path d="M6 4.5V3.2h4v1.3" />
+      <path d="M4.2 4.5l.6 9h6.4l.6-9" />
+      <path d="M6.6 7v4.4M9.4 7v4.4" />
+    </Svg>
+  );
+}
+
+export function MaximizeIcon(): React.JSX.Element {
+  return (
+    <Svg size={14}>
+      <path d="M6 2.5H2.5V6" />
+      <path d="M10 2.5h3.5V6" />
+      <path d="M6 13.5H2.5V10" />
+      <path d="M10 13.5h3.5V10" />
+    </Svg>
+  );
+}
+
+export function RestoreIcon(): React.JSX.Element {
+  return (
+    <Svg size={14}>
+      <path d="M2.5 6H6V2.5" />
+      <path d="M13.5 10H10v3.5" />
+      <path d="M6 6 2.5 2.5" />
+      <path d="M10 10l3.5 3.5" />
+    </Svg>
+  );
+}
+
+export function CloseIcon(): React.JSX.Element {
+  return (
+    <Svg size={14}>
+      <path d="m3.5 3.5 9 9M12.5 3.5l-9 9" />
+    </Svg>
+  );
+}
+
 export function SplitVerticalIcon(): React.JSX.Element {
   return (
     <Svg>

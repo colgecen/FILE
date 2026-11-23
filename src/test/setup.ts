@@ -16,6 +16,7 @@ const api = {
   sysStart: vi.fn().mockResolvedValue(undefined),
   sysStop: vi.fn().mockResolvedValue(undefined),
   onMetrics: vi.fn(() => () => undefined),
+  setFullscreen: vi.fn().mockResolvedValue(true),
   winMinimize: vi.fn().mockResolvedValue(true),
   winToggleMaximize: vi.fn().mockResolvedValue(true),
   appReady: vi.fn(),
