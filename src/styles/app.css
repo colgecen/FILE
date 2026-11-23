@@ -766,7 +766,9 @@ html[data-platform='darwin'] .app-cover {
   align-items: center;
   gap: 1px;
   padding-left: 8px;
+  padding-right: 2px;
   background: linear-gradient(90deg, transparent, rgba(24, 25, 29, 0.96) 22%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   opacity: 0;
   pointer-events: none;
   transition: opacity 100ms ease;
