@@ -39,9 +39,20 @@ function newTab(workspace: TerminalWorkspace, cwd: string | null): TerminalTab {
 
 function withTab(workspace: TerminalWorkspace, cwd: string | null): TerminalWorkspace {
   const tab = newTab(workspace, cwd);
+  const activeIndex =
+    workspace.activeId === null
+      ? -1
+      : workspace.tabs.findIndex((entry) => entry.id === workspace.activeId);
+  // Yeni terminal her zaman aktif sekmenin hemen ardına eklenir.
+  const insertAt = activeIndex < 0 ? workspace.tabs.length : activeIndex + 1;
+  const tabs = [
+    ...workspace.tabs.slice(0, insertAt),
+    tab,
+    ...workspace.tabs.slice(insertAt),
+  ];
   return {
     ...workspace,
-    tabs: [...workspace.tabs, tab],
+    tabs,
     activeId: tab.id,
     open: true,
     seq: workspace.seq + 1,

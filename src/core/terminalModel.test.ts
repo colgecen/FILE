@@ -34,6 +34,19 @@ describe('TerminalModel', () => {
     expect(terminalModel.workspace('/proje/a')?.tabs).toHaveLength(2);
   });
 
+  it('yeni terminal aktif sekmenin hemen ardına eklenir', () => {
+    environmentsModel.add('/proje/a', 'a');
+    openActiveTerminal();
+    newActiveTerminal();
+    const before = terminalModel.workspace('/proje/a')!;
+    expect(before.tabs.map((tab) => tab.title)).toEqual(['Terminal 1', 'Terminal 2']);
+    terminalModel.setActive('/proje/a', before.tabs[0]!.id);
+    newActiveTerminal();
+    const after = terminalModel.workspace('/proje/a')!;
+    expect(after.tabs.map((tab) => tab.title)).toEqual(['Terminal 1', 'Terminal 3', 'Terminal 2']);
+    expect(after.activeId).toBe(after.tabs[1]!.id);
+  });
+
   it('bölme işlemi ikinci terminali oluşturur ve iki panele ayırır', () => {
     environmentsModel.add('/proje/a', 'a');
     openActiveTerminal();

@@ -261,3 +261,33 @@
 .terminal-view__host .xterm {
   height: 100%;
 }
+
+/* Terminal kaydırma çubukları: köşesiz, ince neon çizgi. */
+.terminal-view__host .xterm-viewport,
+.terminal-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #7f7cff transparent;
+}
+
+.terminal-view__host .xterm-viewport::-webkit-scrollbar,
+.terminal-sidebar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.terminal-view__host .xterm-viewport::-webkit-scrollbar-track,
+.terminal-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terminal-view__host .xterm-viewport::-webkit-scrollbar-thumb,
+.terminal-sidebar::-webkit-scrollbar-thumb {
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(180deg, #5ea8ff 0%, #8f7dff 52%, #b48cff 100%);
+}
+
+.terminal-view__host .xterm-viewport::-webkit-scrollbar-thumb:hover,
+.terminal-sidebar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8dc6ff 0%, #a997ff 52%, #c8a8ff 100%);
+}
