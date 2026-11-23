@@ -572,49 +572,68 @@ html[data-platform='darwin'] .app-cover {
   color: var(--text-muted);
 }
 
+.explorer-view__bodywrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
 .explorer-view__body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 6px;
-  /* Ağaca özel ince, neon gradyanlı kaydırma çubuğu. */
-  scrollbar-width: auto;
-  scrollbar-color: auto;
+  /* Native çubuğu gizle; ağaca özel overlay çubuğu kullan. */
+  scrollbar-width: none;
 }
 
 .explorer-view__body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Ağaca özel, yalnızca üzerine gelince beliren düz neon çubuk. */
+.explorer-view__scrollbar {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  bottom: 2px;
   width: 10px;
-  height: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 480ms ease-out;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(94, 168, 255, 0.08) 12%,
+    rgba(94, 168, 255, 0.08) 88%,
+    transparent 100%
+  );
 }
 
-.explorer-view__body::-webkit-scrollbar-track {
-  border-radius: var(--radius-full);
-  background:
-    linear-gradient(180deg, transparent 4px, rgba(94, 168, 255, 0.08) 4px calc(100% - 4px), transparent calc(100% - 4px));
+.explorer-view__bodywrap:hover .explorer-view__scrollbar {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: 120ms;
 }
 
-.explorer-view__body::-webkit-scrollbar-thumb {
-  min-height: 38px;
-  border: 3px solid transparent;
-  border-radius: var(--radius-full);
-  background:
-    linear-gradient(180deg, #5ea8ff 0%, #8f7dff 52%, #b48cff 100%) content-box;
-  box-shadow: inset 0 0 0 1px rgba(219, 232, 255, 0.25);
+.explorer-view__scrollbar-thumb {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  border-radius: 0;
+  background: linear-gradient(180deg, #5ea8ff 0%, #8f7dff 52%, #b48cff 100%);
+  box-shadow: inset 1px 0 0 rgba(219, 232, 255, 0.22);
+  cursor: default;
 }
 
-.explorer-view__body::-webkit-scrollbar-thumb:hover {
-  border-width: 2px;
-  background:
-    linear-gradient(180deg, #8dc6ff 0%, #a997ff 52%, #c8a8ff 100%) content-box;
+.explorer-view__scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8dc6ff 0%, #a997ff 52%, #c8a8ff 100%);
 }
 
-.explorer-view__body::-webkit-scrollbar-thumb:active {
-  border-width: 2px;
-  background:
-    linear-gradient(180deg, #dbe8ff 0%, #b48cff 52%, #d7b8ff 100%) content-box;
-}
-
-.explorer-view__body::-webkit-scrollbar-corner {
-  background: transparent;
+.explorer-view__scrollbar-thumb:active {
+  background: linear-gradient(180deg, #dbe8ff 0%, #b48cff 52%, #d7b8ff 100%);
 }
 
 .explorer-view__rows {

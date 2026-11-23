@@ -59,7 +59,9 @@ export function ExplorerView(): React.JSX.Element | null {
   const { registry } = useCore();
   const bodyRef = useRef<HTMLDivElement>(null);
   const draftInputRef = useRef<HTMLInputElement>(null);
+  const scrollDragRef = useRef<{ y: number; top: number } | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
+  const [scrollHeight, setScrollHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(FALLBACK_VIEWPORT_HEIGHT);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [draftName, setDraftName] = useState('');
@@ -174,13 +176,21 @@ export function ExplorerView(): React.JSX.Element | null {
   useEffect(() => {
     const body = bodyRef.current;
     if (body === null) return;
-    const measure = (): void => setViewportHeight(body.clientHeight || FALLBACK_VIEWPORT_HEIGHT);
+    const measure = (): void => {
+      setViewportHeight(body.clientHeight || FALLBACK_VIEWPORT_HEIGHT);
+      setScrollHeight(body.scrollHeight);
+    };
     measure();
     if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(measure);
     observer.observe(body);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (body !== null) setScrollHeight(body.scrollHeight);
+  }, [displayRows, draftError, viewportHeight, state.loading]);
 
   useEffect(() => {
     const body = bodyRef.current;
@@ -221,6 +231,41 @@ export function ExplorerView(): React.JSX.Element | null {
     Math.ceil((scrollTop + viewportHeight) / ROW_HEIGHT) + OVERSCAN,
   );
   const visibleRows = displayRows.slice(start, end);
+  const scrollRange = Math.max(0, scrollHeight - viewportHeight);
+  const showScrollbar = scrollRange > 1;
+  const trackHeight = Math.max(0, viewportHeight - 4);
+  const thumbHeight = showScrollbar
+    ? Math.min(trackHeight, Math.max(28, Math.round((viewportHeight / scrollHeight) * trackHeight)))
+    : 0;
+  const thumbTop = showScrollbar
+    ? Math.round((scrollTop / scrollRange) * Math.max(0, trackHeight - thumbHeight))
+    : 0;
+
+  const onThumbPointerDown = (event: React.PointerEvent<HTMLDivElement>): void => {
+    if (!showScrollbar) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    scrollDragRef.current = { y: event.clientY, top: scrollTop };
+  };
+
+  const onThumbPointerMove = (event: React.PointerEvent<HTMLDivElement>): void => {
+    const drag = scrollDragRef.current;
+    const body = bodyRef.current;
+    if (drag === null || body === null) return;
+    const range = Math.max(1, trackHeight - thumbHeight);
+    const next = drag.top + ((event.clientY - drag.y) / range) * scrollRange;
+    body.scrollTop = Math.max(0, Math.min(scrollRange, next));
+    setScrollTop(body.scrollTop);
+  };
+
+  const onThumbPointerUp = (event: React.PointerEvent<HTMLDivElement>): void => {
+    scrollDragRef.current = null;
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch {
+      // pointer capture zaten bırakılmış olabilir
+    }
+  };
 
   return (
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
@@ -269,16 +314,17 @@ export function ExplorerView(): React.JSX.Element | null {
           </button>
         </div>
       </div>
-      <div
-        ref={bodyRef}
-        className="explorer-view__body"
-        role="listbox"
-        aria-label="Dosya listesi"
-        onScroll={(event) => {
-          const next = event.currentTarget.scrollTop;
-          setScrollTop((current) => (Math.abs(current - next) < 1 ? current : next));
-        }}
-      >
+      <div className="explorer-view__bodywrap">
+        <div
+          ref={bodyRef}
+          className="explorer-view__body"
+          role="listbox"
+          aria-label="Dosya listesi"
+          onScroll={(event) => {
+            const next = event.currentTarget.scrollTop;
+            setScrollTop((current) => (Math.abs(current - next) < 1 ? current : next));
+          }}
+        >
         {state.loading && (
           <div className="explorer-view__loading" role="status">
             {uiText('YÜKLENİYOR…', 'LOADING…')}
@@ -432,6 +478,28 @@ export function ExplorerView(): React.JSX.Element | null {
         {state.error !== null && (
           <div className="explorer-view__error" role="alert">
             {state.error}
+          </div>
+        )}
+        </div>
+        {showScrollbar && (
+          <div
+            className="explorer-view__scrollbar"
+            aria-hidden="true"
+            onWheel={(event) => {
+              const body = bodyRef.current;
+              if (body === null) return;
+              body.scrollTop += event.deltaY;
+              setScrollTop(body.scrollTop);
+            }}
+          >
+            <div
+              className="explorer-view__scrollbar-thumb"
+              style={{ height: thumbHeight, top: thumbTop }}
+              onPointerDown={onThumbPointerDown}
+              onPointerMove={onThumbPointerMove}
+              onPointerUp={onThumbPointerUp}
+              onPointerCancel={onThumbPointerUp}
+            />
           </div>
         )}
       </div>
