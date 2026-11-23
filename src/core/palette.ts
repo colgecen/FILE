@@ -27,6 +27,7 @@ export type PaletteState = {
 
 export class PaletteModel {
   private state: PaletteState = { query: '', items: [], activeIndex: 0 };
+  private scopeFiles: readonly OpenFileRef[] | null = null;
   private readonly listeners = new Set<() => void>();
 
   getState(): PaletteState {
@@ -41,29 +42,40 @@ export class PaletteModel {
   }
 
   reset(commands: readonly CommandDef[]): void {
+    this.scopeFiles = null;
     this.state = { query: '', items: this.buildItems(commands, ''), activeIndex: 0 };
     this.emit();
   }
 
   showBookmarks(bookmarks: readonly PaletteItem[]): void {
+    this.scopeFiles = null;
     this.state = { query: '', items: bookmarks, activeIndex: 0 };
     this.emit();
   }
 
   showHistory(historyItems: readonly PaletteItem[]): void {
+    this.scopeFiles = null;
     this.state = { query: '', items: historyItems, activeIndex: 0 };
     this.emit();
   }
 
   showClipboardHistory(items: readonly PaletteItem[]): void {
+    this.scopeFiles = null;
     this.state = { query: '', items, activeIndex: 0 };
     this.emit();
   }
 
   showFiles(files: readonly OpenFileRef[]): void {
+    const seen = new Set<string>();
+    const unique = files.filter((file) => {
+      if (seen.has(file.path)) return false;
+      seen.add(file.path);
+      return true;
+    });
+    this.scopeFiles = unique;
     this.state = {
       query: '',
-      items: files.map((file) => ({
+      items: unique.slice(0, 40).map((file) => ({
         commandId: 'file.open',
         title: file.name,
         category: 'file',
@@ -75,6 +87,7 @@ export class PaletteModel {
   }
 
   showModels(models: readonly { readonly id: string; readonly name: string }[]): void {
+    this.scopeFiles = null;
     this.state = {
       query: '',
       items: models.map((model) => ({
@@ -142,7 +155,10 @@ export class PaletteModel {
       }
       if (bestScore >= 0) entries.push({ kind: 'command', command, score: bestScore });
     }
-    for (const file of openFilesModel.list()) {
+    const seenFiles = new Set<string>();
+    for (const file of this.scopeFiles ?? openFilesModel.list()) {
+      if (seenFiles.has(file.path)) continue;
+      seenFiles.add(file.path);
       const match = fuzzyScore(query, file.name);
       if (match !== null) entries.push({ kind: 'file', file, score: match.score });
     }

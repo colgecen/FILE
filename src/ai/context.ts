@@ -1,4 +1,5 @@
 import { environmentsModel } from '../core/environments';
+import { chatContextModel } from '../core/chatContext';
 import { explorerModel } from '../core/explorer';
 import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
@@ -19,6 +20,7 @@ export type ProjectContext = {
   readonly projectName: string;
   readonly activeFile: ContextFile | null;
   readonly openFiles: readonly { readonly path: string; readonly name: string }[];
+  readonly extraFolders?: readonly string[];
 };
 
 export type ContextInput = {
@@ -54,6 +56,7 @@ export function collectProjectContext(input: ContextInput): ProjectContext {
     rootPath: rootPath ?? null,
     projectName: input.env?.name ?? (rootPath ? baseNameOf(rootPath) : 'proje'),
     activeFile,
+    extraFolders: chatContextModel.list(),
     openFiles: input.tabs
       .slice(0, MAX_LISTED_FILES)
       .map((tab) => ({ path: tab.file.path, name: tab.file.name })),
@@ -92,6 +95,9 @@ export function renderContextBlock(ctx: ProjectContext, mode: PlanMode, withTool
   lines.push(`Proje: ${ctx.projectName}${ctx.rootPath ? ` (${ctx.rootPath})` : ' (kök yok)'}`);
   if (ctx.openFiles.length > 0) {
     lines.push(`Açık dosyalar: ${ctx.openFiles.map((file) => file.name).join(', ')}`);
+  }
+  if ((ctx.extraFolders ?? []).length > 0) {
+    lines.push(`Ek bağlam klasörleri: ${(ctx.extraFolders ?? []).join(', ')}`);
   }
   if (ctx.activeFile !== null) {
     lines.push(`--- aktif dosya: ${ctx.activeFile.path} (${ctx.activeFile.language}) ---`);

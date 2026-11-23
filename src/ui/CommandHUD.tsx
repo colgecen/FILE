@@ -90,7 +90,7 @@ export function CommandHUD(): React.JSX.Element | null {
                 .join(' ');
               return (
                 <div
-                  key={item.commandId}
+                  key={`${item.commandId}:${item.filePath ?? item.modelId ?? item.title}:${index}`}
                   role="option"
                   aria-selected={active}
                   className={className}

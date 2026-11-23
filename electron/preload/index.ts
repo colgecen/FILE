@@ -14,6 +14,12 @@ const api: Api = {
   readDir: (path) => ipcRenderer.invoke('fs:read-dir', path),
   createEntry: (parentPath, name, kind) =>
     ipcRenderer.invoke('fs:create-entry', parentPath, name, kind),
+  copyEntry: (source, targetParent) => ipcRenderer.invoke('fs:copy-entry', source, targetParent),
+  moveEntry: (source, targetParent) => ipcRenderer.invoke('fs:move-entry', source, targetParent),
+  renameEntry: (source, newName) => ipcRenderer.invoke('fs:rename-entry', source, newName),
+  deleteEntry: (path) => ipcRenderer.invoke('fs:delete-entry', path),
+  showItemInFolder: (path) => ipcRenderer.invoke('shell:show-item', path),
+  writeClipboard: (text) => ipcRenderer.invoke('clipboard:write', text),
   gitBranch: (path) => ipcRenderer.invoke('git:branch', path),
   gitStatus: (path) => ipcRenderer.invoke('git:status', path),
   gitDiff: (path, file) => ipcRenderer.invoke('git:diff', path, file),

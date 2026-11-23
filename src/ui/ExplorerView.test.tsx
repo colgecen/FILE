@@ -301,6 +301,37 @@ describe('ExplorerView', () => {
     expect(focusManager.get()).toBe('editor');
   });
 
+  it('klasöre sağ tıklayınca bağlam menüsü açılır ve dışarı tıklayınca kapanır', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    const row = screen.getByText('src', { selector: '.explorer-row__name' }).closest('.explorer-row')!;
+    fireEvent.contextMenu(row);
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /Yeni Dosya/ })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /Yeni Klasör/ })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /Görsel Önizlemede Aç/ })).toBeInTheDocument();
+    expect(screen.getByText('Ctrl+Alt+R')).toBeInTheDocument();
+    expect(screen.getByText('Ctrl+Shift+Alt+C')).toBeInTheDocument();
+    expect(document.querySelectorAll('.explorer-context-menu__separator')).toHaveLength(5);
+    fireEvent.mouseDown(document.body);
+    expect(screen.queryByRole('menu')).toBeNull();
+  });
+
+  it('F2 ile klasör adı satır içinde düzenlenir', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+      focusManager.set('explorer');
+      explorerModel.select('/proje/src');
+    });
+    fireEvent.keyDown(window, { key: 'F2' });
+    expect(screen.getByRole('textbox', { name: 'Yeni klasör adı' })).toBeInTheDocument();
+  });
+
   it('tek tık klasörü açıp kapatır', async () => {
     render(<AppShell />);
     act(() => {

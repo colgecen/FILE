@@ -55,6 +55,12 @@ export type CreateEntryResult = {
   readonly path?: string;
 };
 
+export type FsMutationResult = {
+  readonly ok: boolean;
+  readonly error?: string;
+  readonly path?: string;
+};
+
 export type AiApiMessage = {
   readonly role: 'system' | 'user' | 'assistant';
   readonly content: string;
@@ -222,6 +228,12 @@ export type Api = {
     name: string,
     kind: 'file' | 'directory',
   ): Promise<CreateEntryResult>;
+  copyEntry(source: string, targetParent: string): Promise<FsMutationResult>;
+  moveEntry(source: string, targetParent: string): Promise<FsMutationResult>;
+  renameEntry(source: string, newName: string): Promise<FsMutationResult>;
+  deleteEntry(path: string): Promise<FsMutationResult>;
+  showItemInFolder(path: string): Promise<boolean>;
+  writeClipboard(text: string): Promise<boolean>;
   gitBranch(path: string): Promise<GitBranchInfo | null>;
   gitStatus(path: string): Promise<GitFile[] | null>;
   gitDiff(path: string, file: string): Promise<string | null>;

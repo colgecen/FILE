@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useExplorerState, explorerModel, type ExplorerRow } from '../core/explorer';
 import { focusManager } from '../core/focus';
 import { gitModel, useGitPanelState } from '../core/gitModel';
@@ -13,9 +14,17 @@ import {
   NewFolderIcon,
   RefreshIcon,
 } from './icons';
+import { reportError } from '../core/appErrors';
+import { chatContextModel } from '../core/chatContext';
+import { aiChatModel } from '../core/chatModel';
+import { explorerClipboard, useExplorerClipboard } from '../core/explorerClipboard';
+import { adoptFile } from '../core/fileCommands';
 import { fileContentCache } from '../core/fileCache';
 import { fileWarmup } from '../core/fileWarmup';
-import { mediaKindForPath } from '../core/media';
+import { mediaKindForPath, mediaUrlForPath } from '../core/media';
+import { paletteModel } from '../core/palette';
+import { tabsModel } from '../core/tabs';
+import { activeTerminalContext, terminalModel } from '../core/terminalModel';
 import { uiText } from '../core/uiLanguage';
 
 /** Dosyayı oku ve hazır olduğunda editör modelini boşta kur. */
@@ -53,12 +62,59 @@ type Draft = {
   readonly depth: number;
 };
 
+type ContextMenuState = {
+  readonly path: string;
+  readonly name: string;
+  readonly depth: number;
+  readonly x: number;
+  readonly y: number;
+};
+
+type RenameState = {
+  readonly path: string;
+  readonly depth: number;
+};
+
+type GalleryImage = {
+  readonly name: string;
+  readonly path: string;
+};
+
+type GalleryState = {
+  readonly name: string;
+  readonly images: readonly GalleryImage[];
+};
+
+const SEARCH_SKIP_DIRS = new Set(['.git', 'node_modules', 'dist', 'out', 'build', 'target', '.cache']);
+
+function relativeTo(root: string, path: string): string {
+  const normalizedRoot = root.replace(/[\\/]+$/, '');
+  if (path === normalizedRoot) return '.';
+  const prefix = `${normalizedRoot}/`;
+  if (path.startsWith(prefix)) return path.slice(prefix.length);
+  const winPrefix = `${normalizedRoot}\\`;
+  if (path.startsWith(winPrefix)) return path.slice(winPrefix.length);
+  return path;
+}
+
+function closeTabsUnder(path: string): void {
+  const prefix = path.endsWith('/') || path.endsWith('\\') ? path : `${path}/`;
+  const winPrefix = path.endsWith('\\') ? path : `${path}\\`;
+  for (const tab of tabsModel.getState().tabs) {
+    if (tab.file.path === path || tab.file.path.startsWith(prefix) || tab.file.path.startsWith(winPrefix)) {
+      tabsModel.close(tab.id);
+    }
+  }
+}
+
+
 export function ExplorerView(): React.JSX.Element | null {
   const state = useExplorerState();
   const git = useGitPanelState();
   const { registry } = useCore();
   const bodyRef = useRef<HTMLDivElement>(null);
   const draftInputRef = useRef<HTMLInputElement>(null);
+  const renameInputRef = useRef<HTMLInputElement>(null);
   const scrollDragRef = useRef<{ y: number; top: number } | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [scrollHeight, setScrollHeight] = useState(0);
@@ -66,6 +122,11 @@ export function ExplorerView(): React.JSX.Element | null {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [draftName, setDraftName] = useState('');
   const [draftError, setDraftError] = useState<string | null>(null);
+  const [menu, setMenu] = useState<ContextMenuState | null>(null);
+  const [rename, setRename] = useState<RenameState | null>(null);
+  const [renameName, setRenameName] = useState('');
+  const [gallery, setGallery] = useState<GalleryState | null>(null);
+  const clipboard = useExplorerClipboard();
 
   useEffect(() => {
     if (state.rootPath === null) return;
@@ -107,11 +168,15 @@ export function ExplorerView(): React.JSX.Element | null {
     return [...rows.slice(0, index + 1), draftRow, ...rows.slice(index + 1)];
   }, [rows, draft, draftRow]);
 
+  const selectedRow = useMemo(
+    () => rows.find((row) => row.path === state.selectedPath) ?? null,
+    [rows, state.selectedPath],
+  );
+
   const folderTarget = useMemo(() => {
-    const selected = rows.find((row) => row.path === state.selectedPath);
-    if (selected === undefined) return state.rootPath;
-    return selected.kind === 'directory' ? selected.path : parentPathOf(selected.path);
-  }, [rows, state.selectedPath, state.rootPath]);
+    if (selectedRow === null) return state.rootPath;
+    return selectedRow.kind === 'directory' ? selectedRow.path : parentPathOf(selectedRow.path);
+  }, [selectedRow, state.rootPath]);
 
   const beginCreate = (kind: 'file' | 'directory', parentPath: string | null): void => {
     if (parentPath === null) return;
@@ -173,6 +238,191 @@ export function ExplorerView(): React.JSX.Element | null {
     cancelDraft();
   };
 
+  const closeMenu = (): void => setMenu(null);
+
+  const openInTab = async (path: string): Promise<void> => {
+    const file = await fileContentCache.read(window.api, path);
+    if (file === null) {
+      reportError(uiText('Dosya okunamadı', 'Could not read file'));
+      return;
+    }
+    adoptFile({
+      path: file.path,
+      name: file.name,
+      content: file.content,
+      language: file.language,
+      ...(file.kind === undefined ? {} : { kind: file.kind }),
+    });
+  };
+
+  const refreshParentOf = async (path: string): Promise<void> => {
+    const parent = parentPathOf(path);
+    if (parent === null) return;
+    explorerModel.invalidateCache(parent);
+    await explorerModel.refreshDirectory(parent, window.api.readDir);
+  };
+
+  const beginRename = (row: ExplorerRow): void => {
+    closeMenu();
+    setRename({ path: row.path, depth: row.depth });
+    setRenameName(row.name);
+  };
+
+  const commitRename = async (): Promise<void> => {
+    if (rename === null) return;
+    const name = renameName.trim();
+    if (name.length === 0) return;
+    const result = await window.api.renameEntry(rename.path, name);
+    if (!result.ok) {
+      reportError(result.error ?? uiText('Yeniden adlandırılamadı', 'Could not rename'));
+      return;
+    }
+    const created = result.path ?? rename.path;
+    closeTabsUnder(rename.path);
+    fileContentCache.clear();
+    setRename(null);
+    setRenameName('');
+    await refreshParentOf(rename.path);
+    explorerModel.select(created);
+  };
+
+  const deleteFolder = async (path: string, name: string): Promise<void> => {
+    closeMenu();
+    if (path === state.rootPath) {
+      reportError(uiText('Kök klasör silinemez', 'The workspace root cannot be deleted'));
+      return;
+    }
+    if (!window.confirm(uiText(`"${name}" silinsin mi?`, `Delete "${name}"?`))) return;
+    const result = await window.api.deleteEntry(path);
+    if (!result.ok) {
+      reportError(result.error ?? uiText('Silinemedi', 'Could not delete'));
+      return;
+    }
+    closeTabsUnder(path);
+    fileContentCache.clear();
+    const parent = parentPathOf(path) ?? state.rootPath;
+    await refreshParentOf(path);
+    if (parent !== null) explorerModel.select(parent);
+  };
+
+  const setFolderClipboard = (path: string, name: string, cut: boolean): void => {
+    explorerClipboard.set({ path, name, cut });
+  };
+
+  const pasteInto = async (folder: string): Promise<void> => {
+    closeMenu();
+    const entry = explorerClipboard.get();
+    if (entry === null) {
+      reportError(uiText('Panoda klasör yok', 'Clipboard is empty'));
+      return;
+    }
+    if (entry.path === folder) return;
+    const result = entry.cut
+      ? await window.api.moveEntry(entry.path, folder)
+      : await window.api.copyEntry(entry.path, folder);
+    if (!result.ok) {
+      reportError(result.error ?? uiText('Yapıştırılamadı', 'Could not paste'));
+      return;
+    }
+    if (entry.cut) {
+      closeTabsUnder(entry.path);
+      explorerClipboard.set(null);
+      await refreshParentOf(entry.path);
+    }
+    fileContentCache.clear();
+    explorerModel.invalidateCache(folder);
+    await explorerModel.expandDirectory(folder, window.api.readDir);
+    if (result.path !== undefined) explorerModel.select(result.path);
+  };
+
+  const copyFolderPath = async (path: string, relative: boolean): Promise<void> => {
+    closeMenu();
+    const text =
+      relative && state.rootPath !== null ? relativeTo(state.rootPath, path) : path;
+    await window.api.writeClipboard(text);
+  };
+
+  const findInFolder = async (folder: string): Promise<void> => {
+    closeMenu();
+    const files: { name: string; path: string }[] = [];
+    const queue = [folder];
+    const visited = new Set<string>();
+    while (queue.length > 0 && files.length < 400) {
+      const current = queue.shift() as string;
+      if (visited.has(current)) continue;
+      visited.add(current);
+      const entries = await window.api.readDir(current).catch(() => null);
+      if (entries === null) continue;
+      for (const entry of entries as readonly { name: string; path: string; kind: 'file' | 'directory' }[]) {
+        if (entry.kind === 'directory') {
+          if (!SEARCH_SKIP_DIRS.has(entry.name)) queue.push(entry.path);
+        } else {
+          files.push({ name: relativeTo(folder, entry.path), path: entry.path });
+          if (files.length >= 400) break;
+        }
+      }
+    }
+    if (files.length === 0) {
+      reportError(uiText('Klasörde dosya bulunamadı', 'No files found in folder'));
+      return;
+    }
+    files.sort((a, b) => a.name.localeCompare(b.name));
+    paletteModel.showFiles(files);
+    focusManager.set('palette');
+  };
+
+  const addFolderToChat = (folder: string): void => {
+    closeMenu();
+    chatContextModel.addFolder(folder);
+    aiChatModel.open();
+    focusManager.set('ai');
+  };
+
+  const openVisualPreview = async (folder: string, name: string): Promise<void> => {
+    closeMenu();
+    const entries = await window.api.readDir(folder).catch(() => null);
+    if (entries === null) {
+      reportError(uiText('Klasör okunamadı', 'Could not read folder'));
+      return;
+    }
+    const images = (entries as readonly { name: string; path: string; kind: 'file' | 'directory' }[])
+      .filter((entry) => entry.kind === 'file' && mediaKindForPath(entry.path) === 'image')
+      .map((entry) => ({ name: entry.name, path: entry.path }));
+    if (images.length === 0) {
+      reportError(uiText('Bu klasörde görsel yok', 'No images in this folder'));
+      return;
+    }
+    setGallery({ name, images });
+  };
+
+  const openTerminalAt = (folder: string): void => {
+    closeMenu();
+    const { envId } = activeTerminalContext();
+    terminalModel.addTab(envId, folder);
+  };
+
+  const openContextMenu = (
+    event: React.MouseEvent<HTMLDivElement>,
+    row: ExplorerRow,
+  ): void => {
+    event.preventDefault();
+    event.stopPropagation();
+    explorerModel.select(row.path);
+    focusManager.set('explorer');
+    cancelDraft();
+    setRename(null);
+    const rect = event.currentTarget.getBoundingClientRect();
+    const width = 330;
+    const estimatedHeight = 560;
+    const x = Math.max(8, Math.min(rect.left + 8, window.innerWidth - width - 8));
+    const below = rect.bottom + 2;
+    const y =
+      below + estimatedHeight > window.innerHeight - 8
+        ? Math.max(8, window.innerHeight - estimatedHeight - 8)
+        : below;
+    setMenu({ path: row.path, name: row.name, depth: row.depth, x, y });
+  };
+
   useEffect(() => {
     const body = bodyRef.current;
     if (body === null) return;
@@ -220,8 +470,130 @@ export function ExplorerView(): React.JSX.Element | null {
     if (state.rootPath === null) {
       setDraft(null);
       setDraftError(null);
+      setMenu(null);
+      setRename(null);
+      setGallery(null);
     }
   }, [state.rootPath]);
+
+  useEffect(() => {
+    if (rename === null) return;
+    renameInputRef.current?.focus();
+    renameInputRef.current?.select();
+  }, [rename]);
+
+  useEffect(() => {
+    if (menu === null) return;
+    const close = (): void => setMenu(null);
+    const onDown = (event: MouseEvent): void => {
+      const target = event.target;
+      if (target instanceof Element && target.closest('.explorer-context-menu') !== null) return;
+      close();
+    };
+    const onKey = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') close();
+    };
+    document.addEventListener('mousedown', onDown, true);
+    document.addEventListener('keydown', onKey, true);
+    document.addEventListener('scroll', close, true);
+    window.addEventListener('blur', close);
+    window.addEventListener('resize', close);
+    return () => {
+      document.removeEventListener('mousedown', onDown, true);
+      document.removeEventListener('keydown', onKey, true);
+      document.removeEventListener('scroll', close, true);
+      window.removeEventListener('blur', close);
+      window.removeEventListener('resize', close);
+    };
+  }, [menu]);
+
+  useEffect(() => {
+    if (gallery === null) return;
+    const onKey = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') setGallery(null);
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [gallery]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      const menuOpen = menu !== null;
+      if (!menuOpen && focusManager.get() !== 'explorer') return;
+      const folder =
+        menu?.path ?? (selectedRow?.kind === 'directory' ? selectedRow.path : null);
+      if (folder === null) return;
+      const ctrl = event.ctrlKey || event.metaKey;
+      const handled = (): void => {
+        event.preventDefault();
+        event.stopPropagation();
+        closeMenu();
+      };
+      if (ctrl && event.altKey && !event.shiftKey && event.code === 'KeyR') {
+        handled();
+        void window.api.showItemInFolder(folder);
+        return;
+      }
+      if (event.shiftKey && event.altKey && !ctrl && event.code === 'KeyF') {
+        handled();
+        void findInFolder(folder);
+        return;
+      }
+      if (ctrl && !event.altKey && !event.shiftKey && event.code === 'KeyX') {
+        handled();
+        const row = rows.find((entry) => entry.path === folder);
+        setFolderClipboard(folder, row?.name ?? folder, true);
+        return;
+      }
+      if (ctrl && !event.altKey && !event.shiftKey && event.code === 'KeyC') {
+        handled();
+        const row = rows.find((entry) => entry.path === folder);
+        setFolderClipboard(folder, row?.name ?? folder, false);
+        return;
+      }
+      if (ctrl && !event.altKey && !event.shiftKey && event.code === 'KeyV') {
+        handled();
+        void pasteInto(folder);
+        return;
+      }
+      if (ctrl && event.altKey && !event.shiftKey && event.code === 'KeyC') {
+        handled();
+        void copyFolderPath(folder, false);
+        return;
+      }
+      if (ctrl && event.altKey && event.shiftKey && event.code === 'KeyC') {
+        handled();
+        void copyFolderPath(folder, true);
+        return;
+      }
+      if (!ctrl && !event.altKey && !event.shiftKey && event.key === 'F2') {
+        const row = rows.find((entry) => entry.path === folder);
+        if (row !== undefined) {
+          handled();
+          beginRename(row);
+        }
+        return;
+      }
+      if (!ctrl && !event.altKey && !event.shiftKey && event.key === 'Delete') {
+        const row = rows.find((entry) => entry.path === folder);
+        if (row !== undefined) {
+          handled();
+          void deleteFolder(folder, row.name);
+        }
+      }
+    };
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, [menu, selectedRow, rows, state.rootPath, clipboard, rename]);
 
   if (!state.isOpen) return null;
 
@@ -268,7 +640,8 @@ export function ExplorerView(): React.JSX.Element | null {
   };
 
   return (
-    <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
+    <>
+      <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
       <div className="explorer-view__head">
         <span className="explorer-view__title">{uiText('Dosyalar', 'Files')}</span>
         <div className="explorer-view__actions" role="toolbar" aria-label="Gezgin işlemleri">
@@ -338,8 +711,10 @@ export function ExplorerView(): React.JSX.Element | null {
         <div className="explorer-view__rows" style={{ height: displayRows.length * ROW_HEIGHT }}>
           {visibleRows.map((row, index) => {
             const active = row.path === state.selectedPath;
+            const cut = clipboard?.cut === true && clipboard.path === row.path;
             const className = ['explorer-row', `explorer-row--depth-${row.depth}`]
               .concat(active ? ['explorer-row--active'] : [])
+              .concat(cut ? ['explorer-row--cut'] : [])
               .join(' ');
             const style = {
               position: 'absolute' as const,
@@ -409,6 +784,9 @@ export function ExplorerView(): React.JSX.Element | null {
                 onPointerDown={() => {
                   if (row.kind === 'file') prefetchFile(row.path);
                 }}
+                onContextMenu={(event) => {
+                  if (row.kind === 'directory') openContextMenu(event, row);
+                }}
                 onClick={() => {
                   if (draft !== null) cancelDraft();
                   explorerModel.select(row.path);
@@ -434,7 +812,29 @@ export function ExplorerView(): React.JSX.Element | null {
                     <FileLogo name={row.name} />
                   </span>
                 )}
-                <span className="explorer-row__name">{row.name}</span>
+                {rename?.path === row.path ? (
+                  <input
+                    ref={renameInputRef}
+                    className="explorer-row__name explorer-row__input"
+                    value={renameName}
+                    aria-label="Yeni klasör adı"
+                    spellCheck={false}
+                    onChange={(event) => setRenameName(event.target.value)}
+                    onClick={(event) => event.stopPropagation()}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        void commitRename();
+                      } else if (event.key === 'Escape') {
+                        event.preventDefault();
+                        setRename(null);
+                        setRenameName('');
+                      }
+                    }}
+                  />
+                ) : (
+                  <span className="explorer-row__name">{row.name}</span>
+                )}
                 {badges.get(row.path) !== undefined && (
                   <span className={badgeClass(badges.get(row.path) as string)} aria-label={`Git durumu ${badges.get(row.path)}`}>
                     {badges.get(row.path)}
@@ -503,6 +903,190 @@ export function ExplorerView(): React.JSX.Element | null {
           </div>
         )}
       </div>
-    </aside>
+      </aside>
+      {menu !== null &&
+        createPortal(
+          <div
+            className="explorer-context-menu"
+            role="menu"
+            aria-label={`${menu.name} klasör işlemleri`}
+            style={{ left: menu.x, top: menu.y }}
+            onMouseDown={(event) => event.stopPropagation()}
+            onContextMenu={(event) => event.preventDefault()}
+          >
+            <ContextMenuButton
+              label="Yeni Dosya..."
+              onSelect={() => {
+                closeMenu();
+                beginCreate('file', menu.path);
+              }}
+            />
+            <ContextMenuButton
+              label="Yeni Klasör..."
+              onSelect={() => {
+                closeMenu();
+                beginCreate('directory', menu.path);
+              }}
+            />
+            <ContextMenuButton
+              label="İçeren Klasörü Aç"
+              shortcut="Ctrl+Alt+R"
+              onSelect={() => {
+                closeMenu();
+                void window.api.showItemInFolder(menu.path);
+              }}
+            />
+            <ContextMenuButton
+              label="Görsel Önizlemede Aç"
+              onSelect={() => void openVisualPreview(menu.path, menu.name)}
+            />
+            <ContextMenuButton
+              label="Tümleşik Terminalde Aç"
+              onSelect={() => openTerminalAt(menu.path)}
+            />
+            <ContextMenuSeparator />
+            <ContextMenuButton
+              label="Klasörde Bul..."
+              shortcut="Shift+Alt+F"
+              onSelect={() => void findInFolder(menu.path)}
+            />
+            <ContextMenuSeparator />
+            <ContextMenuButton
+              label="Klasörü Sohbete Ekle"
+              onSelect={() => addFolderToChat(menu.path)}
+            />
+            <ContextMenuSeparator />
+            <ContextMenuButton
+              label="Kes"
+              shortcut="Ctrl+X"
+              onSelect={() => {
+                closeMenu();
+                setFolderClipboard(menu.path, menu.name, true);
+              }}
+            />
+            <ContextMenuButton
+              label="Kopyala"
+              shortcut="Ctrl+C"
+              onSelect={() => {
+                closeMenu();
+                setFolderClipboard(menu.path, menu.name, false);
+              }}
+            />
+            <ContextMenuButton
+              label="Yapıştır"
+              shortcut="Ctrl+V"
+              disabled={clipboard === null}
+              onSelect={() => void pasteInto(menu.path)}
+            />
+            <ContextMenuSeparator />
+            <ContextMenuButton
+              label="Yolu Kopyala"
+              shortcut="Ctrl+Alt+C"
+              onSelect={() => void copyFolderPath(menu.path, false)}
+            />
+            <ContextMenuButton
+              label="Göreli Yolu Kopyala"
+              shortcut="Ctrl+Shift+Alt+C"
+              onSelect={() => void copyFolderPath(menu.path, true)}
+            />
+            <ContextMenuSeparator />
+            <ContextMenuButton
+              label="Yeniden Adlandır..."
+              shortcut="F2"
+              onSelect={() => {
+                const row = rows.find((entry) => entry.path === menu.path);
+                if (row !== undefined) beginRename(row);
+              }}
+            />
+            <ContextMenuButton
+              label="Sil"
+              shortcut="Del"
+              onSelect={() => void deleteFolder(menu.path, menu.name)}
+            />
+          </div>,
+          document.body,
+        )}
+      {gallery !== null &&
+        createPortal(
+          <div
+            className="explorer-gallery"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${gallery.name} görsel önizlemesi`}
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) setGallery(null);
+            }}
+          >
+            <div className="explorer-gallery__panel">
+              <div className="explorer-gallery__head">
+                <span className="explorer-gallery__title">{gallery.name}</span>
+                <button
+                  type="button"
+                  className="explorer-gallery__close"
+                  aria-label="Önizlemeyi kapat"
+                  onClick={() => setGallery(null)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="explorer-gallery__grid">
+                {gallery.images.map((image) => (
+                  <button
+                    key={image.path}
+                    type="button"
+                    className="explorer-gallery__item"
+                    title={image.name}
+                    onClick={() => {
+                      setGallery(null);
+                      void openInTab(image.path);
+                    }}
+                  >
+                    <img
+                      className="explorer-gallery__thumb"
+                      src={mediaUrlForPath(image.path)}
+                      alt={image.name}
+                      loading="lazy"
+                      draggable={false}
+                    />
+                    <span className="explorer-gallery__name">{image.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+    </>
   );
+}
+
+function ContextMenuButton({
+  label,
+  shortcut,
+  disabled = false,
+  onSelect,
+}: {
+  readonly label: string;
+  readonly shortcut?: string;
+  readonly disabled?: boolean;
+  readonly onSelect: () => void;
+}): React.JSX.Element {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      className="explorer-context-menu__item"
+      disabled={disabled}
+      onClick={onSelect}
+    >
+      <span className="explorer-context-menu__label">{label}</span>
+      {shortcut !== undefined && (
+        <span className="explorer-context-menu__shortcut">{shortcut}</span>
+      )}
+    </button>
+  );
+}
+
+function ContextMenuSeparator(): React.JSX.Element {
+  return <div className="explorer-context-menu__separator" role="separator" />;
 }

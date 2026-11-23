@@ -148,7 +148,21 @@ export function registerNavCommands(registry: CommandRegistry): void {
         return ok ? { ok: true } : { ok: false, error: 'Geçmiş dosyası açık değil' };
       }
       if (item.category === 'file' && item.filePath !== undefined) {
-        tabsModel.activate(item.filePath);
+        const path = item.filePath;
+        if (tabsModel.getState().tabs.some((tab) => tab.file.path === path)) {
+          tabsModel.activate(path);
+          return { ok: true };
+        }
+        const file = await fileContentCache.read(window.api, path);
+        if (file === null) return { ok: false, error: 'Dosya okunamadı' };
+        const { adoptFile } = await import('./fileCommands');
+        adoptFile({
+          path: file.path,
+          name: file.name,
+          content: file.content,
+          language: file.language,
+          ...(file.kind === undefined ? {} : { kind: file.kind }),
+        });
         return { ok: true };
       }
       if (item.modelId !== undefined) {
