@@ -60,7 +60,7 @@ describe('scanLocalModels', () => {
         return { ok: true, status: 200 };
       }),
     });
-    await scanLocalModels(api, { ollama: 'http://192.168.1.9:11434' });
-    expect(seen).toContain('http://192.168.1.9:11434');
+    await scanLocalModels(api, { ollama: 'http://192.0.2.9:11434' });
+    expect(seen).toContain('http://192.0.2.9:11434');
   });
 });

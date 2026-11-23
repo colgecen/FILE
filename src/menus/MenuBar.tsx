@@ -5,6 +5,7 @@ import { focusManager, useFocusZone } from '../core/focus';
 import { MenuPanel } from './MenuPanel';
 import { menuModel, useMenuModelState } from './menuModel';
 import { Clock } from '../ui/Clock';
+import { uiMenuLabel } from '../core/uiLanguage';
 
 export function WindowControls(): React.JSX.Element | null {
   if (window.api.platform === 'darwin') return null;
@@ -64,7 +65,7 @@ export function MenuBar(): React.JSX.Element {
 
   const items = [];
   for (let i = 0; i < menuModel.topCount(); i++) {
-    const label = menuModel.topLabel(i);
+    const label = uiMenuLabel(menuModel.topId(i), menuModel.topLabel(i));
     const active = menubarActive && state.activeTop === i;
     const className = ['menubar__item', active ? 'menubar__item--active' : '']
       .filter(Boolean)

@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 #
-# file — etkileşimli üretim/paket derleme aracı
+# file — uygulamayı çalıştırma ve paket derleme aracı
 #
 # Kullanım:
-#   ./file                      -> etkileşimli menü (OS seç -> format seç -> derle)
+#   ./file                      -> uygulamayı kaynaktan çalıştır (Ctrl+C ile durdur)
+#   ./file --build              -> etkileşimli menü (OS seç -> format seç -> derle)
 #   ./file --list               -> tüm derleme seçeneklerini listele
 #   ./file linux appimage       -> hızlı derle (argümanlı, menüsüz)
 #   ./file --tam linux appimage  -> tam derle (doğrulama zincirli)
 #   ./file windows portable
 #   ./file macos dmg
-#   ./file --install            -> ~/.local/bin'e sembolik bağ kur,
-#                                  sonra her klasörden `file` yazman yeterli
+#   ./file --install            -> `file` komutunu ve masaüstü kısayolunu kur
+#   ./file --uninstall          -> komutu, kısayolu ve simgeyi kaldır
 #   ./file --help               -> yardım
 #
 # Geçerli hedefler (package.json > build alanıyla birebir):
@@ -65,11 +66,13 @@ usage() {
   banner
   echo
   echo "Kullanım:"
-  echo "  ./file                      Etkileşimli menü (hızlı)"
+  echo "  ./file                      Uygulamayı kaynaktan çalıştır"
+  echo "  ./file --build              Etkileşimli derleme menüsü"
   echo "  ./file <os> <format>        Direkt hızlı derle"
   echo "  ./file --tam <os> <format>  Tam derle (doğrulama zincirli)"
   echo "  ./file --list               Seçenekleri listele"
-  echo "  ./file --install            Komutu sisteme kur (her yerden 'file')"
+  echo "  ./file --install            Komutu ve masaüstü kısayolunu kur"
+  echo "  ./file --uninstall          Kurulumu kaldır"
   echo "  ./file --help               Bu yardım"
   echo
   echo "Hedefler:"
@@ -94,11 +97,91 @@ list_targets() {
   echo "macos   : dmg | zip"
 }
 
+# Uygulamayı kaynaktan başlat; Ctrl+C doğrudan uygulamaya ulaşır.
+run_app() {
+  cd "$ROOT"
+  exec npm run dev -- "$@"
+}
+
+WRAPPER_MARK="# file-wrapper"
+DESKTOP_MARK="# file-desktop"
+ICON="$ROOT/assets/icon.png"
+
+refresh_caches() {
+  command -v update-desktop-database >/dev/null 2>&1 \
+    && update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
+  command -v gtk-update-icon-cache >/dev/null 2>&1 \
+    && gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor" >/dev/null 2>&1 || true
+}
+
+# Simge zaten yuvarlatılmışsa olduğu gibi kopyala; kare ise %20 köşe yuvarlat.
+prepare_icon() {
+  local dest="$1" im="" ident="" w r corner
+  [ -f "$ICON" ] || return 1
+  if command -v magick >/dev/null 2>&1; then
+    im="magick"; ident="magick identify"
+  elif command -v convert >/dev/null 2>&1; then
+    im="convert"; ident="identify"
+  fi
+  if [ -z "$im" ]; then
+    cp "$ICON" "$dest"
+    return 0
+  fi
+  w="$($ident -format '%w' "$ICON")"
+  r=$(( w * 20 / 100 ))
+  corner="$($ident -format '%[fx:p{0,0}.a]' "$ICON" 2>/dev/null || echo 1)"
+  if [ "$corner" = "0" ]; then
+    cp "$ICON" "$dest"
+  else
+    $im "$ICON" -alpha set \
+      \( -size "${w}x${w}" xc:none -fill white \
+         -draw "roundrectangle 0,0 $((w-1)),$((w-1)) $r,$r" \) \
+      -compose DstIn -composite "$dest"
+  fi
+}
+
+install_desktop() {
+  local apps="$HOME/.local/share/applications"
+  local icons="$HOME/.local/share/icons/hicolor/512x512/apps"
+  mkdir -p "$apps" "$icons"
+  prepare_icon "$icons/file.png" || true
+  cat > "$apps/file.desktop" << DESKTOP
+$DESKTOP_MARK
+[Desktop Entry]
+Type=Application
+Name=FILE
+Comment=Keyboard-first desktop code editor
+Exec="$ROOT/file"
+Icon=file
+Terminal=true
+Categories=Development;
+DESKTOP
+  refresh_caches
+  echo "Kuruldu: $apps/file.desktop (uygulama menüsünde görünür)"
+}
+
+uninstall_desktop() {
+  local entry="$HOME/.local/share/applications/file.desktop"
+  if [ -f "$entry" ] && grep -q "$DESKTOP_MARK" "$entry"; then
+    rm -f "$entry"
+    echo "Kaldırıldı: $entry"
+  fi
+  rm -f "$HOME/.local/share/icons/hicolor/512x512/apps/file.png"
+  refresh_caches
+}
+
 do_install() {
-  local bindir="$HOME/.local/bin"
+  local bindir="$HOME/.local/bin" wrapper="$HOME/.local/bin/file"
   mkdir -p "$bindir"
-  ln -sf "$ROOT/file" "$bindir/file"
-  echo "Kuruldu: $bindir/file -> $ROOT/file"
+  # Eski sembolik bağ hedef betiği ezmesin diye önce kaldır.
+  if [ -L "$wrapper" ]; then
+    rm -f "$wrapper"
+  fi
+  printf '#!/usr/bin/env bash\n%s\nexec "%s/file" --build "$@"\n' \
+    "$WRAPPER_MARK" "$ROOT" > "$wrapper"
+  chmod +x "$wrapper"
+  echo "Kuruldu: $wrapper"
+  install_desktop
   case ":$PATH:" in
     *":$bindir:"*) echo "PATH zaten '$bindir' içeriyor. Artık her klasörden 'file' yazabilirsin." ;;
     *)
@@ -107,6 +190,20 @@ do_install() {
       echo "Sonra yeni terminal aç ya da: source ~/.bashrc"
       ;;
   esac
+}
+
+do_uninstall() {
+  local wrapper="$HOME/.local/bin/file"
+  if [ -f "$wrapper" ] && grep -q "$WRAPPER_MARK" "$wrapper"; then
+    rm -f "$wrapper"
+    echo "Kaldırıldı: $wrapper"
+  elif [ -L "$wrapper" ]; then
+    rm -f "$wrapper"
+    echo "Kaldırıldı: $wrapper"
+  else
+    echo "Kaldırılacak komut bulunamadı."
+  fi
+  uninstall_desktop
 }
 
 # verify: paketleme öncesi doğrulama zinciri (hızlı modda atlanır)
@@ -276,12 +373,36 @@ interactive() {
 }
 
 # ---- argüman yönlendirme ----
-if [ $# -eq 0 ]; then
-  interactive
-  exit 0
-fi
+build_main() {
+  case "${1:-}" in
+    "") interactive ;;
+    -h|--help|help) usage ;;
+    -l|--list|list) list_targets ;;
+    linux|windows|macos|darwin)
+      if [ $# -lt 2 ]; then
+        echo "Format eksik. Örnek: ./file --build $1 <format>"
+        list_targets
+        exit 1
+      fi
+      build_target "$1" "$2"
+      ;;
+    *)
+      echo "Bilinmeyen komut: $1"
+      echo
+      usage
+      exit 1
+      ;;
+  esac
+}
 
 case "${1:-}" in
+  "")
+    run_app
+    ;;
+  --build)
+    shift
+    build_main "$@"
+    ;;
   -h|--help|help)
     usage
     ;;
@@ -291,8 +412,15 @@ case "${1:-}" in
   --install|install)
     do_install
     ;;
+  --uninstall|uninstall)
+    do_uninstall
+    ;;
   --version|-v)
     echo "file $VERSION"
+    ;;
+  --)
+    shift
+    run_app "$@"
     ;;
   linux|windows|macos|darwin)
     if [ $# -lt 2 ]; then
@@ -303,9 +431,7 @@ case "${1:-}" in
     build_target "$1" "$2"
     ;;
   *)
-    echo "Bilinmeyen komut: $1"
-    echo
-    usage
-    exit 1
+    # Rezerve edilmemiş her argüman uygulamaya gider.
+    run_app "$@"
     ;;
 esac

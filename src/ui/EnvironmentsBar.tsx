@@ -1,5 +1,6 @@
 import { removeEnvironment, switchToEnvironment } from '../core/envCommands';
 import { useEnvironmentsState } from '../core/environments';
+import { uiText } from '../core/uiLanguage';
 
 export function EnvironmentsBar(): React.JSX.Element {
   const { environments, activeId } = useEnvironmentsState();
@@ -8,7 +9,7 @@ export function EnvironmentsBar(): React.JSX.Element {
     <div className="env-bar" role="toolbar" aria-label="Proje ortamları">
       <div className="env-bar__list" aria-label="Ortam listesi">
         {environments.length === 0 && (
-          <span className="env-bar__hint">Ortam yok</span>
+          <span className="env-bar__hint">{uiText('Ortam yok', 'No workspace')}</span>
         )}
         {environments.map((env) => {
           const browserEnv = env.id.startsWith('browser:');

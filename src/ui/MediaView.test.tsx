@@ -7,7 +7,13 @@ import type { OpenFile } from '../core/types';
 afterEach(cleanup);
 
 function file(path: string, kind?: OpenFile['kind']): OpenFile {
-  return { path, name: path.split('/').pop() ?? path, content: '', language: 'plaintext', kind };
+  return {
+    path,
+    name: path.split('/').pop() ?? path,
+    content: '',
+    language: 'plaintext',
+    ...(kind === undefined ? {} : { kind }),
+  };
 }
 
 describe('MediaView', () => {

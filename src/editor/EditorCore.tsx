@@ -34,6 +34,7 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const loadedPathRef = useRef<string | null>(null);
+  const syncingRef = useRef(false);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -50,6 +51,7 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       cursorModel.update(model.uri.path, event.position.lineNumber, event.position.column);
     });
     const contentDisposable = editor.onDidChangeModelContent(() => {
+      if (syncingRef.current) return;
       const model = editor.getModel();
       if (model === null) return;
       const path = model.uri.path;
@@ -109,7 +111,27 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     const editor = editorRef.current;
     if (editor === null) return;
     const path = file === null ? null : file.path;
-    if (loadedPathRef.current === path && editor.getModel()?.uri.path === path) return;
+    // Restored sessions and AI edits update the tab content after the model
+    // was created. Reflect external changes unless the buffer is dirty.
+    const syncModelContent = (): void => {
+      const model = editor.getModel();
+      if (
+        file === null ||
+        model === null ||
+        model.getValue() === file.content ||
+        dirtyTracker.isDirty(file.path)
+      ) {
+        return;
+      }
+      syncingRef.current = true;
+      model.setValue(file.content);
+      syncingRef.current = false;
+      dirtyTracker.clearDirty(file.path);
+    };
+    if (loadedPathRef.current === path && editor.getModel()?.uri.path === path) {
+      syncModelContent();
+      return;
+    }
     const previous = loadedPathRef.current;
     if (previous !== null && typeof editor.getScrollTop === 'function') {
       session.updateMemory(previous, { viewportTop: editor.getScrollTop() });

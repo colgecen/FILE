@@ -7,6 +7,7 @@ import { dirOf, useGitBranch } from '../core/gitInfo';
 import { useTabsState } from '../core/tabs';
 import { useTelemetry } from '../core/telemetry';
 import { perfModel, usePerfState } from '../core/perfModel';
+import { uiText } from '../core/uiLanguage';
 
 export function StatusBar(): React.JSX.Element {
   const cursor = useCursorState();
@@ -20,8 +21,8 @@ export function StatusBar(): React.JSX.Element {
 
   const aiText =
     ai.modelId === null
-      ? 'YZ: —'
-      : `YZ: ${modelName(ai.modelId)} · ${statusLabel(ai.status)}${
+      ? `${uiText('YZ', 'AI')}: —`
+      : `${uiText('YZ', 'AI')}: ${modelName(ai.modelId)} · ${statusLabel(ai.status)}${
           ai.progress !== null ? ` %${ai.progress.percent}` : ''
         }`;
 
@@ -29,7 +30,7 @@ export function StatusBar(): React.JSX.Element {
     <footer className="status-bar" aria-label="Durum çubuğu">
       <div className="status-bar__group">
         <span className="status-bar__cell status-bar__file" data-testid="status-file">
-          {activeFile?.name ?? 'Dosya Yok'}
+          {activeFile?.name ?? uiText('Dosya Yok', 'No file')}
         </span>
         {gitBranch !== null && (
           <span className="status-bar__cell status-bar__branch" data-testid="status-branch">
@@ -45,11 +46,11 @@ export function StatusBar(): React.JSX.Element {
             perf.reducedMotion ? 'status-bar__cell status-bar__perf status-bar__perf--on' : 'status-bar__cell status-bar__perf'
           }
           data-testid="status-perf"
-          title="Hızlı Mod: animasyon ve bulanıklığı kapat"
+          title={uiText('Hızlı Mod: animasyon ve bulanıklığı kapat', 'Fast mode: disable animations and blur')}
           aria-pressed={perf.reducedMotion}
           onClick={() => perfModel.set({ reducedMotion: !perf.reducedMotion })}
         >
-          HIZLI
+          {uiText('HIZLI', 'FAST')}
         </button>
         {telemetry !== null && (
           <span className="status-bar__cell status-bar__metrics" data-testid="status-metrics">
@@ -74,7 +75,7 @@ export function StatusBar(): React.JSX.Element {
             data-testid="status-errors"
             onClick={() => errorStore.clear()}
           >
-            {errors.length} hata
+            {errors.length} {uiText('hata', 'errors')}
           </button>
         )}
         <span className="status-bar__cell status-bar__version" data-testid="status-version">

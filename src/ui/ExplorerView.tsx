@@ -4,6 +4,7 @@ import { focusManager } from '../core/focus';
 import { gitModel, useGitPanelState } from '../core/gitModel';
 import { useCore } from '../layout/AppShell';
 import { ChevronDownIcon, ChevronRightIcon, FileLogo, FolderIcon } from './icons';
+import { uiText } from '../core/uiLanguage';
 
 function badgeClass(status: string): string {
   if (status === 'M') return 'explorer-row__badge explorer-row__badge--modified';
@@ -41,12 +42,12 @@ export function ExplorerView(): React.JSX.Element | null {
   return (
     <aside className="explorer-view" role="region" aria-label="Dosya gezgini">
       <div className="explorer-view__head">
-        <span className="explorer-view__title">Dosyalar</span>
+        <span className="explorer-view__title">{uiText('Dosyalar', 'Files')}</span>
       </div>
       <div className="explorer-view__body" role="listbox" aria-label="Dosya listesi">
         {state.loading && (
           <div className="explorer-view__loading" role="status">
-            YÜKLENİYOR…
+            {uiText('YÜKLENİYOR…', 'LOADING…')}
           </div>
         )}
         {rows.map((row) => {

@@ -66,6 +66,10 @@ export class MenuModel {
     return menuTree[index]?.label ?? '';
   }
 
+  topId(index: number): string {
+    return menuTree[index]?.id ?? '';
+  }
+
   openAt(topIndex: number): void {
     const clamped = ((topIndex % TOP_COUNT) + TOP_COUNT) % TOP_COUNT;
     const items = menuTree[clamped]?.items ?? [];

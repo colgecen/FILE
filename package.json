@@ -5,7 +5,7 @@
   "type": "module",
   "main": "out/main/index.js",
   "description": "Keyboard-first desktop editor — Electron, Monaco & local AI",
-  "author": "colgecen <alperencolgecen@gmail.com>",
+  "author": "colgecen",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -33,7 +33,8 @@
       "!**/node_modules/@img/${/*}"
     ],
     "linux": {
-      "icon": "build/icon.png",
+      "icon": "assets/icon.png",
+      "maintainer": "colgecen",
       "target": [
         {
           "target": "AppImage",
@@ -64,6 +65,7 @@
     },
     "npmRebuild": false,
     "win": {
+      "icon": "build/icon.ico",
       "target": [
         {
           "target": "nsis",
@@ -110,8 +112,12 @@
     },
     "extraResources": [
       {
-        "from": "native/ai-helper/target/release/ai-helper",
-        "to": "ai-helper"
+        "from": "native/ai-helper/target/release",
+        "to": ".",
+        "filter": [
+          "ai-helper",
+          "ai-helper.exe"
+        ]
       }
     ]
   },
@@ -150,6 +156,7 @@
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "jsdom": "^25.0.1",
+    "playwright-core": "^1.65.1",
     "prettier": "^3.9.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -165,6 +172,8 @@
     "xterm": "^5.3.0"
   },
   "allowScripts": {
-    "@homebridge/node-pty-prebuilt-multiarch@0.14.1": true
+    "@homebridge/node-pty-prebuilt-multiarch@0.14.1": true,
+    "electron@33.4.11": true,
+    "esbuild@0.21.5": true
   }
 }

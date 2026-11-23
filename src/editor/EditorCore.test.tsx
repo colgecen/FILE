@@ -227,4 +227,18 @@ describe('EditorCore', () => {
     expect(tabsModel.getState().tabs[0]!.file.content).toBe('yeni içerik');
     tabsModel.reset();
   });
+
+  it('oturumdan gelen içeriği temiz modelde günceller', () => {
+    const model = {
+      uri: { path: file.path },
+      getValue: vi.fn(() => ''),
+      setValue: vi.fn(),
+    };
+    api.getModel.mockReturnValue(model);
+    api.editorGetModel.mockReturnValue(model);
+    const { rerender } = render(<EditorCore file={{ ...file, content: '' }} />);
+    rerender(<EditorCore file={{ ...file, content: 'const restored = true;' }} />);
+    expect(model.setValue).toHaveBeenCalledWith('const restored = true;');
+    expect(dirtyTracker.isDirty(file.path)).toBe(false);
+  });
 });
