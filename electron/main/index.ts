@@ -46,6 +46,20 @@ app.commandLine.appendSwitch('disable-background-timer-throttling');
 let mainWindow: BrowserWindow | null = null;
 const ptyManager = createPtyManager(spawn as unknown as PtySpawnFn, join(__dirname, 'pty-helper.js'));
 
+// Only one FILE instance/window may run at a time. A second launch focuses the
+// existing window instead of creating another BrowserWindow.
+const hasSingleInstanceLock = app.requestSingleInstanceLock();
+if (!hasSingleInstanceLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (): void => {
+    if (mainWindow === null) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+  });
+}
+
 function resolveRendererEntry(): { url?: string; file?: string } {
   if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
     return { url: process.env['ELECTRON_RENDERER_URL'] };
@@ -95,6 +109,7 @@ function createMainWindow(): void {
 }
 
 void app.whenReady().then((): void => {
+  if (!hasSingleInstanceLock) return;
   const getWindow = (): BrowserWindow | null => mainWindow;
   registerDialogHandlers(getWindow);
   registerFsHandlers();

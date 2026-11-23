@@ -362,6 +362,17 @@ describe('ExplorerView kök yükleme', () => {
     expect(focusManager.get()).toBe('explorer');
   });
 
+  it('büyük ağaçta yalnızca görünür satırları DOM’a basar', () => {
+    const huge = Array.from({ length: 2000 }, (_, index) => file(`/proje/f${index}.ts`, `f${index}.ts`));
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle([folder('/proje', 'proje', huge)], '/proje');
+    });
+    expect(screen.getByText('f0.ts', { selector: '.explorer-row__name' })).toBeInTheDocument();
+    expect(document.querySelectorAll('.explorer-row').length).toBeLessThan(100);
+  });
+
   it('git durumu olan satırda rozet gösterir', () => {
     render(<AppShell />);
     act(() => {

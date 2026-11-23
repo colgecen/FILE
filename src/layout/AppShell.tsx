@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, memo, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useExitPending, exitController } from '../core/exit';
 import { createCore, type Core } from '../core/instances';
 import { useIpcLifecycle } from '../core/ipc';
@@ -29,6 +29,22 @@ import { PerfSettings } from '../ui/SettingsPanel';
 import '../styles/git.css';
 
 const CoreContext = createContext<Core | null>(null);
+
+// These panels subscribe to their own stores. Memoizing them keeps tab clicks
+// and explorer navigation from re-rendering the whole shell.
+const MemoMenuBar = memo(MenuBar);
+const MemoErrorIndicator = memo(ErrorIndicator);
+const MemoCommandHUD = memo(CommandHUD);
+const MemoHelpOverlay = memo(HelpOverlay);
+const MemoEnvironmentsBar = memo(EnvironmentsBar);
+const MemoExplorerView = memo(ExplorerView);
+const MemoGitPanel = memo(GitPanel);
+const MemoAIChatPanel = memo(AIChatPanel);
+const MemoTerminalView = memo(TerminalView);
+const MemoStatusBar = memo(StatusBar);
+const MemoBrowserView = memo(BrowserView);
+const MemoTabBar = memo(TabBar);
+const MemoBreadcrumb = memo(Breadcrumb);
 
 export function useCore(): Core {
   const core = useContext(CoreContext);
@@ -80,10 +96,10 @@ export function AppShell({
     <CoreContext.Provider value={core}>
       <div className={`app-backdrop${nativeFullscreen ? ' app-backdrop--fullscreen' : ''}`} aria-hidden="true" />
       <div className={className}>
-        <MenuBar />
-        <ErrorIndicator />
-        <CommandHUD />
-        <HelpOverlay />
+        <MemoMenuBar />
+        <MemoErrorIndicator />
+        <MemoCommandHUD />
+        <MemoHelpOverlay />
         {exitPending && (
           <ConfirmOverlay
             message="Kaydedilmemiş değişiklikler var. Kapatılsın mı?"
@@ -98,29 +114,29 @@ export function AppShell({
           </div>
         )}
         <div className="app-shell__envbar">
-          <EnvironmentsBar />
+          <MemoEnvironmentsBar />
         </div>
         <div className="app-shell__workspace">
-          {!browserEnvActive && <ExplorerView />}
-          {gitState.isOpen && <GitPanel />}
+          {!browserEnvActive && <MemoExplorerView />}
+          {gitState.isOpen && <MemoGitPanel />}
           <div className="app-shell__main">
             <div className="app-shell__editor">
               {browserEnvActive ? (
-                <BrowserView />
+                <MemoBrowserView />
               ) : (
                 <>
-                  <TabBar />
-                  <Breadcrumb />
+                  <MemoTabBar />
+                  <MemoBreadcrumb />
                   <PaneManager file={activeFile} />
                 </>
               )}
             </div>
-            {terminalOpen && <TerminalView />}
+            {terminalOpen && <MemoTerminalView />}
           </div>
-          <AIChatPanel />
+          <MemoAIChatPanel />
           {children}
         </div>
-        <StatusBar />
+        <MemoStatusBar />
       </div>
     </CoreContext.Provider>
   );

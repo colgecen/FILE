@@ -5,7 +5,7 @@ import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
 import { historyModel } from '../core/history';
 import { session } from '../core/session';
-import { tabsModel } from '../core/tabs';
+import { tabsModel, useTabsState } from '../core/tabs';
 import type { OpenFile } from '../core/types';
 import { viewModeModel } from '../core/viewMode';
 import { setActiveEditor } from './activeEditor';
@@ -41,6 +41,7 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
   const syncingRef = useRef(false);
   const lastModelValueRef = useRef<string | null>(null);
   const largeFileRef = useRef(false);
+  const { tabs } = useTabsState();
 
   useEffect(() => {
     const host = hostRef.current;
@@ -116,6 +117,37 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       setActiveEditor(null);
     };
   }, []);
+
+  useEffect(() => {
+    // Pre-create Monaco models for open but inactive tabs during idle time.
+    // The first switch to one of these tabs then only swaps the model instead
+    // of parsing it on the click path.
+    if (typeof window.requestIdleCallback !== 'function' || tabs.length <= 1) return;
+    const activePath = file?.path ?? null;
+    const candidates = tabs
+      .filter((tab) => tab.file.path !== activePath)
+      .filter((tab) => (tab.file.kind ?? 'text') === 'text')
+      .filter((tab) => tab.file.content.length > 0 && tab.file.content.length < 2_000_000)
+      .slice(0, 12);
+    if (candidates.length === 0) return;
+    let cancelled = false;
+    let index = 0;
+    let handle = 0;
+    const run = (deadline: IdleDeadline): void => {
+      while (!cancelled && index < candidates.length && deadline.timeRemaining() > 4) {
+        resolveModel(candidates[index]!.file);
+        index += 1;
+      }
+      if (!cancelled && index < candidates.length) {
+        handle = window.requestIdleCallback(run, { timeout: 1000 });
+      }
+    };
+    handle = window.requestIdleCallback(run, { timeout: 1000 });
+    return () => {
+      cancelled = true;
+      window.cancelIdleCallback(handle);
+    };
+  }, [tabs, file?.path]);
 
   useEffect(() => {
     const editor = editorRef.current;

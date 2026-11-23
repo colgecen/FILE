@@ -96,13 +96,21 @@ export const session = {
           },
         };
       });
-      this.save({
-        environments,
-        activeEnvId: envState.activeId,
-        activeFileId: tabsModel.getState().activeId,
-        files: memories,
-        wordWrap: viewModeModel.getState().wordWrap,
-      });
+      const flush = (): void => {
+        this.save({
+          environments,
+          activeEnvId: envState.activeId,
+          activeFileId: tabsModel.getState().activeId,
+          files: memories,
+          wordWrap: viewModeModel.getState().wordWrap,
+        });
+      };
+      // Keep localStorage writes out of the click/render path.
+      if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(flush, { timeout: 1000 });
+      } else {
+        flush();
+      }
     }, 300);
   },
 

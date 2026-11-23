@@ -554,6 +554,10 @@ textarea {
   padding: 6px;
 }
 
+.explorer-view__rows {
+  position: relative;
+}
+
 .explorer-row {
   display: flex;
   align-items: center;
