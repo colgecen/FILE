@@ -1,5 +1,6 @@
 import { protocol } from 'electron';
-import { createReadStream, statSync } from 'node:fs';
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 import { mediaKindForPath, mimeForPath, decodeMediaPath } from './mediaKinds';
 import { safePath } from './fsHandlers';
@@ -24,7 +25,7 @@ export function registerMediaSchemePrivileges(): void {
 
 /** app.whenReady sonrasında çağrılmalı. */
 export function registerMediaProtocol(): void {
-  protocol.handle(SCHEME, (request) => {
+  protocol.handle(SCHEME, async (request) => {
     let pathname = '';
     try {
       const url = new URL(request.url);
@@ -41,15 +42,10 @@ export function registerMediaProtocol(): void {
       return new Response('Not found', { status: 404 });
     }
 
-    let stat;
-    try {
-      stat = statSync(path);
-    } catch {
-      return new Response('Not found', { status: 404 });
-    }
-    if (!stat.isFile()) return new Response('Not found', { status: 404 });
+    const info = await stat(path).catch(() => null);
+    if (info === null || !info.isFile()) return new Response('Not found', { status: 404 });
 
-    const size = stat.size;
+    const size = info.size;
     const mime = mimeForPath(path);
     const rangeHeader = request.headers.get('range');
 

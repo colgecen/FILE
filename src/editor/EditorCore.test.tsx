@@ -228,6 +228,14 @@ describe('EditorCore', () => {
     tabsModel.reset();
   });
 
+  it('büyük dosyada minimapi ve kelime sarmayı kapatır', () => {
+    const large: OpenFile = { ...file, content: 'x'.repeat(1_000_001) };
+    render(<EditorCore file={large} />);
+    const lastOptions = api.updateOptions.mock.calls.at(-1)?.[0] as Record<string, unknown>;
+    expect(lastOptions.minimap).toEqual({ enabled: false });
+    expect(lastOptions.wordWrap).toBe('off');
+  });
+
   it('oturumdan gelen içeriği temiz modelde günceller', () => {
     const model = {
       uri: { path: file.path },

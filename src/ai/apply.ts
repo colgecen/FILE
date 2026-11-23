@@ -1,4 +1,5 @@
 import type { Api } from '../../electron/shared/api-types';
+import { fileContentCache } from '../core/fileCache';
 import { tabsModel } from '../core/tabs';
 
 export type FileEdit = {
@@ -156,6 +157,7 @@ export async function applyEdits(
         rejected.push({ path: resolved, reason: result.error ?? 'yazılamadı' });
         continue;
       }
+      fileContentCache.invalidate(resolved);
       tabsModel.updateContent(resolved, edit.content);
       applied.push(resolved);
       changes.push({ path: resolved, preview: formatDiff(resolved, oldText, edit.content) });

@@ -2,6 +2,7 @@ import type { Api, OpenFileResult } from '../../electron/shared/api-types';
 import { mediaKindForPath } from './media';
 import { reportError } from './appErrors';
 import { dirtyTracker } from './dirty';
+import { fileContentCache } from './fileCache';
 import { focusManager } from './focus';
 import { openFilesModel } from './openFiles';
 import { recentFiles } from './recentFiles';
@@ -35,6 +36,7 @@ export async function runSave(
     return { ok: false, error: result.error ?? 'Dosya kaydedilemedi' };
   }
   dirtyTracker.clearDirty(path);
+  fileContentCache.invalidate(path);
   saveSignal.emit();
   return { ok: true };
 }
@@ -91,7 +93,7 @@ export async function runOpenRecent(
   if (entry === undefined) {
     return { ok: false, error: 'Son kullanılan dosya bulunamadı' };
   }
-  const file = await api.readFile(entry.path);
+  const file = await fileContentCache.read(api, entry.path);
   if (file === null) {
     recentFiles.replace(recentFiles.list().filter((item) => item.path !== entry.path));
     return { ok: false, error: 'Dosya okunamadı' };

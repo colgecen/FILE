@@ -1,8 +1,9 @@
 import { ipcMain } from 'electron';
-import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { basename, isAbsolute, join, normalize } from 'node:path';
 import type { DirEntry, OpenFileResult, WriteFileResult } from '../shared/api-types';
 import { languageForPath } from './fileUtils';
+import { textFileCache } from './fileCache';
 import { mediaKindForPath } from './mediaKinds';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -21,17 +22,37 @@ async function readFileOrNull(path: string): Promise<string | null> {
   }
 }
 
+/** Reads a file for the editor, reusing the main-process content cache. */
+export async function readFileForEditor(rawPath: string): Promise<OpenFileResult | null> {
+  const path = safePath(rawPath);
+  if (!path) return null;
+  const mediaKind = mediaKindForPath(path);
+  if (mediaKind !== null) {
+    return { path, name: basename(path), content: '', language: 'plaintext', kind: mediaKind };
+  }
+  const info = await stat(path).catch(() => null);
+  if (info === null || !info.isFile() || info.size > MAX_FILE_BYTES) return null;
+  const cached = textFileCache.get(path, info);
+  if (cached !== null) return cached;
+  const content = await readFileOrNull(path);
+  if (content === null || content.length > MAX_FILE_BYTES) return null;
+  const result: OpenFileResult = {
+    path,
+    name: basename(path),
+    content,
+    language: languageForPath(path),
+    kind: 'text',
+  };
+  // Re-stat after the read so a file modified during the read is not cached
+  // under the older mtime.
+  const after = await stat(path).catch(() => null);
+  if (after !== null) textFileCache.set(path, after, result);
+  return result;
+}
+
 export function registerFsHandlers(): void {
   ipcMain.handle('fs:read-file', async (_event, rawPath: string): Promise<OpenFileResult | null> => {
-    const path = safePath(rawPath);
-    if (!path) return null;
-    const mediaKind = mediaKindForPath(path);
-    if (mediaKind !== null) {
-      return { path, name: basename(path), content: '', language: 'plaintext', kind: mediaKind };
-    }
-    const content = await readFileOrNull(path);
-    if (content === null || content.length > MAX_FILE_BYTES) return null;
-    return { path, name: basename(path), content, language: languageForPath(path), kind: 'text' };
+    return readFileForEditor(rawPath);
   });
 
   ipcMain.handle(
@@ -44,6 +65,7 @@ export function registerFsHandlers(): void {
       }
       try {
         await writeFile(path, content, 'utf8');
+        textFileCache.invalidate(path);
         return { ok: true, path };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);

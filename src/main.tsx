@@ -23,11 +23,12 @@ import { AppCover } from './ui/AppCover';
 import { hydrateRestoredFiles, restoreSession, session } from './core/session';
 import { tabsModel } from './core/tabs';
 import { cursorModel } from './core/cursor';
+import { fileContentCache } from './core/fileCache';
 import { initUiLanguage } from './core/uiLanguage';
 
 initUiLanguage();
 restoreSession();
-void hydrateRestoredFiles((path) => window.api.readFile(path));
+void hydrateRestoredFiles((path) => fileContentCache.read(window.api, path));
 tabsModel.subscribe(() => session.schedule());
 cursorModel.subscribe(() => {
   const cursor = cursorModel.getState();

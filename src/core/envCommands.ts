@@ -3,6 +3,7 @@ import { session } from './session';
 import type { CommandRegistry } from './commands';
 import { createBrowserTab, environmentsModel, type EnvironmentTabs } from './environments';
 import { explorerModel } from './explorer';
+import { fileContentCache } from './fileCache';
 import { focusManager } from './focus';
 import { openFilesModel } from './openFiles';
 import { tabsModel } from './tabs';
@@ -21,6 +22,19 @@ export function applyTabs(snapshot: EnvironmentTabs): void {
   openFilesModel.set(snapshot.files.map((file) => ({ name: file.name, path: file.path })));
 }
 
+/** Oturumdan gelen boş sekmeleri, görünür olduklarında diskten tamamlar. */
+async function hydrateVisibleTabs(): Promise<void> {
+  const tabs = tabsModel.getState().tabs;
+  await Promise.all(
+    tabs.map(async (tab) => {
+      if (tab.file.content.length > 0) return;
+      if (tab.file.kind !== undefined && tab.file.kind !== 'text') return;
+      const result = await fileContentCache.read(window.api, tab.file.path);
+      if (result !== null) tabsModel.updateContent(tab.file.path, result.content);
+    }),
+  );
+}
+
 export async function switchToEnvironment(id: string): Promise<CommandResult> {
   const t0 = performance.now();
   console.log(`[env] switch-> ${id} @${Math.round(t0)}`);
@@ -36,6 +50,7 @@ export async function switchToEnvironment(id: string): Promise<CommandResult> {
   }
   applyTabs(target.tabs);
   environmentsModel.setActive(id);
+  void hydrateVisibleTabs();
   console.log(`[env] setActive done +${Math.round(performance.now() - t0)}ms`);
   if (!isBrowserEnvId(target.rootPath)) {
     const loaded = await explorerModel.loadRoot(target.rootPath, window.api.readDir);
@@ -67,7 +82,10 @@ export function adoptFolderAsEnvironment(
     .getState()
     .environments.find((env) => env.rootPath === rootPath);
   if (existing !== undefined) {
-    if (mode === 'switch') applyTabs(existing.tabs);
+    if (mode === 'switch') {
+      applyTabs(existing.tabs);
+      void hydrateVisibleTabs();
+    }
     environmentsModel.setActive(existing.id);
     syncChatWithActiveEnv();
     return;
@@ -123,6 +141,7 @@ export async function removeEnvironment(id?: string): Promise<CommandResult> {
   }
   if (!wasActive) return { ok: true };
   applyTabs(next.tabs);
+  void hydrateVisibleTabs();
   if (!isBrowserEnvId(next.rootPath)) {
     const loaded = await explorerModel.loadRoot(next.rootPath, window.api.readDir);
     if (!loaded) {

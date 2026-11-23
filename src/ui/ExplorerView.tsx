@@ -4,6 +4,7 @@ import { focusManager } from '../core/focus';
 import { gitModel, useGitPanelState } from '../core/gitModel';
 import { useCore } from '../layout/AppShell';
 import { ChevronDownIcon, ChevronRightIcon, FileLogo, FolderIcon } from './icons';
+import { fileContentCache } from '../core/fileCache';
 import { uiText } from '../core/uiLanguage';
 
 function badgeClass(status: string): string {
@@ -61,6 +62,9 @@ export function ExplorerView(): React.JSX.Element | null {
               role="option"
               aria-selected={active}
               className={className}
+              onMouseEnter={() => {
+                if (row.kind === 'file') fileContentCache.prefetch(window.api, row.path);
+              }}
               onClick={() => {
                 explorerModel.select(row.path);
                 focusManager.set('explorer');

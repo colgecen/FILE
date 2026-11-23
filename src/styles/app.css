@@ -561,6 +561,8 @@ textarea {
   min-height: 27px;
   padding-right: 10px;
   border-radius: var(--radius-sm);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 27px;
   color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 12px;

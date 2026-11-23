@@ -1,6 +1,7 @@
 import type { CommandRegistry } from './commands';
 import { gotoBookmark } from './bookmarkNav';
 import { explorerModel } from './explorer';
+import { fileContentCache } from './fileCache';
 import { focusManager } from './focus';
 import { menuModel } from '../menus/menuModel';
 import { restoreHistory } from './historyCommands';
@@ -294,14 +295,14 @@ export function registerNavCommands(registry: CommandRegistry): void {
         await explorerModel.toggleFolder(row.path, window.api.readDir);
         return { ok: true };
       }
-      const result = await window.api.readFile(row.path);
+      const result = await fileContentCache.read(window.api, row.path);
       if (result === null) return { ok: false, error: 'Dosya okunamadı' };
       tabsModel.open({
         path: result.path,
         name: result.name,
         content: result.content,
         language: result.language,
-        kind: result.kind,
+        ...(result.kind === undefined ? {} : { kind: result.kind }),
       });
       openFilesModel.set(
         tabsModel.getState().tabs.map((tab) => ({ name: tab.file.name, path: tab.file.path })),

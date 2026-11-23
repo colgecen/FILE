@@ -13,10 +13,14 @@ import { defineEditorTheme, EDITOR_THEME_NAME } from './editorTheme';
 import { resolveModel, touchModel } from './editorModel';
 import { installMonacoEnvironment, monaco } from './monacoSetup';
 
+const LARGE_FILE_CHARS = 1_000_000;
+
 const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
   minimap: { enabled: true, scale: 1, renderCharacters: false, maxColumn: 120 },
   scrollBeyondLastLine: false,
+  largeFileOptimizations: true,
+  maxTokenizationLineLength: 20_000,
   fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
   fontLigatures: true,
   fontSize: 13,
@@ -35,6 +39,8 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const loadedPathRef = useRef<string | null>(null);
   const syncingRef = useRef(false);
+  const lastModelValueRef = useRef<string | null>(null);
+  const largeFileRef = useRef(false);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -55,9 +61,11 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       const model = editor.getModel();
       if (model === null) return;
       const path = model.uri.path;
+      const value = model.getValue();
+      lastModelValueRef.current = value;
       touchModel(path);
-      tabsModel.updateContent(path, model.getValue());
-      historyModel.capture(path, model.getValue());
+      tabsModel.updateContent(path, value);
+      historyModel.capture(path, value);
       if (!dirtyTracker.isDirty(path)) {
         dirtyTracker.markDirty(path);
       }
@@ -77,7 +85,9 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     const bookmarkDisposable = bookmarkModel.subscribe(renderBookmarks);
     const modelDisposable = editor.onDidChangeModel(renderBookmarks);
     const applyWordWrap = (): void => {
-      editor.updateOptions({ wordWrap: viewModeModel.getState().wordWrap });
+      editor.updateOptions({
+        wordWrap: largeFileRef.current ? 'off' : viewModeModel.getState().wordWrap,
+      });
     };
     applyWordWrap();
     const viewModeDisposable = viewModeModel.subscribe(applyWordWrap);
@@ -115,17 +125,23 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     // was created. Reflect external changes unless the buffer is dirty.
     const syncModelContent = (): void => {
       const model = editor.getModel();
-      if (
-        file === null ||
-        model === null ||
-        model.getValue() === file.content ||
-        dirtyTracker.isDirty(file.path)
-      ) {
+      if (file === null || model == null) return;
+      if (lastModelValueRef.current === file.content) return;
+      if (dirtyTracker.isDirty(file.path)) {
+        // Do not overwrite unsaved edits; remember the tab value so the next
+        // render does not read the whole model again.
+        lastModelValueRef.current = file.content;
+        return;
+      }
+      if (typeof model.getValue !== 'function' || typeof model.setValue !== 'function') return;
+      if (model.getValue() === file.content) {
+        lastModelValueRef.current = file.content;
         return;
       }
       syncingRef.current = true;
       model.setValue(file.content);
       syncingRef.current = false;
+      lastModelValueRef.current = file.content;
       dirtyTracker.clearDirty(file.path);
     };
     if (loadedPathRef.current === path && editor.getModel()?.uri.path === path) {
@@ -137,7 +153,16 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       session.updateMemory(previous, { viewportTop: editor.getScrollTop() });
     }
     loadedPathRef.current = path;
+    const large = file !== null && file.content.length > LARGE_FILE_CHARS;
+    largeFileRef.current = large;
+    editor.updateOptions({
+      minimap: { enabled: !large },
+      wordWrap: large ? 'off' : viewModeModel.getState().wordWrap,
+      maxTokenizationLineLength: large ? 5_000 : 20_000,
+    });
     editor.setModel(file === null ? null : resolveModel(file));
+    lastModelValueRef.current = null;
+    syncModelContent();
     if (path !== null) {
       const memory = session.fileMemory(path);
       if (memory !== null) {

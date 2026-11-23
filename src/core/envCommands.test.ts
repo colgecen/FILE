@@ -64,6 +64,25 @@ describe('envCommands', () => {
     expect(explorerModel.getState().rootPath).toBe('/proj/a');
   });
 
+  it('oturumdan gelen boş sekmeleri diskten tamamlar', async () => {
+    const path = '/proj/a/oturum.ts';
+    const stored = { path, name: 'oturum.ts', content: '', language: 'typescript' };
+    environmentsModel.add('/proj/a', 'a');
+    environmentsModel.storeTabs('/proj/a', { files: [stored], activeId: path });
+    environmentsModel.add('/proj/b', 'b');
+    vi.mocked(window.api.readFile).mockResolvedValue({
+      path,
+      name: 'oturum.ts',
+      content: 'disk içeriği',
+      language: 'typescript',
+    });
+    const result = await switchToEnvironment('/proj/a');
+    expect(result.ok).toBe(true);
+    await vi.waitFor(() => {
+      expect(tabsModel.getState().tabs[0]?.file.content).toBe('disk içeriği');
+    });
+  });
+
   it('önceki ortamın sekmeleri saklanır', async () => {
     seedTwo();
     await switchToEnvironment('/proj/a');

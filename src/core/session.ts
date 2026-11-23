@@ -1,5 +1,6 @@
 import { environmentsModel, type Environment, type EnvironmentTabs } from './environments';
 import { tabsModel } from './tabs';
+import type { OpenFile } from './types';
 import { viewModeModel } from './viewMode';
 
 const STORAGE_KEY = 'file:session:v1';
@@ -19,6 +20,17 @@ export type Session = {
 };
 
 let timer: number | null = null;
+
+/** Oturumda yalnızca sekme kimliği saklanır; dosya içeriği diskten tazelenir. */
+function withoutContent(file: OpenFile): OpenFile {
+  return {
+    path: file.path,
+    name: file.name,
+    content: '',
+    language: file.language,
+    ...(file.kind === undefined ? {} : { kind: file.kind }),
+  };
+}
 
 function snapshotEnvTabs(envId: string): EnvironmentTabs {
   const stored = environmentsModel.getState().environments.find((env) => env.id === envId);
@@ -74,9 +86,16 @@ export const session = {
     timer = window.setTimeout(() => {
       timer = null;
       const envState = environmentsModel.getState();
-      const environments = envState.environments.map((env) =>
-        env.id === envState.activeId ? { ...env, tabs: snapshotEnvTabs(env.id) } : env,
-      );
+      const environments = envState.environments.map((env) => {
+        const tabs = env.id === envState.activeId ? snapshotEnvTabs(env.id) : env.tabs;
+        return {
+          ...env,
+          tabs: {
+            files: tabs.files.map(withoutContent),
+            activeId: tabs.activeId,
+          },
+        };
+      });
       this.save({
         environments,
         activeEnvId: envState.activeId,
@@ -125,11 +144,13 @@ export function restoreSession(): void {
 export async function hydrateRestoredFiles(readFile: (path: string) => Promise<{ content: string; kind?: string } | null>): Promise<void> {
   const active = environmentsModel.active();
   if (active === null) return;
-  for (const tab of tabsModel.getState().tabs) {
-    if (tab.file.kind !== undefined && tab.file.kind !== 'text') continue;
-    const result = await readFile(tab.file.path);
-    if (result !== null) {
-      tabsModel.updateContent(tab.file.path, result.content);
-    }
-  }
+  await Promise.all(
+    tabsModel.getState().tabs.map(async (tab) => {
+      if (tab.file.kind !== undefined && tab.file.kind !== 'text') return;
+      const result = await readFile(tab.file.path);
+      if (result !== null) {
+        tabsModel.updateContent(tab.file.path, result.content);
+      }
+    }),
+  );
 }
