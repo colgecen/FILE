@@ -583,7 +583,8 @@ html[data-platform='darwin'] .app-cover {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 6px;
+  /* Sağdaki özel scrollbarın altına satır taşmasın. */
+  padding: 6px 14px 6px 6px;
   /* Native çubuğu gizle; ağaca özel overlay çubuğu kullan. */
   scrollbar-width: none;
 }
