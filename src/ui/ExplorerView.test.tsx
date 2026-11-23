@@ -314,6 +314,57 @@ describe('ExplorerView', () => {
     expect(explorerModel.getState().expanded.has('/proje/src')).toBe(false);
   });
 
+  it('gezgin başlığında yeni dosya, yeni klasör, yenile ve tümünü kapat düğmeleri vardır', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    expect(document.querySelectorAll('.explorer-view__action')).toHaveLength(4);
+    expect(screen.getByRole('button', { name: 'Tüm klasörleri kapat' })).toBeInTheDocument();
+  });
+
+  it('tüm klasörleri tek seferde kapatır', () => {
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    expect(explorerModel.getState().expanded.size).toBeGreaterThan(0);
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Tüm klasörleri kapat' }));
+    });
+    expect(explorerModel.getState().expanded.size).toBe(0);
+  });
+
+  it('yeni dosya oluşturur ve sekmede açar', async () => {
+    vi.mocked(window.api.createEntry).mockResolvedValue({ ok: true, path: '/proje/yeni.ts' });
+    vi.mocked(window.api.readDir).mockResolvedValue([
+      { name: 'yeni.ts', path: '/proje/yeni.ts', kind: 'file' },
+    ]);
+    vi.mocked(window.api.readFile).mockResolvedValue({
+      path: '/proje/yeni.ts',
+      name: 'yeni.ts',
+      content: '',
+      language: 'typescript',
+    });
+    render(<AppShell />);
+    act(() => {
+      explorerModel.open();
+      explorerModel.settle(TREE, '/proje');
+    });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Yeni dosya' })[0]!);
+    const input = screen.getByRole('textbox', { name: 'Yeni dosya adı' });
+    fireEvent.change(input, { target: { value: 'yeni.ts' } });
+    await act(async () => {
+      fireEvent.keyDown(input, { key: 'Enter' });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(window.api.createEntry).toHaveBeenCalledWith('/proje', 'yeni.ts', 'file');
+    expect(tabsModel.getState().activeId).toBe('/proje/yeni.ts');
+  });
+
   it('tek tık tembel klasörü okuyup ilk seferde açar', async () => {
     vi.mocked(window.api.readDir).mockResolvedValue([
       { name: 'ic.ts', path: '/proje/bos/ic.ts', kind: 'file' },

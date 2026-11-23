@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
-import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { basename, isAbsolute, join, normalize } from 'node:path';
-import type { DirEntry, OpenFileResult, WriteFileResult } from '../shared/api-types';
+import type { CreateEntryResult, DirEntry, OpenFileResult, WriteFileResult } from '../shared/api-types';
 import { languageForPath } from './fileUtils';
 import { textFileCache } from './fileCache';
 import { mediaKindForPath } from './mediaKinds';
@@ -54,6 +54,52 @@ export function registerFsHandlers(): void {
   ipcMain.handle('fs:read-file', async (_event, rawPath: string): Promise<OpenFileResult | null> => {
     return readFileForEditor(rawPath);
   });
+
+  ipcMain.handle(
+    'fs:create-entry',
+    async (
+      _event,
+      rawParent: string,
+      rawName: string,
+      kind: unknown,
+    ): Promise<CreateEntryResult> => {
+      const parent = safePath(rawParent);
+      if (parent === null) return { ok: false, error: 'Geçersiz klasör' };
+      if (kind !== 'file' && kind !== 'directory') {
+        return { ok: false, error: 'Geçersiz öğe türü' };
+      }
+      const name = typeof rawName === 'string' ? rawName.trim() : '';
+      const hasControlChars = [...name].some((char) => char.charCodeAt(0) < 32);
+      if (
+        name.length === 0 ||
+        name.length > 255 ||
+        name === '.' ||
+        name === '..' ||
+        name.includes('/') ||
+        name.includes('\\') ||
+        hasControlChars
+      ) {
+        return { ok: false, error: 'Geçersiz ad' };
+      }
+      const info = await stat(parent).catch(() => null);
+      if (info === null || !info.isDirectory()) {
+        return { ok: false, error: 'Klasör bulunamadı' };
+      }
+      const target = join(parent, name);
+      try {
+        if (kind === 'directory') {
+          await mkdir(target);
+        } else {
+          // 'wx' var olan dosyanın üzerine yazmaz.
+          await writeFile(target, '', { encoding: 'utf8', flag: 'wx' });
+        }
+        return { ok: true, path: target };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return { ok: false, error: message, path: target };
+      }
+    },
+  );
 
   ipcMain.handle(
     'fs:write-file',

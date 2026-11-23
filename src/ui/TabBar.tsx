@@ -20,7 +20,7 @@ export function TabBar(): React.JSX.Element {
     const active = bar.querySelector('.tab-bar__item--active') as HTMLElement | null;
     if (active !== null && typeof active.scrollIntoView === 'function') {
       try {
-        active.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+        active.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
       } catch {
         // jsdom'da scrollIntoView desteklenmeyebilir — sessiz geç
       }

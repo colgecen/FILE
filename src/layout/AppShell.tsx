@@ -94,7 +94,6 @@ export function AppShell({
     .join(' ');
   return (
     <CoreContext.Provider value={core}>
-      <div className={`app-backdrop${nativeFullscreen ? ' app-backdrop--fullscreen' : ''}`} aria-hidden="true" />
       <div className={className}>
         <MemoMenuBar />
         <MemoErrorIndicator />

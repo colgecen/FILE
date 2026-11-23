@@ -3,17 +3,27 @@ import { bookmarkModel } from '../core/bookmarks';
 import { clipboardHistory } from '../core/clipboardHistory';
 import { cursorModel } from '../core/cursor';
 import { dirtyTracker } from '../core/dirty';
+import { fileWarmup } from '../core/fileWarmup';
 import { historyModel } from '../core/history';
 import { session } from '../core/session';
-import { tabsModel, useTabsState } from '../core/tabs';
+import { tabsModel } from '../core/tabs';
 import type { OpenFile } from '../core/types';
 import { viewModeModel } from '../core/viewMode';
 import { setActiveEditor } from './activeEditor';
 import { defineEditorTheme, EDITOR_THEME_NAME } from './editorTheme';
-import { resolveModel, touchModel } from './editorModel';
-import { installMonacoEnvironment, monaco } from './monacoSetup';
+import {
+  hasModel,
+  installTabWarmup,
+  queueCachedModelWarmup,
+  resolveModel,
+  touchModel,
+} from './editorModel';
+import { installMonacoEnvironment, monaco, primeLanguages } from './monacoSetup';
 
 const LARGE_FILE_CHARS = 1_000_000;
+// Büyük dosyalarda ilk boyama maliyetini sınırla: minimap ve kelime sarma kapalı.
+const WRAP_MAX_CHARS = 200_000;
+const MINIMAP_MAX_CHARS = 200_000;
 
 const BASE_OPTIONS: monaco.editor.IStandaloneEditorConstructionOptions = {
   automaticLayout: true,
@@ -41,7 +51,6 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
   const syncingRef = useRef(false);
   const lastModelValueRef = useRef<string | null>(null);
   const largeFileRef = useRef(false);
-  const { tabs } = useTabsState();
 
   useEffect(() => {
     const host = hostRef.current;
@@ -49,6 +58,9 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
     installMonacoEnvironment();
     defineEditorTheme();
     monaco.editor.setTheme(EDITOR_THEME_NAME);
+    installTabWarmup();
+    primeLanguages();
+    const detachWarmup = fileWarmup.subscribe(queueCachedModelWarmup);
     const editor = monaco.editor.create(host, BASE_OPTIONS);
     editorRef.current = editor;
     setActiveEditor(editor);
@@ -65,7 +77,7 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       const value = model.getValue();
       lastModelValueRef.current = value;
       touchModel(path);
-      tabsModel.updateContent(path, value);
+      tabsModel.updateContent(path, value, { notify: false });
       historyModel.capture(path, value);
       if (!dirtyTracker.isDirty(path)) {
         dirtyTracker.markDirty(path);
@@ -108,6 +120,7 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       bookmarkDisposable();
       modelDisposable.dispose();
       viewModeDisposable();
+      detachWarmup();
       host.removeEventListener('copy', copyListener);
       host.removeEventListener('cut', copyListener);
       editor.dispose();
@@ -117,37 +130,6 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       setActiveEditor(null);
     };
   }, []);
-
-  useEffect(() => {
-    // Pre-create Monaco models for open but inactive tabs during idle time.
-    // The first switch to one of these tabs then only swaps the model instead
-    // of parsing it on the click path.
-    if (typeof window.requestIdleCallback !== 'function' || tabs.length <= 1) return;
-    const activePath = file?.path ?? null;
-    const candidates = tabs
-      .filter((tab) => tab.file.path !== activePath)
-      .filter((tab) => (tab.file.kind ?? 'text') === 'text')
-      .filter((tab) => tab.file.content.length > 0 && tab.file.content.length < 2_000_000)
-      .slice(0, 12);
-    if (candidates.length === 0) return;
-    let cancelled = false;
-    let index = 0;
-    let handle = 0;
-    const run = (deadline: IdleDeadline): void => {
-      while (!cancelled && index < candidates.length && deadline.timeRemaining() > 4) {
-        resolveModel(candidates[index]!.file);
-        index += 1;
-      }
-      if (!cancelled && index < candidates.length) {
-        handle = window.requestIdleCallback(run, { timeout: 1000 });
-      }
-    };
-    handle = window.requestIdleCallback(run, { timeout: 1000 });
-    return () => {
-      cancelled = true;
-      window.cancelIdleCallback(handle);
-    };
-  }, [tabs, file?.path]);
 
   useEffect(() => {
     const editor = editorRef.current;
@@ -185,16 +167,24 @@ export function EditorCore({ file }: { readonly file: OpenFile | null }): React.
       session.updateMemory(previous, { viewportTop: editor.getScrollTop() });
     }
     loadedPathRef.current = path;
-    const large = file !== null && file.content.length > LARGE_FILE_CHARS;
+    const contentLength = file?.content.length ?? 0;
+    const large = contentLength > LARGE_FILE_CHARS;
     largeFileRef.current = large;
+    const wrap =
+      viewModeModel.getState().wordWrap === 'on' && contentLength <= WRAP_MAX_CHARS
+        ? 'on'
+        : 'off';
     editor.updateOptions({
-      minimap: { enabled: !large },
-      wordWrap: large ? 'off' : viewModeModel.getState().wordWrap,
+      minimap: { enabled: !large && contentLength <= MINIMAP_MAX_CHARS },
+      wordWrap: wrap,
       maxTokenizationLineLength: large ? 5_000 : 20_000,
     });
+    const reusedModel = file !== null && hasModel(file.path);
     editor.setModel(file === null ? null : resolveModel(file));
     lastModelValueRef.current = null;
-    syncModelContent();
+    // Yeni kurulan model zaten dosya içeriğiyle birebir aynı; koca dosyada
+    // tam içerik karşılaştırmasını yalnızca önceden ısıtılmış modelde yap.
+    if (reusedModel) syncModelContent();
     if (path !== null) {
       const memory = session.fileMemory(path);
       if (memory !== null) {

@@ -49,6 +49,12 @@ export type WriteFileResult = {
   readonly path: string;
 };
 
+export type CreateEntryResult = {
+  readonly ok: boolean;
+  readonly error?: string;
+  readonly path?: string;
+};
+
 export type AiApiMessage = {
   readonly role: 'system' | 'user' | 'assistant';
   readonly content: string;
@@ -211,6 +217,11 @@ export type Api = {
   readFile(path: string): Promise<OpenFileResult | null>;
   writeFile(path: string, content: string): Promise<WriteFileResult>;
   readDir(path: string): Promise<DirEntry[]>;
+  createEntry(
+    parentPath: string,
+    name: string,
+    kind: 'file' | 'directory',
+  ): Promise<CreateEntryResult>;
   gitBranch(path: string): Promise<GitBranchInfo | null>;
   gitStatus(path: string): Promise<GitFile[] | null>;
   gitDiff(path: string, file: string): Promise<string | null>;
@@ -228,6 +239,7 @@ export type Api = {
   onWindowFullscreen(listener: (fullscreen: boolean) => void): () => void;
   winMinimize(): Promise<boolean>;
   winToggleMaximize(): Promise<boolean>;
+  appReady(): void;
   appExit(): Promise<void>;
   newWindow(): Promise<void>;
   browserAdd(envId: string, url?: string): Promise<boolean>;
@@ -238,6 +250,7 @@ export type Api = {
   browserForward(envId: string): Promise<boolean>;
   browserReload(envId: string): Promise<boolean>;
   browserLayout(layout: EmbeddedLayout): Promise<boolean>;
+  browserOverlay(hidden: boolean): Promise<boolean>;
   browserState(envId: string): Promise<EmbeddedState | null>;
   browserOpenExternal(url: string): Promise<boolean>;
   agentExec(args: AgentExecArgs): Promise<AgentExecResult>;

@@ -25,7 +25,7 @@ const ACCENT = '#00D2FF';
 const BG_BASE = '#000000';
 const DEV_RENDERER_URL = 'http://localhost:5173';
 
-const TRANSPARENT = process.env['TRANSPARENT'] === '1';
+const TRANSPARENT = process.platform !== 'darwin' && process.env['TRANSPARENT'] !== '0';
 
 // Haswell-era drivers on this class of machine intermittently fail to spawn the GPU
 // process (error_code=1002), which is fatal for Electron. Software compositing is the
@@ -75,6 +75,7 @@ function createMainWindow(): void {
     height: 800,
     minWidth: 800,
     minHeight: 500,
+    show: false,
     backgroundColor: TRANSPARENT ? '#00000000' : BG_BASE,
     title: 'File',
     icon: nativeImage.createFromPath(join(app.getAppPath(), 'public', 'FILE.png')),
@@ -92,6 +93,15 @@ function createMainWindow(): void {
   if (mainWindow !== null) {
     attachFullscreenEvents(mainWindow);
   }
+
+  // Renderer ilk kareyi çizip `window:ready` gönderene kadar pencereyi gizli
+  // tut. `ready-to-show` bazen React'ten önceki boş karede tetiklenip
+  // transparan pencere flaşına yol açıyordu.
+  const win = mainWindow;
+  if (win === null) return;
+  setTimeout(() => {
+    if (!win.isDestroyed() && !win.isVisible()) win.show();
+  }, 2500);
 
   mainWindow.on('closed', (): void => {
     mainWindow = null;

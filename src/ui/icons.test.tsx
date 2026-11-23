@@ -23,6 +23,17 @@ describe('FileLogo', () => {
     const { container } = render(<FileLogo name={'arsiv.xyz'} />);
     expect(container.querySelector('[data-logo="xyz"]')).not.toBeNull();
   });
+
+  it.each([
+    ['package.json', 'npm'],
+    ['Dockerfile', 'docker'],
+    ['a.tsx', 'react'],
+    ['a.scss', 'sass'],
+    ['a.rs', 'rust'],
+  ])('%s için doğru ikon eşleşir', (name, icon) => {
+    const { container } = render(<FileLogo name={name} />);
+    expect(container.querySelector(`[data-icon="${icon}"]`)).not.toBeNull();
+  });
 });
 
 describe('FolderIcon', () => {

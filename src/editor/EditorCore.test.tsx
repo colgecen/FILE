@@ -29,6 +29,7 @@ const api = vi.hoisted(() => ({
 
 vi.mock('./monacoSetup', () => ({
   installMonacoEnvironment: api.install,
+  primeLanguages: () => undefined,
   monaco: {
     Uri: {
       from: (parts: { scheme: string; path: string }) => ({ scheme: parts.scheme, path: parts.path }),

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import type { DirEntry, FileNode } from './types';
 import { buildTree, replaceChildren } from './explorerTree';
 
@@ -173,6 +173,33 @@ export class ExplorerModel {
     return true;
   }
 
+  /** Klasörü diskten yeniden okur; açık/kapalı durumunu korur. */
+  async refreshDirectory(path: string, readDir: ReadDir): Promise<boolean> {
+    const files = this.state.files;
+    if (files.length === 0) return false;
+    try {
+      const entries = await readDir(path);
+      this.dirCache.set(path, [...entries]);
+      this.state = {
+        ...this.state,
+        files: replaceChildren(files, path, entries),
+        error: null,
+      };
+      this.emit();
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.setError(message);
+      return false;
+    }
+  }
+
+  collapseAll(): void {
+    if (this.state.expanded.size === 0) return;
+    this.state = { ...this.state, expanded: new Set() };
+    this.emit();
+  }
+
   rows(): readonly ExplorerRow[] {
     if (this.state.files.length === 0) return [];
     return this.state.files.flatMap((node) => flatten(node, 0, this.state.expanded));
@@ -246,8 +273,12 @@ export class ExplorerModel {
 
 export const explorerModel = new ExplorerModel();
 
+const subscribeExplorer = (listener: () => void): (() => void) =>
+  explorerModel.subscribe(listener);
+const getExplorerSnapshot = (): ExplorerState => explorerModel.getState();
+
 export function useExplorerState(): ExplorerState {
-  const [state, setState] = useState<ExplorerState>(() => explorerModel.getState());
-  useEffect(() => explorerModel.subscribe(() => setState(explorerModel.getState())), []);
-  return state;
+  // useSyncExternalStore, React render ile effect aboneliği arasında gelen
+  // "settle" güncellemesini kaçırmaz; yoksa ağaç "YÜKLENİYOR…"da takılıyordu.
+  return useSyncExternalStore(subscribeExplorer, getExplorerSnapshot, getExplorerSnapshot);
 }

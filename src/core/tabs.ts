@@ -45,12 +45,14 @@ export class TabsModel {
     this.emit();
   }
 
-  updateContent(path: string, content: string): void {
+  updateContent(path: string, content: string, options?: { readonly notify?: boolean }): void {
     const tabs = this.state.tabs.map((tab) =>
       tab.file.path === path ? { ...tab, file: { ...tab.file, content } } : tab,
     );
     this.state = { ...this.state, tabs };
-    this.emit();
+    // Editörün her tuş vuruşunda tüm kabuğu yeniden çizmemesi için yerel
+    // içerik güncellemeleri sessizce yapılabilir; dış değişiklikler haber verir.
+    if (options?.notify !== false) this.emit();
   }
 
   close(id: string): void {

@@ -32,6 +32,8 @@
   --selection: rgba(10, 132, 255, 0.35);
   --line-active: rgba(255, 255, 255, 0.04);
 
+  --window-radius: 8px;
+
   --error: #ff453a;
   --success: #30d158;
   --warning: #ffd60a;

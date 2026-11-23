@@ -23,11 +23,27 @@ import { AppCover } from './ui/AppCover';
 import { hydrateRestoredFiles, restoreSession, session } from './core/session';
 import { tabsModel } from './core/tabs';
 import { cursorModel } from './core/cursor';
+import { environmentsModel } from './core/environments';
+import { explorerModel } from './core/explorer';
 import { fileContentCache } from './core/fileCache';
 import { initUiLanguage } from './core/uiLanguage';
 
 initUiLanguage();
+document.documentElement.dataset.platform = window.api.platform;
 restoreSession();
+
+// Oturumdan gelen ortam varsa dosya ağacını ilk açılışta hazırla ve göster.
+// Önceden `tree` komutu elle çalıştırılmadıkça gezgin boş/kapalı kalıyordu.
+const restoredEnv = environmentsModel.active();
+if (restoredEnv !== null && !restoredEnv.id.startsWith('browser:')) {
+  explorerModel.open();
+  // İlk React render'ı ve abonelik otursun; ardından diski oku. Böylece
+  // "YÜKLENİYOR…" durumu güncellemesi abonelik öncesinde kaybolmaz.
+  window.requestAnimationFrame(() => {
+    void explorerModel.loadRoot(restoredEnv.rootPath, window.api.readDir);
+  });
+}
+
 void hydrateRestoredFiles((path) => fileContentCache.read(window.api, path));
 tabsModel.subscribe(() => session.schedule());
 cursorModel.subscribe(() => {
@@ -47,3 +63,9 @@ createRoot(container).render(
     <AppCover />
   </StrictMode>,
 );
+
+// İlk React karesi boyandıktan sonra pencereyi göster; gizli pencerede
+// `ready-to-show` boş bir kareye denk gelip siyah/şeffaf flaş üretiyordu.
+window.requestAnimationFrame(() => {
+  window.requestAnimationFrame(() => window.api.appReady());
+});

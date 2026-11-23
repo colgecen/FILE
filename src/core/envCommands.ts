@@ -59,6 +59,7 @@ export async function switchToEnvironment(id: string): Promise<CommandResult> {
       reportError(message);
       return { ok: false, error: message };
     }
+    explorerModel.open();
   }
   syncChatWithActiveEnv();
   session.remember();

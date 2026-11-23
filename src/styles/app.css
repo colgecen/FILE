@@ -64,8 +64,7 @@ textarea {
   flex-direction: column;
   color: var(--text-primary);
   overflow: hidden;
-  border-radius: 10px;
-  clip-path: inset(0 round 10px);
+  border-radius: var(--window-radius);
   background:
     radial-gradient(1100px 620px at 18% -14%, rgba(120, 140, 200, 0.09), transparent 55%),
     radial-gradient(900px 560px at 84% -12%, rgba(10, 132, 255, 0.07), transparent 55%),
@@ -73,27 +72,14 @@ textarea {
     linear-gradient(180deg, #202024 0%, #16171b 100%);
 }
 
-/* ---------- pencere arkasi: siyah yuvarlak köşe maskesi ---------- */
-.app-backdrop {
-  position: fixed;
-  inset: -2px;
-  z-index: -1;
-  border-radius: 12px;
-  background: #000000;
-  opacity: 0.92;
-  pointer-events: none;
-  transition:
-    opacity 180ms ease,
-    border-radius 180ms ease;
-}
-
-.app-backdrop--fullscreen {
-  opacity: 1;
-}
-
 .app-shell--fullscreen {
   border-radius: 0;
-  clip-path: inset(0);
+}
+
+/* macOS penceresi köşeleri zaten sistem tarafından yuvarlatılır. */
+html[data-platform='darwin'] .app-shell,
+html[data-platform='darwin'] .app-cover {
+  border-radius: 0;
 }
 
 .app-shell::after {
@@ -337,6 +323,10 @@ textarea {
 
 .file-logo {
   display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex: none;
 }
 
 .file-logo--generic {
@@ -534,9 +524,43 @@ textarea {
   flex: none;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   min-height: 34px;
-  padding: 0 14px;
+  padding: 0 8px 0 14px;
   border-bottom: 1px solid var(--border-dim);
+}
+
+.explorer-view__actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.explorer-view__action,
+.explorer-row__action {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.explorer-view__action:hover:not(:disabled),
+.explorer-row__action:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-primary);
+}
+
+.explorer-view__action:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 .explorer-view__title {
@@ -645,7 +669,7 @@ textarea {
 }
 
 .explorer-row__state {
-  width: 12px;
+  width: 14px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -669,8 +693,58 @@ textarea {
 }
 
 .explorer-row__name {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.explorer-row__actions {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding-left: 8px;
+  background: linear-gradient(90deg, transparent, rgba(24, 25, 29, 0.96) 22%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 100ms ease;
+}
+
+.explorer-row:hover .explorer-row__actions,
+.explorer-row:focus-within .explorer-row__actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.explorer-row__input {
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--bg-editor);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+}
+
+.explorer-row--draft {
+  background: rgba(10, 132, 255, 0.12);
+}
+
+.explorer-view__draft-error {
+  margin: 6px 8px;
+  padding: 6px 9px;
+  border: 1px solid rgba(255, 69, 58, 0.45);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 69, 58, 0.1);
+  color: var(--error);
+  font-family: var(--font-sans);
+  font-size: 11px;
 }
 
 .explorer-row__badge {
@@ -1344,14 +1418,33 @@ textarea {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  background: #000;
+  overflow: hidden;
+  border-radius: var(--window-radius);
+  background: #000000;
   opacity: 1;
-  transition: opacity 600ms ease;
+  transition: opacity 240ms ease-out;
+}
+
+.app-cover__titlebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 40px;
+  -webkit-app-region: drag;
+}
+
+.app-cover__titlebar .traffic-lights {
+  -webkit-app-region: no-drag;
 }
 
 .app-cover--fade {
   opacity: 0;
   pointer-events: none;
+  will-change: opacity;
 }
 
 .app-cover__logo {

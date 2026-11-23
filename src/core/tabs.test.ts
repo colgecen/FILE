@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { TabsModel } from './tabs';
 import type { OpenFile } from './types';
 
@@ -84,5 +84,17 @@ describe('TabsModel', () => {
     model.updateContent('/a.ts', 'yeni içerik');
     expect(model.getState().tabs[1]!.file.content).toBe('içerik');
     expect(model.getState().tabs[0]!.file.content).toBe('yeni içerik');
+  });
+
+  it('yerel içerik güncellemesi dinleyicileri uyandırmadan yazılabilir', () => {
+    const model = new TabsModel();
+    const listener = vi.fn();
+    model.open(file('/a.ts', 'a.ts'));
+    model.subscribe(listener);
+    model.updateContent('/a.ts', 'tuş vuruşu', { notify: false });
+    expect(model.getState().tabs[0]!.file.content).toBe('tuş vuruşu');
+    expect(listener).not.toHaveBeenCalled();
+    model.updateContent('/a.ts', 'dış değişiklik');
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });

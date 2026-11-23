@@ -13,8 +13,14 @@ describe('AppCover', () => {
   it('ilk anda logosu ile gorunur', () => {
     render(<AppCover />);
     const cover = screen.getByTestId('app-cover');
-    expect(cover.querySelector('img[src="./FILE.png"]')).not.toBeNull();
+    expect(cover.querySelector('img[src="./FILE-app.png"]')).not.toBeNull();
     expect(cover.className).toBe('app-cover');
+  });
+
+  it('pencere kontrol düğmelerini ve sürükleme alanını gösterir', () => {
+    render(<AppCover />);
+    expect(screen.getByTestId('traffic-lights')).toBeInTheDocument();
+    expect(document.querySelector('.app-cover__titlebar')).not.toBeNull();
   });
 
   it('sure bitince solarak kaldirilir', () => {

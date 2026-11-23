@@ -1,40 +1,11 @@
 import { useEffect } from 'react';
-import { exitController } from '../core/exit';
 import { useCore } from '../layout/AppShell';
 import { focusManager, useFocusZone } from '../core/focus';
 import { MenuPanel } from './MenuPanel';
 import { menuModel, useMenuModelState } from './menuModel';
 import { Clock } from '../ui/Clock';
+import { WindowControls } from '../ui/WindowControls';
 import { uiMenuLabel } from '../core/uiLanguage';
-
-export function WindowControls(): React.JSX.Element | null {
-  if (window.api.platform === 'darwin') return null;
-  return (
-    <div className="traffic-lights" data-testid="traffic-lights">
-      <button
-        type="button"
-        className="traffic traffic--min"
-        title="Küçült"
-        aria-label="Küçült"
-        onClick={() => void window.api.winMinimize()}
-      />
-      <button
-        type="button"
-        className="traffic traffic--max"
-        title="Ekranı Doldur"
-        aria-label="Ekranı Doldur"
-        onClick={() => void window.api.winToggleMaximize()}
-      />
-      <button
-        type="button"
-        className="traffic traffic--close"
-        title="Pencereyi Kapat"
-        aria-label="Pencereyi Kapat"
-        onClick={() => exitController.request()}
-      />
-    </div>
-  );
-}
 
 export function MenuBar(): React.JSX.Element {
   const state = useMenuModelState();

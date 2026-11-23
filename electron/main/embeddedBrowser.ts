@@ -20,6 +20,7 @@ const HOME_URL = 'https://www.google.com';
 const views = new Map<string, WebContentsView>();
 let layout: Layout | null = null;
 let activeView: WebContentsView | null = null;
+let overlayHidden = false;
 let getWindow: () => BrowserWindow | null = () => null;
 let push: ((state: EmbeddedState) => void) | null = null;
 
@@ -54,6 +55,25 @@ function bind(envId: string, view: WebContentsView): void {
   });
 }
 
+function canShowView(): boolean {
+  return (
+    !overlayHidden &&
+    layout !== null &&
+    layout.width > 1 &&
+    layout.height > 1
+  );
+}
+
+function applyVisibility(): void {
+  if (activeView === null) return;
+  if (!canShowView()) {
+    activeView.setVisible(false);
+    return;
+  }
+  activeView.setBounds(layout as Layout);
+  activeView.setVisible(true);
+}
+
 function show(envId: string | null): void {
   const win = getWindow();
   if (win === null) return;
@@ -62,19 +82,11 @@ function show(envId: string | null): void {
     activeView.setVisible(false);
   }
   activeView = next;
-  if (activeView !== null && layout !== null && layout.width > 1 && layout.height > 1) {
-    activeView.setBounds(layout);
-    activeView.setVisible(true);
-  } else if (activeView !== null) {
-    activeView.setVisible(false);
-  }
+  applyVisibility();
 }
 
 function applyLayout(): void {
-  if (activeView !== null && layout !== null && layout.width > 1 && layout.height > 1) {
-    activeView.setBounds(layout);
-    activeView.setVisible(true);
-  }
+  applyVisibility();
 }
 
 export function registerEmbeddedBrowser(
@@ -143,6 +155,12 @@ export function registerEmbeddedBrowser(
 
   ipcMain.handle('browser:reload', (_event, envId: string): boolean => {
     views.get(String(envId))?.webContents.reload();
+    return true;
+  });
+
+  ipcMain.handle('browser:overlay', (_event, hidden: unknown): boolean => {
+    overlayHidden = hidden === true;
+    applyVisibility();
     return true;
   });
 

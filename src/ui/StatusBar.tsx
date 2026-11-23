@@ -2,6 +2,7 @@ import { useAIEngine } from '../ai/engine';
 import { statusLabel } from '../ai/format';
 import { modelName } from '../ai/models';
 import { useCursorState } from '../core/cursor';
+import { useEnvironmentsState } from '../core/environments';
 import { errorStore, useErrorStore } from '../core/errorStore';
 import { dirOf, useGitBranch } from '../core/gitInfo';
 import { useTabsState } from '../core/tabs';
@@ -12,8 +13,18 @@ import { uiText } from '../core/uiLanguage';
 export function StatusBar(): React.JSX.Element {
   const cursor = useCursorState();
   const { tabs, activeId } = useTabsState();
+  const environments = useEnvironmentsState();
   const activeFile = tabs.find((tab) => tab.id === activeId)?.file ?? null;
-  const gitBranch = useGitBranch(window.api, activeFile === null ? null : dirOf(activeFile.path));
+  const activeEnv = environments.environments.find((env) => env.id === environments.activeId) ?? null;
+  // Dal bilgisi depo köküne bağlıdır; dosya klasörü değişince yeni git
+  // süreci başlatmak yerine aktif ortamın kökünü kullan.
+  const branchDir =
+    activeEnv !== null && !activeEnv.id.startsWith('browser:')
+      ? activeEnv.rootPath
+      : activeFile === null
+        ? null
+        : dirOf(activeFile.path);
+  const gitBranch = useGitBranch(window.api, branchDir);
   const telemetry = useTelemetry();
   const ai = useAIEngine();
   const errors = useErrorStore();

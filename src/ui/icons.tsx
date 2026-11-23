@@ -29,8 +29,8 @@ export function FolderIcon({ open = false }: { readonly open?: boolean }): React
   if (open) {
     return (
       <svg
-        width={14}
-        height={14}
+        width={22}
+        height={22}
         viewBox="0 0 16 16"
         fill="currentColor"
         aria-hidden="true"
@@ -46,8 +46,8 @@ export function FolderIcon({ open = false }: { readonly open?: boolean }): React
   }
   return (
     <svg
-      width={14}
-      height={14}
+      width={22}
+      height={22}
       viewBox="0 0 16 16"
       fill="currentColor"
       aria-hidden="true"
@@ -71,7 +71,7 @@ export function FileIcon(): React.JSX.Element {
 
 export function ChevronRightIcon(): React.JSX.Element {
   return (
-    <Svg size={12}>
+    <Svg size={14}>
       <path d="M6 3.5 10.5 8 6 12.5" />
     </Svg>
   );
@@ -79,8 +79,50 @@ export function ChevronRightIcon(): React.JSX.Element {
 
 export function ChevronDownIcon(): React.JSX.Element {
   return (
-    <Svg size={12}>
+    <Svg size={14}>
       <path d="M3.5 6 8 10.5 12.5 6" />
+    </Svg>
+  );
+}
+
+export function NewFileIcon(): React.JSX.Element {
+  return (
+    <Svg size={18}>
+      <path d="M4 1.8h5.2L12 4.6v5.1" />
+      <path d="M4 1.8v12.4h4.2" />
+      <path d="M9 1.8v3h3" />
+      <path d="M11.5 10v4M9.5 12h4" />
+    </Svg>
+  );
+}
+
+export function NewFolderIcon(): React.JSX.Element {
+  return (
+    <Svg size={18}>
+      <path d="M1.8 4.2a1 1 0 0 1 1-1h3l1.2 1.5h4.2" />
+      <path d="M1.8 4.2v8.1a1 1 0 0 0 1 1h4.1" />
+      <path d="M11.5 8.6v4.8M9.1 11h4.8" />
+    </Svg>
+  );
+}
+
+export function RefreshIcon(): React.JSX.Element {
+  return (
+    <Svg size={18}>
+      <path d="M13.2 6.4A5.4 5.4 0 0 0 3.6 4.2L2 5.8" />
+      <path d="M2 2.6v3.2h3.2" />
+      <path d="M2.8 9.6a5.4 5.4 0 0 0 9.6 2.2l1.6-1.6" />
+      <path d="M14 13.4v-3.2h-3.2" />
+    </Svg>
+  );
+}
+
+export function CollapseAllIcon(): React.JSX.Element {
+  return (
+    <Svg size={18}>
+      <path d="M4 2.8 8 6.4l4-3.6" />
+      <path d="M4 13.2 8 9.6l4 3.6" />
+      <path d="M3 8h10" />
     </Svg>
   );
 }
@@ -103,156 +145,169 @@ export function SplitHorizontalIcon(): React.JSX.Element {
   );
 }
 
-type LogoSpec = { readonly bg: string; readonly fg: string; readonly text: string };
+const FILE_ICON_URLS = import.meta.glob<string>('./file-icons/*.svg', {
+  eager: true,
+  import: 'default',
+});
 
-const LOGO_MAP: Readonly<Record<string, LogoSpec>> = {
-  // Web
-  ts: { bg: '#3178c6', fg: '#ffffff', text: 'TS' },
-  tsx: { bg: '#3178c6', fg: '#ffffff', text: 'TS' },
-  js: { bg: '#f7df1e', fg: '#000000', text: 'JS' },
-  jsx: { bg: '#f7df1e', fg: '#000000', text: 'JS' },
-  mjs: { bg: '#f7df1e', fg: '#000000', text: 'JS' },
-  cjs: { bg: '#f7df1e', fg: '#000000', text: 'JS' },
-  html: { bg: '#e34f26', fg: '#ffffff', text: '5' },
-  css: { bg: '#2965f1', fg: '#ffffff', text: 'CSS' },
-  scss: { bg: '#cd6799', fg: '#ffffff', text: 'SC' },
-  sass: { bg: '#cd6799', fg: '#ffffff', text: 'SA' },
-  less: { bg: '#1d365d', fg: '#ffffff', text: 'LESS' },
-  svg: { bg: '#ffb13b', fg: '#000000', text: 'SVG' },
-  vue: { bg: '#42b883', fg: '#ffffff', text: 'VUE' },
-  svelte: { bg: '#ff3e00', fg: '#ffffff', text: 'SV' },
-  // Veri
-  json: { bg: '#555555', fg: '#ffffff', text: '{}' },
-  yaml: { bg: '#cb171e', fg: '#ffffff', text: 'YML' },
-  yml: { bg: '#cb171e', fg: '#ffffff', text: 'YML' },
-  xml: { bg: '#e37933', fg: '#ffffff', text: 'XML' },
-  toml: { bg: '#9c4221', fg: '#ffffff', text: 'TOML' },
-  csv: { bg: '#217346', fg: '#ffffff', text: 'CSV' },
-  // Programlama
-  py: { bg: '#3776ab', fg: '#ffd43b', text: 'Py' },
-  rs: { bg: '#dea584', fg: '#000000', text: 'Rs' },
-  go: { bg: '#00add8', fg: '#ffffff', text: 'Go' },
-  java: { bg: '#b07219', fg: '#ffffff', text: 'Ja' },
-  kt: { bg: '#a97bff', fg: '#ffffff', text: 'Kt' },
-  c: { bg: '#555555', fg: '#ffffff', text: 'C' },
-  cpp: { bg: '#f34b7d', fg: '#ffffff', text: 'C++' },
-  cc: { bg: '#f34b7d', fg: '#ffffff', text: 'C++' },
-  cxx: { bg: '#f34b7d', fg: '#ffffff', text: 'C++' },
-  h: { bg: '#555555', fg: '#ffffff', text: 'H' },
-  hpp: { bg: '#f34b7d', fg: '#ffffff', text: 'H' },
-  cs: { bg: '#178600', fg: '#ffffff', text: 'C#' },
-  rb: { bg: '#cc342d', fg: '#ffffff', text: 'Rb' },
-  php: { bg: '#4f5d95', fg: '#ffffff', text: 'PHP' },
-  sh: { bg: '#89e051', fg: '#000000', text: 'Sh' },
-  bash: { bg: '#89e051', fg: '#000000', text: 'Sh' },
-  sql: { bg: '#e38c00', fg: '#ffffff', text: 'SQL' },
-  swift: { bg: '#f05138', fg: '#ffffff', text: 'Sw' },
-  // İşaretleme / doküman
-  md: { bg: '#6b7280', fg: '#ffffff', text: 'Md' },
-  markdown: { bg: '#6b7280', fg: '#ffffff', text: 'Md' },
-  txt: { bg: '#9ca3af', fg: '#1f2937', text: 'TXT' },
-  pdf: { bg: '#dc2626', fg: '#ffffff', text: 'PDF' },
-  // Ses
-  mp3: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  wav: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  flac: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  ogg: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  oga: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  m4a: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  aac: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  opus: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  wma: { bg: '#7c3aed', fg: '#ffffff', text: 'AUD' },
-  // Video
-  mp4: { bg: '#db2777', fg: '#ffffff', text: 'VID' },
-  webm: { bg: '#db2777', fg: '#ffffff', text: 'VID' },
-  mkv: { bg: '#db2777', fg: '#ffffff', text: 'VID' },
-  mov: { bg: '#db2777', fg: '#ffffff', text: 'VID' },
-  avi: { bg: '#db2777', fg: '#ffffff', text: 'VID' },
-  m4v: { bg: '#db2777', fg: '#ffffff', text: 'VID' },
-  ogv: { bg: '#db2777', fg: '#ffffff', text: 'VID' },
-  // Yapılandırma / meta
-  env: { bg: '#ecd53f', fg: '#000000', text: 'ENV' },
-  lock: { bg: '#6b7280', fg: '#ffffff', text: '🔒' },
-  gitignore: { bg: '#f05032', fg: '#ffffff', text: 'Git' },
-  dockerfile: { bg: '#2496ed', fg: '#ffffff', text: 'Dk' },
-  makefile: { bg: '#6b7280', fg: '#ffffff', text: 'Mk' },
-  // Görüntü
-  png: { bg: '#10b981', fg: '#ffffff', text: 'IMG' },
-  jpg: { bg: '#10b981', fg: '#ffffff', text: 'IMG' },
-  jpeg: { bg: '#10b981', fg: '#ffffff', text: 'IMG' },
-  gif: { bg: '#10b981', fg: '#ffffff', text: 'IMG' },
-  webp: { bg: '#10b981', fg: '#ffffff', text: 'IMG' },
-  ico: { bg: '#10b981', fg: '#ffffff', text: 'IMG' },
+// Simgeler Seti UI'dan (MIT) alınmıştır — bkz. src/ui/file-icons/LICENSE.md.
+const FALLBACK_ICON = FILE_ICON_URLS['./file-icons/default.svg'] ?? '';
+
+function iconUrl(name: string): string {
+  return FILE_ICON_URLS[`./file-icons/${name}.svg`] ?? FALLBACK_ICON;
+}
+
+const NAME_ICONS: Readonly<Record<string, string>> = {
+  'package.json': 'npm',
+  'package-lock.json': 'npm',
+  'npm-shrinkwrap.json': 'npm',
+  'yarn.lock': 'yarn',
+  'pnpm-lock.yaml': 'lock',
+  'tsconfig.json': 'typescript',
+  'jsconfig.json': 'javascript',
+  'vite.config.ts': 'vite',
+  'vite.config.js': 'vite',
+  'vite.config.mjs': 'vite',
+  'vite.config.mts': 'vite',
+  'vite.config.cjs': 'vite',
+  'vite.config.cts': 'vite',
+  dockerfile: 'docker',
+  '.dockerignore': 'docker',
+  'docker-compose.yml': 'docker',
+  'docker-compose.yaml': 'docker',
+  makefile: 'makefile',
+  'cmakelists.txt': 'makefile',
+  license: 'license',
+  licence: 'license',
+  copying: 'license',
+  '.gitignore': 'git',
+  '.gitattributes': 'git',
+  '.gitmodules': 'git',
+  '.editorconfig': 'editorconfig',
+  '.npmrc': 'npm',
+  '.npmignore': 'npm',
+  '.eslintrc': 'eslint',
+  '.eslintrc.js': 'eslint',
+  '.eslintrc.cjs': 'eslint',
+  '.eslintrc.json': 'eslint',
+  '.eslintrc.yml': 'eslint',
+  '.eslintrc.yaml': 'eslint',
+  '.eslintignore': 'eslint',
+  'eslint.config.js': 'eslint',
+  'eslint.config.mjs': 'eslint',
+  'eslint.config.cjs': 'eslint',
 };
 
-function logoSpec(name: string): LogoSpec | null {
-  const dot = name.lastIndexOf('.');
-  const ext = dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
-  const base = name.toLowerCase();
-  if (base === 'dockerfile' || base === 'makefile') {
-    return LOGO_MAP[base] ?? null;
-  }
-  if (ext === '') return null;
-  return LOGO_MAP[ext] ?? null;
-}
+const EXT_ICONS: Readonly<Record<string, string>> = {
+  ts: 'typescript',
+  tsx: 'react',
+  js: 'javascript',
+  jsx: 'react',
+  mjs: 'javascript',
+  cjs: 'javascript',
+  json: 'json',
+  md: 'markdown',
+  markdown: 'markdown',
+  css: 'css',
+  scss: 'sass',
+  sass: 'sass',
+  less: 'less',
+  html: 'html',
+  htm: 'html',
+  vue: 'vue',
+  svelte: 'svelte',
+  svg: 'svg',
+  py: 'python',
+  go: 'go2',
+  rs: 'rust',
+  c: 'c',
+  h: 'c',
+  cpp: 'cpp',
+  cc: 'cpp',
+  cxx: 'cpp',
+  hpp: 'cpp',
+  hh: 'cpp',
+  hxx: 'cpp',
+  cs: 'c-sharp',
+  java: 'java',
+  kt: 'kotlin',
+  kts: 'kotlin',
+  swift: 'swift',
+  rb: 'ruby',
+  php: 'php',
+  sh: 'shell',
+  bash: 'shell',
+  zsh: 'shell',
+  fish: 'shell',
+  ps1: 'powershell',
+  lua: 'lua',
+  pl: 'perl',
+  dart: 'dart',
+  scala: 'scala',
+  r: 'R',
+  yml: 'yml',
+  yaml: 'yml',
+  xml: 'xml',
+  toml: 'config',
+  ini: 'config',
+  conf: 'config',
+  sql: 'db',
+  png: 'image',
+  jpg: 'image',
+  jpeg: 'image',
+  gif: 'image',
+  webp: 'image',
+  bmp: 'image',
+  avif: 'image',
+  ico: 'favicon',
+  mp3: 'audio',
+  wav: 'audio',
+  flac: 'audio',
+  ogg: 'audio',
+  oga: 'audio',
+  m4a: 'audio',
+  aac: 'audio',
+  opus: 'audio',
+  wma: 'audio',
+  mp4: 'video',
+  webm: 'video',
+  mkv: 'video',
+  mov: 'video',
+  avi: 'video',
+  m4v: 'video',
+  ogv: 'video',
+  graphql: 'graphql',
+  gql: 'graphql',
+  prisma: 'prisma',
+  tf: 'terraform',
+  wasm: 'wasm',
+  csv: 'csv',
+  pdf: 'pdf',
+  zip: 'zip',
+  rar: 'zip',
+  '7z': 'zip',
+  tar: 'zip',
+  gz: 'zip',
+  lock: 'lock',
+};
 
 export function FileLogo({ name }: { readonly name: string }): React.JSX.Element {
   const dot = name.lastIndexOf('.');
   const ext = dot === -1 ? '' : name.slice(dot + 1).toLowerCase();
-  const spec = logoSpec(name);
-  if (spec === null) {
-    // Bilinmeyen tür: uzantıyı gri bir rozet olarak göster (her dosya bir ikon alır).
-    const label = ext === '' ? 'FILE' : ext.slice(0, 4).toUpperCase();
-    return (
-      <span className="file-logo file-logo--generic" data-logo={ext === '' ? 'file' : ext}>
-        <svg
-          className="file-logo"
-          width={15}
-          height={15}
-          viewBox="0 0 15 15"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <rect x={0.5} y={0.5} width={14} height={14} fill="#6b7280" />
-          <text
-            x={7.5}
-            y={label.length > 3 ? 10 : 11}
-            textAnchor="middle"
-            fontFamily="monospace"
-            fontWeight="bold"
-            fontSize={label.length > 3 ? 4.5 : 6}
-            fill="#ffffff"
-          >
-            {label}
-          </text>
-        </svg>
-      </span>
-    );
-  }
-  const size = 15;
-  const fontSize = spec.text.length > 2 ? 5 : 6.5;
+  const base = name.toLowerCase();
+  const key =
+    NAME_ICONS[base] ??
+    (base.endsWith('ignore') ? 'ignored' : ext === '' ? 'default' : EXT_ICONS[ext] ?? 'default');
   return (
-    <svg
+    <img
       className="file-logo"
-      data-logo={ext}
-      width={size}
-      height={size}
-      viewBox="0 0 15 15"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <rect x={0.5} y={0.5} width={14} height={14} fill={spec.bg} />
-      <text
-        x={7.5}
-        y={spec.text.length > 2 ? 10.5 : 11}
-        textAnchor="middle"
-        fontFamily="monospace"
-        fontWeight="bold"
-        fontSize={fontSize}
-        fill={spec.fg}
-      >
-        {spec.text}
-      </text>
-    </svg>
+      data-logo={ext === '' ? 'file' : ext}
+      data-icon={key}
+      src={iconUrl(key)}
+      alt=""
+      width={22}
+      height={22}
+      draggable={false}
+    />
   );
 }

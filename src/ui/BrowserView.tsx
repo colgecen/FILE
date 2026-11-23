@@ -4,6 +4,11 @@ import {
   environmentsModel,
   useEnvironmentsState,
 } from '../core/environments';
+import { useExitPending } from '../core/exit';
+import { useFocusZone } from '../core/focus';
+import { useHelpScreen } from '../core/helpModel';
+import { usePerfPanelOpen } from '../core/perfModel';
+import { useMenuModelState } from '../menus/menuModel';
 import type { EmbeddedState } from '../../electron/preload/index';
 import '../styles/browser.css';
 
@@ -33,6 +38,23 @@ export function BrowserView(): React.JSX.Element {
   const activeBrowser =
     activeId !== null ? browserEnvs.find((env) => env.id === activeId) ?? null : null;
   const knownRef = useRef<Set<string>>(new Set());
+  const menu = useMenuModelState();
+  const focusZone = useFocusZone();
+  const helpScreen = useHelpScreen();
+  const perfOpen = usePerfPanelOpen();
+  const exitPending = useExitPending();
+  // Native WebContentsView her zaman renderer DOM'unun üstünde çizilir;
+  // menü/palet/yardım gibi katmanlar açıkken tarayıcıyı gizle ki arkasında kalmasın.
+  const overlayOpen =
+    menu.openTop !== null ||
+    focusZone === 'palette' ||
+    helpScreen !== null ||
+    perfOpen ||
+    exitPending;
+
+  useEffect(() => {
+    void window.api.browserOverlay(overlayOpen);
+  }, [overlayOpen]);
 
   useEffect(() => {
     void window.api
