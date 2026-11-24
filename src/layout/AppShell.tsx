@@ -9,6 +9,7 @@ import { perfModel, usePerfPanelOpen, usePerfState } from '../core/perfModel';
 import { useGitPanelState } from '../core/gitModel';
 import { useTabsState } from '../core/tabs';
 import { useEnvironmentsState } from '../core/environments';
+import { viewModeModel } from '../core/viewMode';
 import { MenuBar } from '../menus/MenuBar';
 import { AIChatPanel } from '../ui/AIChatPanel';
 import { Breadcrumb } from '../ui/Breadcrumb';
@@ -70,7 +71,14 @@ export function AppShell({
   const envState = useEnvironmentsState();
   const browserEnvActive = envState.activeId !== null && envState.activeId.startsWith('browser:');
   const [nativeFullscreen, setNativeFullscreen] = useState(false);
-  useEffect(() => window.api.onWindowFullscreen(setNativeFullscreen), []);
+  useEffect(
+    () =>
+      window.api.onWindowFullscreen((fullscreen: boolean) => {
+        setNativeFullscreen(fullscreen);
+        viewModeModel.setFullscreen(fullscreen);
+      }),
+    [],
+  );
   useEffect(() => window.api.onEnvKey((delta: number) => {
     void cycleEnvironment(delta < 0 ? -1 : 1);
   }), []);

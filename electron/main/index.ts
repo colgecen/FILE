@@ -92,6 +92,9 @@ function createMainWindow(): void {
 
   if (mainWindow !== null) {
     attachFullscreenEvents(mainWindow);
+    // Tam ekran yerine varsayılan olarak ekranı kapla; böylece görev çubuğu
+    // ve masaüstü paneli görünür kalır.
+    mainWindow.maximize();
   }
 
   // Renderer ilk kareyi çizip `window:ready` gönderene kadar pencereyi gizli

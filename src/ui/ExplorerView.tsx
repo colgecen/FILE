@@ -9,7 +9,6 @@ import {
   ChevronRightIcon,
   CollapseAllIcon,
   FileLogo,
-  FolderIcon,
   NewFileIcon,
   NewFolderIcon,
   RefreshIcon,
@@ -734,7 +733,6 @@ export function ExplorerView(): React.JSX.Element | null {
                   className={`explorer-row explorer-row--depth-${row.depth} explorer-row--draft`}
                   style={style}
                 >
-                  <span className="explorer-row__state" aria-hidden="true" />
                   <span
                     className={
                       draftFolder
@@ -742,8 +740,9 @@ export function ExplorerView(): React.JSX.Element | null {
                         : 'explorer-row__icon explorer-row__logo'
                     }
                     aria-hidden="true"
+                    data-chevron={draftFolder ? 'right' : undefined}
                   >
-                    {draftFolder ? <FolderIcon open={false} /> : <FileLogo name={draftName} />}
+                    {draftFolder ? <ChevronRightIcon /> : <FileLogo name={draftName} />}
                   </span>
                   <input
                     ref={draftInputRef}
@@ -794,18 +793,13 @@ export function ExplorerView(): React.JSX.Element | null {
                   void registry.run('explorer.activate');
                 }}
               >
-                <span className="explorer-row__state" aria-hidden="true">
-                  {row.kind === 'directory' ? (
-                    row.expanded ? (
-                      <ChevronDownIcon />
-                    ) : (
-                      <ChevronRightIcon />
-                    )
-                  ) : null}
-                </span>
                 {row.kind === 'directory' ? (
-                  <span className="explorer-row__icon explorer-row__icon--dir" aria-hidden="true">
-                    <FolderIcon open={row.expanded} />
+                  <span
+                    className="explorer-row__icon explorer-row__icon--dir"
+                    aria-hidden="true"
+                    data-chevron={row.expanded ? 'down' : 'right'}
+                  >
+                    {row.expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
                   </span>
                 ) : (
                   <span className="explorer-row__icon explorer-row__logo" aria-hidden="true">

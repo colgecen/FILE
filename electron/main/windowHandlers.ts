@@ -29,6 +29,9 @@ export function registerWindowHandlers(getWindow: () => BrowserWindow | null): v
     const window = getWindow();
     if (window === null || window.isDestroyed()) return;
     if (event.sender !== window.webContents) return;
+    // İlk açılışta pencere tam ekran başlayabilir; renderer ilk kareyi
+    // çizdiğinde mevcut durumu bildir ki tam ekran sınıfı uygulansın.
+    window.webContents.send('window:fullscreen', window.isFullScreen());
     if (!window.isVisible()) window.show();
   });
 

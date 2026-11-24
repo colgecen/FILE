@@ -95,10 +95,11 @@ describe('ExplorerView', () => {
       explorerModel.settle(TREE, '/proje');
     });
     const dirIcon = screen.getByText('proje').closest('.explorer-row')!.querySelector(
-      '.explorer-row__icon',
+      '.explorer-row__icon--dir',
     );
-    expect(dirIcon).toHaveClass('explorer-row__icon--dir');
+    expect(dirIcon).not.toBeNull();
     expect(dirIcon?.querySelector('svg')).not.toBeNull();
+    expect(dirIcon?.getAttribute('data-chevron')).toBe('down');
     const fileLogo = screen.getByText('main.ts', { selector: '.explorer-row__name' }).closest('.explorer-row')!.querySelector(
       '[data-logo="ts"]',
     );
@@ -111,29 +112,32 @@ describe('ExplorerView', () => {
       explorerModel.open();
       explorerModel.settle(TREE, '/proje');
     });
-    const rootState = screen.getByText('proje').closest('.explorer-row')!.querySelector(
-      '.explorer-row__state',
+    const expandedIcon = screen.getByText('proje').closest('.explorer-row')!.querySelector(
+      '.explorer-row__icon--dir',
     );
-    expect(rootState?.querySelector('svg')).not.toBeNull();
+    expect(expandedIcon?.querySelector('svg')).not.toBeNull();
+    expect(expandedIcon?.getAttribute('data-chevron')).toBe('down');
     act(() => {
       explorerModel.toggleExpanded('/proje');
     });
-    const collapsedState = screen.getByText('proje').closest('.explorer-row')!.querySelector(
-      '.explorer-row__state',
+    const collapsedIcon = screen.getByText('proje').closest('.explorer-row')!.querySelector(
+      '.explorer-row__icon--dir',
     );
-    expect(collapsedState?.querySelector('svg')).not.toBeNull();
+    expect(collapsedIcon?.querySelector('svg')).not.toBeNull();
+    expect(collapsedIcon?.getAttribute('data-chevron')).toBe('right');
   });
 
-  it('dosya satırında durum göstergesi boştur', () => {
+  it('dosya satırında klasör oku gösterilmez', () => {
     render(<AppShell />);
     act(() => {
       explorerModel.open();
       explorerModel.settle(TREE, '/proje');
     });
-    const fileState = screen.getByText('main.ts', { selector: '.explorer-row__name' }).closest('.explorer-row')!.querySelector(
-      '.explorer-row__state',
+    const fileRow = screen.getByText('main.ts', { selector: '.explorer-row__name' }).closest(
+      '.explorer-row',
     );
-    expect(fileState?.textContent).toBe('');
+    expect(fileRow?.querySelector('.explorer-row__icon--dir')).toBeNull();
+    expect(fileRow?.querySelector('[data-chevron]')).toBeNull();
   });
 
   it('yükleme sırasında bekleniyor göstergesi görünür', () => {

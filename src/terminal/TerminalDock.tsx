@@ -100,26 +100,15 @@ function WorkspacePanel({
           </button>
           <span className="terminal-bar__divider" aria-hidden="true" />
           {fullscreen ? (
-            <>
-              <button
-                type="button"
-                className="terminal-bar__action"
-                title="Küçült"
-                aria-label="Terminali küçült"
-                onClick={exitFullscreen}
-              >
-                <RestoreIcon />
-              </button>
-              <button
-                type="button"
-                className="terminal-bar__action terminal-bar__action--close"
-                title="Kapat"
-                aria-label="Terminali kapat"
-                onClick={closePanel}
-              >
-                <CloseIcon />
-              </button>
-            </>
+            <button
+              type="button"
+              className="terminal-bar__action"
+              title="Küçült"
+              aria-label="Terminali küçült"
+              onClick={exitFullscreen}
+            >
+              <RestoreIcon />
+            </button>
           ) : (
             <button
               type="button"
@@ -131,6 +120,15 @@ function WorkspacePanel({
               <MaximizeIcon />
             </button>
           )}
+          <button
+            type="button"
+            className="terminal-bar__action terminal-bar__action--close"
+            title="Kapat"
+            aria-label="Terminali kapat"
+            onClick={closePanel}
+          >
+            <CloseIcon />
+          </button>
         </div>
       </div>
       <div className="terminal-body">

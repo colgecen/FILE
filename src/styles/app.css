@@ -242,12 +242,21 @@ html[data-platform='darwin'] .app-cover {
   display: flex;
   flex-wrap: nowrap;
   align-items: flex-end;
-  overflow-x: auto;
-  overflow-y: hidden;
   min-height: 40px;
   padding: 6px 8px 0;
   gap: 4px;
   box-sizing: border-box;
+}
+
+.tab-bar__tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: thin;
 }
 
@@ -367,9 +376,11 @@ html[data-platform='darwin'] .app-cover {
 }
 
 .tab-bar__actions {
-  margin-left: auto;
   display: flex;
+  flex: none;
+  align-self: flex-start;
   align-items: center;
+  height: 33px;
   gap: 2px;
   padding: 0 6px;
 }
@@ -644,6 +655,7 @@ html[data-platform='darwin'] .app-cover {
 .explorer-row {
   display: flex;
   align-items: center;
+  isolation: isolate;
   gap: 8px;
   min-height: 27px;
   padding-right: 10px;
@@ -667,82 +679,115 @@ html[data-platform='darwin'] .app-cover {
 }
 
 .explorer-row:hover {
-  background-color: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
 }
 
+.explorer-row::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  bottom: 2px;
+  left: calc(var(--explorer-row-indent, 8px) - 4px);
+  z-index: -1;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  pointer-events: none;
+  transition: background-color 120ms ease;
+}
+
+.explorer-row:hover::before {
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .explorer-row--depth-0 {
+  --explorer-row-indent: 8px;
   padding-left: 8px;
   background-image: none;
 }
 
 .explorer-row--depth-1 {
+  --explorer-row-indent: 24px;
   padding-left: 24px;
   background-size: 24px 100%;
 }
 
 .explorer-row--depth-2 {
+  --explorer-row-indent: 40px;
   padding-left: 40px;
   background-size: 40px 100%;
 }
 
 .explorer-row--depth-3 {
+  --explorer-row-indent: 56px;
   padding-left: 56px;
   background-size: 56px 100%;
 }
 
 .explorer-row--depth-4 {
+  --explorer-row-indent: 72px;
   padding-left: 72px;
   background-size: 72px 100%;
 }
 
 .explorer-row--depth-5 {
+  --explorer-row-indent: 88px;
   padding-left: 88px;
   background-size: 88px 100%;
 }
 
 .explorer-row--depth-6 {
+  --explorer-row-indent: 104px;
   padding-left: 104px;
   background-size: 104px 100%;
 }
 
 .explorer-row--depth-7 {
+  --explorer-row-indent: 120px;
   padding-left: 120px;
   background-size: 120px 100%;
 }
 
 .explorer-row--depth-8 {
+  --explorer-row-indent: 136px;
   padding-left: 136px;
   background-size: 136px 100%;
 }
 
 .explorer-row--active {
-  background-color: rgba(10, 132, 255, 0.28);
   color: var(--text-primary);
+}
+
+.explorer-row--active::before {
+  background: rgba(10, 132, 255, 0.28);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
 }
 
 .explorer-row--active:hover {
-  background-color: rgba(10, 132, 255, 0.34);
   color: var(--text-primary);
 }
 
-.explorer-row__state {
-  width: 14px;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  color: var(--text-muted);
+.explorer-row--active:hover::before {
+  background: rgba(10, 132, 255, 0.34);
 }
 
 .explorer-row__icon {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
 }
 
 .explorer-row__icon--dir {
-  color: var(--holo-cyan);
+  color: var(--text-muted);
+  transition: color 120ms ease;
+}
+
+.explorer-row:hover .explorer-row__icon--dir,
+.explorer-row--active .explorer-row__icon--dir {
+  color: var(--text-secondary);
 }
 
 .explorer-row__logo {
@@ -1229,24 +1274,48 @@ html[data-platform='darwin'] .app-cover {
 /* ---------- pencere düğmeleri (sağ üst, yan yana) ---------- */
 .traffic-lights {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 13px 0 14px;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
   flex: none;
+  height: 100%;
 }
 
 .traffic {
   appearance: none;
   position: relative;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 100%;
+  box-sizing: border-box;
   padding: 0;
   border: none;
-  border-radius: 4px;
+  border-radius: 0;
+  background: transparent;
   cursor: default;
   display: grid;
   place-items: center;
-  color: #ffffff;
+  -webkit-app-region: no-drag;
+}
+
+.traffic--min {
+  width: 30px;
+  justify-items: end;
+  padding-right: 2px;
+}
+
+.traffic--close {
+  width: 30px;
+  justify-items: start;
+  padding-left: 2px;
+}
+
+.traffic__badge {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  color: #000000;
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 800;
@@ -1254,55 +1323,59 @@ html[data-platform='darwin'] .app-cover {
   box-shadow:
     inset 0 0 0 1px rgba(0, 0, 0, 0.16),
     inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
 }
 
-.traffic--close {
+.traffic--close .traffic__badge {
   background: #ff5f57;
 }
 
-.traffic--min {
+.traffic--min .traffic__badge {
   background: #febc2e;
 }
 
-.traffic--max {
+.traffic--max .traffic__badge {
   background: #28c840;
 }
 
-.traffic::before {
+.traffic__badge::before {
   display: grid;
   place-items: center;
   font-size: 13px;
   font-weight: 800;
   line-height: 1;
-  color: #ffffff;
-  opacity: 1;
+  color: currentColor;
 }
 
-.traffic--close::before {
+.traffic--close .traffic__badge::before {
   content: '\00d7';
 }
 
-.traffic--min::before {
+.traffic--min .traffic__badge::before {
   content: '\2212';
 }
 
-.traffic--max::before {
+.traffic--max .traffic__badge::before {
   content: '';
   width: 9px;
   height: 9px;
-  border: 1.5px solid #ffffff;
+  border: 2px solid currentColor;
   box-sizing: border-box;
 }
 
-.traffic:hover {
+.traffic:hover .traffic__badge {
   background: rgba(128, 128, 128, 0.35);
-}
-
-.traffic-lights:hover .traffic::before {
-  opacity: 1;
+  color: #ffffff;
 }
 
 .traffic:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.traffic:focus-visible .traffic__badge {
   box-shadow:
     inset 0 0 0 1px rgba(0, 0, 0, 0.16),
     var(--focus-ring);

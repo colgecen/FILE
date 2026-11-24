@@ -8,6 +8,7 @@ import { explorerModel } from '../core/explorer';
 import { tabsModel } from '../core/tabs';
 import { terminalModel } from '../core/terminalModel';
 import type { OpenFile } from '../core/types';
+import { viewModeModel } from '../core/viewMode';
 import { AppShell } from './AppShell';
 
 vi.mock('../editor/EditorCore', () => ({
@@ -81,6 +82,30 @@ describe('AppShell', () => {
     act(() => {
       tabsModel.reset();
       environmentsModel.reset();
+    });
+  });
+
+  it('pencere tam ekran durumunu kabuğa ve görünüm modeline yansıtır', () => {
+    let listener: ((fullscreen: boolean) => void) | null = null;
+    const original = window.api.onWindowFullscreen;
+    Object.defineProperty(window.api, 'onWindowFullscreen', {
+      configurable: true,
+      value: (callback: (fullscreen: boolean) => void) => {
+        listener = callback;
+        return () => undefined;
+      },
+    });
+    const { container } = render(<AppShell />);
+    const shell = container.querySelector('.app-shell');
+    act(() => listener?.(true));
+    expect(shell).toHaveClass('app-shell--fullscreen');
+    expect(viewModeModel.getState().fullscreen).toBe(true);
+    act(() => listener?.(false));
+    expect(shell).not.toHaveClass('app-shell--fullscreen');
+    expect(viewModeModel.getState().fullscreen).toBe(false);
+    Object.defineProperty(window.api, 'onWindowFullscreen', {
+      configurable: true,
+      value: original,
     });
   });
 });

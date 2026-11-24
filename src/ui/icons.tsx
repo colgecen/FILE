@@ -71,7 +71,7 @@ export function FileIcon(): React.JSX.Element {
 
 export function ChevronRightIcon(): React.JSX.Element {
   return (
-    <Svg size={14}>
+    <Svg size={16}>
       <path d="M6 3.5 10.5 8 6 12.5" />
     </Svg>
   );
@@ -79,7 +79,7 @@ export function ChevronRightIcon(): React.JSX.Element {
 
 export function ChevronDownIcon(): React.JSX.Element {
   return (
-    <Svg size={14}>
+    <Svg size={16}>
       <path d="M3.5 6 8 10.5 12.5 6" />
     </Svg>
   );

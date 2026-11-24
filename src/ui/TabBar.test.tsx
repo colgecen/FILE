@@ -105,4 +105,12 @@ describe('TabBar', () => {
     expect(panesModel.getState().layout.children?.length ?? 0).toBeGreaterThan(0);
     panesModel.reset();
   });
+
+  it('panel işlemleri kayan sekmelerin dışında durur ve kapat düğmesi yoktur', () => {
+    tabsModel.open(file('/a.ts', 'a.ts'));
+    render(<TabBar />);
+    const toolbar = screen.getByRole('toolbar', { name: 'Panel işlemleri' });
+    expect(toolbar.closest('.tab-bar__tabs')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Panel Kapat' })).toBeNull();
+  });
 });

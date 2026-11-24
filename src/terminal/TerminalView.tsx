@@ -6,8 +6,13 @@ import { setActivePtyId, getActivePtyId } from '../core/terminalRegistry';
 const THEME = {
   background: '#121317',
   foreground: '#f5f5f7',
-  cursor: '#0a84ff',
-  selectionBackground: 'rgba(10, 132, 255, 0.35)',
+  cursor: '#ffffff',
+  cursorAccent: '#121317',
+  selectionBackground: 'rgba(255, 255, 255, 0.32)',
+  selectionForeground: '#ffffff',
+  selectionInactiveBackground: 'rgba(255, 255, 255, 0.18)',
+  green: '#4ade80',
+  brightGreen: '#86efac',
 };
 
 export type TerminalViewProps = {
